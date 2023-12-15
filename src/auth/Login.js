@@ -11,14 +11,38 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useKeycloak } from '@react-keycloak/web';
+
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const { keycloak, initialized } = useKeycloak();
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    keycloak
+      .login({
+        username,
+        password,
+      })
+      .then((authenticated) => {
+        if (authenticated) {
+          console.log('User authenticated');
+        } else {
+          console.log('Authentication failed');
+        }
+      })
+      .catch((error) => {
+        console.error('Login error', error);
+      });
   };
+
+  if (!initialized) {
+    return <div>Loading Keycloak...</div>;
+  }
 
   return (
     <Grid
