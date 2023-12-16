@@ -21,9 +21,11 @@ const LoginComponent = React.lazy(() => import("./auth/Login.js"));
 const App = () => {
   return (
     <>
+    
     <React.Suspense fallback={<>Loading...</>}>
         <Navbar />
         <Routes>
+
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
