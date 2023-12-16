@@ -40,9 +40,9 @@ const Login = () => {
       });
   };
 
-  if (!initialized) {
-    return <div>Loading Keycloak...</div>;
-  }
+  // if (!initialized) {
+  //   return <div>Loading Keycloak...</div>;
+  // }
 
   return (
     <Grid
