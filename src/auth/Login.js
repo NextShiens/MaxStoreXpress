@@ -39,10 +39,10 @@ const Login = () => {
         console.error('Login error', error);
       });
   };
-
-  if (!initialized) {
-    return <div>Loading Keycloak...</div>;
-  }
+//  commented because keycloak is not eunning
+  // if (!initialized) {
+  //   return <div>Loading Keycloak...</div>;
+  // }
 
   return (
     <Grid
