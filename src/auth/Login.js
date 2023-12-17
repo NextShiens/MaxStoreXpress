@@ -39,7 +39,7 @@ const Login = () => {
         console.error('Login error', error);
       });
   };
-//  commented because keycloak is not eunning
+// commented because no keycloak
   // if (!initialized) {
   //   return <div>Loading Keycloak...</div>;
   // }
