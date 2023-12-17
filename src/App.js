@@ -9,7 +9,7 @@ import { Route, Routes } from 'react-router-dom';
 // import ProtectedRoute from './components/ProtectedRoute';
 // import LoginComponent from './auth/Login.js';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
-
+import Footer from './components/common/Footer.js';
 const Navbar = React.lazy(() => import("./components/common/Navbar"));
 const Unauthorized = React.lazy(() => import("./components/AdminComponent"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -18,6 +18,7 @@ const UserComponent = React.lazy(() => import("./components/UserComponent"));
 const SellerComponent = React.lazy(() => import("./components/SellerComponent"));
 const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
+
 const App = () => {
   return (
     <>
@@ -41,7 +42,10 @@ const App = () => {
             path="/seller"
             element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE]} unauthorizedPath="/unauthorized" />}
           />
+         
+       
         </Routes>
+        <Footer />
         </React.Suspense>
         </>
     
