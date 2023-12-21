@@ -6,11 +6,15 @@ import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter } from 'react-router-dom'
 import './index.css';
 import 'tailwindcss/tailwind.css';
+import ErrorBoundary from './ErrorBoundry.js';
 ReactDOM.render(
-  <React.StrictMode>
+
+    <ErrorBoundary>
     <ReactKeycloakProvider authClient={keycloak}>
-      <BrowserRouter><App /></BrowserRouter>
+      <BrowserRouter>
+      <App />
+      </BrowserRouter>
     </ReactKeycloakProvider>
-  </React.StrictMode>,
+    </ErrorBoundary>,
   document.getElementById('root')
 );
