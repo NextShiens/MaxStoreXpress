@@ -1,37 +1,95 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Dropdown from './Dropdown';
-import 'tailwindcss/tailwind.css';
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Link as RouterLink } from 'react-router-dom';
+
 const Navbar = () => {
   return (
-    <nav className="bg-blue-500 p-4">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="text-white">
-          <Link to="/" className="text-xl font-bold">
-            Your Logo
-          </Link>
-        </div>
-        <div className="space-x-4">
-          <Link to="/" className="text-white">
-            Home
-          </Link>
-          <Link to="/products" className="text-white">
-            Products
-          </Link>
-          <Dropdown
-            trigger={<span className="text-white">More</span>}
-            options={[
-              <Link to="/about" key="about" className="text-gray-700">
-                About Us
-              </Link>,
-              <Link to="/contact" key="contact" className="text-gray-700">
-                Contact
-              </Link>,
-            ]}
-          />
-        </div>
-      </div>
-    </nav>
+    <AppBar position="static" color="primary">
+      <Toolbar>
+        <IconButton 
+          edge="start" 
+          color="inherit" 
+          aria-label="menu" 
+          sx={{ mr: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/"
+          color="inherit"
+          sx={{ flexGrow: 1 }}
+        >
+          Your Logo
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/products"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          Products
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/about"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          About Us
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/contact"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          Contact Us
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/services"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          Services
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/gallery"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          Gallery
+        </Typography>
+
+        <Button 
+          component={RouterLink} 
+          to="/login" 
+          color="inherit" 
+          variant="outlined"
+        >
+          Login
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 

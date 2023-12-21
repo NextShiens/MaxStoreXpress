@@ -10,7 +10,10 @@ import { Route, Routes } from 'react-router-dom';
 // import LoginComponent from './auth/Login.js';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
-const Navbar = React.lazy(() => import("./components/common/Navbar"));
+import CircularProgress from '@mui/material/CircularProgress';
+import  Navbar  from './components/common/Navbar'
+
+// const Navbar = React.lazy(() => import("./components/common/Navbar"));
 const Unauthorized = React.lazy(() => import("./components/AdminComponent"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
@@ -18,18 +21,22 @@ const UserComponent = React.lazy(() => import("./components/UserComponent"));
 const SellerComponent = React.lazy(() => import("./components/SellerComponent"));
 const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
+const Products = React.lazy(() => import("./components/Products/Page.js"));
+const Product = React.lazy(() => import("./components/Product/Page.js"));
 
 const App = () => {
   return (
     <>
     
-    <React.Suspense fallback={<>Loading...</>}>
+    <React.Suspense fallback={<CircularProgress />}>
         <Navbar />
         <Routes>
 
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<Product />} />
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" />}
