@@ -6,7 +6,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import CopyrightIcon from '@mui/icons-material/Copyright';
 import FacebookIcon from '@mui/icons-material/Facebook';
-
+// updated
 const Footer = () => {
     return (
         <footer className="footer">
