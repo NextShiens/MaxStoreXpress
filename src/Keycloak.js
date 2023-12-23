@@ -1,8 +1,7 @@
-// Keycloak.js
 import Keycloak from 'keycloak-js';
 
 const keycloakConfig = {
-  url: 'http://localhost:8080',
+  url: 'http://localhost:8080/',
   realm: 'maxstore',
   clientId: 'maxstore-client',
 };

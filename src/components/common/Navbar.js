@@ -5,9 +5,17 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useKeycloak } from '@react-keycloak/web';
 
 const Navbar = () => {
+  const { keycloak } = useKeycloak();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    keycloak.logout({ redirectUri: window.location.origin + '/login' });
+  };
+
   return (
     <AppBar position="static" color="primary">
       <Toolbar>
@@ -25,7 +33,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/"
           color="inherit"
-          sx={{ flexGrow: 1 }}
+          sx={{ flexGrow: 1, textDecoration: 'none' }}
         >
           Your Logo
         </Typography>
@@ -80,14 +88,24 @@ const Navbar = () => {
           Gallery
         </Typography>
 
-        <Button 
-          component={RouterLink} 
-          to="/login" 
-          color="inherit" 
-          variant="outlined"
-        >
-          Login
-        </Button>
+        {keycloak.authenticated ? (
+          <Button 
+            color="inherit" 
+            variant="outlined"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        ) : (
+          <Button 
+            component={RouterLink} 
+            to="/login" 
+            color="inherit" 
+            variant="outlined"
+          >
+            Login
+          </Button>
+        )}
       </Toolbar>
     </AppBar>
   );
