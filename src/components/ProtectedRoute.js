@@ -1,19 +1,25 @@
-import React from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from '../constant';
+import ProductSkeleton from './common/loading.js';
 
-const ProtectedRoute = ({ element: Element, roles, loginPath = '/', ...rest }) => {
+const ProtectedRoute = ({ element: Element, roles, loginPath = '/login', ...rest }) => {
+  debugger
   const { keycloak, initialized } = useKeycloak();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (initialized && !isAuthorized()) {
+      sendToLogin();
+    }
+  }, [initialized]);
 
   const sendToLogin = () => {
-    navigate(loginPath);
+    window.location.href = loginPath;
   };
 
   const isAuthorized = () => {
-    if (!keycloak.authenticated) {
+    if (!keycloak || !keycloak.authenticated) {
       return false;
     }
 
@@ -31,15 +37,14 @@ const ProtectedRoute = ({ element: Element, roles, loginPath = '/', ...rest }) =
         element={
           initialized ? (
             isAuthorized() ? (
-              <Element />
+              <React.Suspense fallback={<ProductSkeleton />}>
+                <Element />
+              </React.Suspense>
             ) : (
-              <>
-                {sendToLogin()}
-                <CircularProgress color="secondary" />
-              </>
+              <ProductSkeleton />
             )
           ) : (
-            <CircularProgress color="secondary" />
+            <ProductSkeleton />
           )
         }
       />
