@@ -23,6 +23,7 @@ const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
 const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
+const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<Product />} />
+          <Route path="/users" element={<Users />} />
           <Route
             path="/admin/*"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
