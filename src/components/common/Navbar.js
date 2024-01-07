@@ -6,8 +6,13 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink } from 'react-router-dom';
+import { AiOutlineShoppingCart } from 'react-icons/ai'; 
 
 const Navbar = () => {
+  const handleCartClick = () => {
+    alert('Your cart is empty!');
+  };
+
   return (
     <AppBar position="static" color="primary">
       <Toolbar>
@@ -88,6 +93,15 @@ const Navbar = () => {
         >
           Login
         </Button>
+        <IconButton 
+          color="inherit" 
+          component={RouterLink} 
+          to="/cart" 
+          onClick={handleCartClick} 
+          sx={{ ml: 2 }} 
+        >
+          <AiOutlineShoppingCart />
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
