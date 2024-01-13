@@ -23,6 +23,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub'; 
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
+import logo from './logo2.png';
 
 const navLinks = [
   { text: 'Home', to: '/', icon: <HomeIcon /> },
@@ -146,6 +147,7 @@ const Navbar = () => {
   };
 
   return (
+
     <>
       <AppBar position="fixed" color="primary">
         <Toolbar>
@@ -155,6 +157,85 @@ const Navbar = () => {
             aria-label="menu" 
             sx={{ mr: 3 }}
             onClick={toggleDrawer(true)}
+
+    <AppBar position="static" color="inherit" sx={{ backgroundColor: '#fff' }}>
+      <Toolbar>
+        <IconButton 
+          edge="start" 
+          color="inherit" 
+          aria-label="menu" 
+          sx={{ mr: 2, color: '#000' }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/"
+          color="inherit"
+          sx={{ flexGrow: 1, color: '#000' }}
+        >
+          <img src={logo} alt="Logo" width="200" height="80" />
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/products"
+          color="inherit"
+          sx={{ mr: 2, color: '#000' }}
+        >
+          Products
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/about"
+          color="inherit"
+          sx={{ mr: 2, color: '#000' }}
+        >
+          About Us
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/contact"
+          color="inherit"
+          sx={{ mr: 2, color: '#000' }}
+        >
+          Contact Us
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/services"
+          color="inherit"
+          sx={{ mr: 2, color: '#000' }}
+        >
+          Services
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          component={RouterLink} 
+          to="/gallery"
+          color="inherit"
+          sx={{ mr: 2, color: '#000' }}
+        >
+          Gallery
+        </Typography>
+
+        {keycloak.authenticated ? (
+          <Button 
+            color="inherit" 
+            variant="outlined"
+            onClick={handleLogout}
+            sx={{ color: '#000', borderColor: '#000' }}
+
           >
             <MenuIcon />
           </IconButton>
@@ -162,9 +243,16 @@ const Navbar = () => {
           <Typography 
             variant="h6" 
             component={RouterLink} 
+
             to="/"
             color="inherit"
             sx={{ textDecoration: 'none', maxWidth: '200px' }}
+
+            to="/login" 
+            color="inherit" 
+            variant="outlined"
+            sx={{ color: '#000', borderColor: '#000' }}
+
           >
             Your Logo
           </Typography>

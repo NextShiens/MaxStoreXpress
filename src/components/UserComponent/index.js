@@ -40,6 +40,13 @@ const DELETE_USER = gql`
   }
 `;
 
+
+const UPDATE_USER_ROLES = gql`
+  mutation UpdateUserRoles($id: ID!, $roles: [String]!) {
+    updateUserRoles(id: $id, roles: $roles)
+  }
+`;
+
 const UserComponent = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -56,7 +63,7 @@ const UserComponent = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
   const [createUser] = useMutation(CREATE_USER);
   const { loading, error, data, refetch } = useQuery(GET_USERS);
   const [deleteUser] = useMutation(DELETE_USER);
@@ -104,6 +111,16 @@ const UserComponent = () => {
       console.error('Failed to delete user:', error);
     }
   };
+  const handleUpdateUserRoles = async (id, roles) => {
+    try {
+      const { data } = await updateUserRoles({ variables: { id, roles } });
+      console.log(data);
+      refetch();
+    } catch (error) {
+      console.error('Failed to update user roles:', error);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -179,6 +196,12 @@ const UserComponent = () => {
                           sx={{ color: 'red' }}
                         >
                           Delete
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => { handleUpdateUserRoles(user.id, ['newRole1', 'newRole2']); handleClose(); }}
+                          sx={{ color: 'blue' }}
+                        >
+                          Update Roles
                         </MenuItem>
                       </Menu>
                     </TableCell>

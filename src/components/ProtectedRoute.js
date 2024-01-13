@@ -1,55 +1,35 @@
-import React, { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from '../constant';
-import ProductSkeleton from './common/loading.js';
+import { useNavigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ element: Element, roles, loginPath = '/login', ...rest }) => {
-  debugger
-  const { keycloak, initialized } = useKeycloak();
+const ProtectedRoute = ({ roles, element: Element, ...props }) => {
+  const { initialized, keycloak } = useKeycloak();
+  const navigate = useNavigate();
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    if (initialized && !isAuthorized()) {
-      sendToLogin();
-    }
-  }, [initialized]);
+    if (!initialized) return;
 
-  const sendToLogin = () => {
-    window.location.href = loginPath;
-  };
+    let isMounted = true;
 
-  const isAuthorized = () => {
-    if (!keycloak || !keycloak.authenticated) {
-      return false;
+    if (!keycloak.authenticated || (roles && !roles.some(role => keycloak.hasResourceRole(role)))) {
+      if (isMounted) {
+        navigate('/login'); // Redirect to login if not authenticated
+      }
+    } else {
+      setIsAuthorized(true);
     }
 
-    if (!roles || roles.length === 0) {
-      return true;
-    }
+    return () => {
+      isMounted = false;
+    };
+  }, [initialized, keycloak, navigate, roles]);
 
-    return roles.some(role => keycloak.hasRealmRole(role));
-  };
+  if (!initialized || !isAuthorized) {
+    return null;
+  }
 
-  return (
-    <Routes>
-      <Route
-        {...rest}
-        element={
-          initialized ? (
-            isAuthorized() ? (
-              <React.Suspense fallback={<ProductSkeleton />}>
-                <Element />
-              </React.Suspense>
-            ) : (
-              <ProductSkeleton />
-            )
-          ) : (
-            <ProductSkeleton />
-          )
-        }
-      />
-    </Routes>
-  );
+  return <Element {...props} />;
 };
 
 export default ProtectedRoute;
