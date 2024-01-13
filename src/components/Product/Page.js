@@ -10,16 +10,21 @@ const Product = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addToCart, setaddToCart] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getProduct = async () => {
       try {
         const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
         const data = await response.json();
         setProduct(data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product:", error);
+        setError("Failed to fetch product. Please try again later.");
       }
     };
     getProduct();
@@ -90,46 +95,59 @@ const Product = () => {
           </Button>
         </div>
       </NavLink>
-      <div className="row">
-        <div className="col-md-6">
-          <div className="text-center p-4">
-            <img id="main-image" alt="product" src={image} width="250" />
-          </div>
+      {error ? (
+        <div className="alert alert-danger" role="alert">
+          {error}
         </div>
-        <div className="col-md-6">
-          <div className="border p-4">
-            <span className="text-muted text-capitalize">
-              {" "}
-              in {category}
-            </span>
-            <h5 className="text-uppercase">{title}</h5>
-            Rating {rating && rating.rate}
-            <i className="fa fa-star text-warning"></i>
-            <div className="price d-flex flex-row align-items-center">
-              <big className="display-6">
-                <b>${price}</b>
-              </big>
-            </div>
-            <p className="text-muted">{description}</p>
-            <div className="cart mt-4 align-items-center">
-              <Button
-                variant="outlined"
-                className="text-uppercase mr-2 px-4"
-                onClick={() => setaddToCart(true)}
-              >
-                Buy
-              </Button>
-              <Button
-                variant="outlined"
-                className="text-uppercase mr-2 px-4"
-                onClick={() => setaddToCart(true)}
-              >
-                Add To Cart
-              </Button>
+      ) : (
+        <div className="row">
+          <div className="col-md-6">
+            <div className="text-center p-4">
+              <img
+                id="main-image"
+                alt="product"
+                src={image}
+                width="250"
+                style={{ borderRadius: "8px" }}
+              />
             </div>
           </div>
+          <div className="col-md-6">
+            <div className="border p-4">
+              <span className="text-muted text-capitalize">
+                {" "}
+                in {category}
+              </span>
+              <h5 className="text-uppercase">{title}</h5>
+              Rating {rating && rating.rate}
+              <i className="fa fa-star text-warning"></i>
+              <div className="price d-flex flex-row align-items-center">
+                <big className="display-6">
+                  <b>${price}</b>
+                </big>
+              </div>
+              <p className="text-muted">{description}</p>
+              <div className="cart mt-4 align-items-center">
+                <Button
+                  variant="outlined"
+                  className="text-uppercase mr-2 px-4"
+                  onClick={() => setaddToCart(true)}
+                  style={{ marginRight: "8px" }}
+                >
+                  Buy
+                </Button>
+                <Button
+                  variant="outlined"
+                  className="text-uppercase mr-2 px-4"
+                  onClick={() => setaddToCart(true)}
+                >
+                  Add To Cart
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 

@@ -12,12 +12,15 @@ import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
 import CircularProgress from '@mui/material/CircularProgress';
 import  Navbar  from './components/common/Navbar'
+import TopProducts from './components/TopProducts/TopProducts';
+import EditProduct from './components/Products/EditProduct';
 
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
 const Unauthorized = React.lazy(() => import("./components/AdminComponent"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
 const UserComponent = React.lazy(() => import("./components/UserComponent"));
+const ProductComponent = React.lazy(() => import("./components/ProductComponent"))
 const SellerComponent = React.lazy(() => import("./components/SellerComponent"));
 const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
@@ -33,12 +36,16 @@ const App = () => {
         <Navbar />
         <Routes>
 
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home/>} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/product-management" element={<ProductComponent />} /> 
+          <Route path="/topproducts" element={<TopProducts />} />
+          <Route path="/editproducts" element={<EditProduct/>} />
+          
           <Route
             path="/admin/*"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
@@ -52,7 +59,6 @@ const App = () => {
             element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
          
-       
         </Routes>
         <Footer />
         </React.Suspense>

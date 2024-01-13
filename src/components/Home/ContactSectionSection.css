@@ -1,0 +1,327 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #f1f1f1;
+  }
+  
+  .first-container {
+    margin:20px 50px;
+    background: white;
+    height: auto;
+  }
+  .first-container .main-para {
+    font-size: 25px;
+    padding: 10px 30px;
+  }
+  .first-container .about-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .first-container .about-container .first-about {
+    border: 1px solid grey;
+    color: #1976d2;
+    padding: 20px;
+    width: 400px;
+    margin-left: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .first-container .about-container .first-about:hover {
+    cursor: pointer;
+    border-color: #929292;
+  }
+  .first-container .about-container .first-about .para1 {
+    font-size: 17px;
+    margin-left: 10px;
+  }
+  .first-container .about-container .first-about .para2 {
+    font-size: 15px;
+    margin-top: 10px;
+    color: black;
+  }
+  .first-container .about-container .first-about .para2:hover {
+    cursor: pointer;
+    color: #929292;
+  }
+  .first-container .about-container .second-about {
+    border: 1px solid grey;
+    color: #1976d2;
+    padding: 20px;
+    width: 400px;
+    margin-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .first-container .about-container .second-about:hover {
+    cursor: pointer;
+    border-color: #929292;
+  }
+  .first-container .about-container .second-about .para1 {
+    font-size: 18px;
+    margin-left: 10px;
+  }
+  .first-container .about-container .second-about .para2 {
+    font-size: 15px;
+    margin-top: 10px;
+    color: black;
+  }
+  .first-container .about-container .second-about .para2:hover {
+    cursor: pointer;
+    color: #929292;
+  }
+  .first-container .about-container .third-about {
+    border: 1px solid grey;
+    color: #1976d2;
+    padding: 20px;
+    width: 400px;
+    margin-left: 10px;
+    margin-right: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .first-container .about-container .third-about:hover {
+    cursor: pointer;
+    border-color: #929292;
+  }
+  .first-container .about-container .third-about .para1 {
+    font-size: 18px;
+    margin-left: 10px;
+  }
+  .first-container .about-container .third-about .para2 {
+    font-size: 15px;
+    margin-top: 10px;
+    color: black;
+  }
+  .first-container .about-container .third-about .para2:hover {
+    cursor: pointer;
+    color: #929292;
+  }
+  .first-container .bottom-about {
+    width: 300px;
+    margin-left: 30px;
+    padding-bottom: 20px;
+  }
+  .first-container .bottom-about p{
+    font-size: 15px;
+  }
+  .first-container .bottom-about .para1{
+    font-size: 17px;
+    color: #1976d2;
+  }
+  .first-container .bottom-about .para2{
+    font-size: 17px;
+    color: #1976d2;
+  }
+  .first-container .bottom-about .para1:hover,
+  .first-container .bottom-about .para2:hover{
+    cursor: pointer;
+  }
+  .bottom-contact{
+    margin: 20px 50px;
+    margin-top: 20px;
+    background-color: white;
+    width: auto;
+    display: flex;
+  }
+  .bottom-contact .contact-us{
+    margin: 20px;
+    font-size: 20px;
+    width: 150px;
+    height: 50px;
+  }
+  .bottom-contact img{
+      margin-top: 50px;
+    margin-right: 50px;
+  }
+  .bottom-contact .information {
+    padding: 10px;
+    margin: 50px;
+  }
+  .bottom-contact .information p{
+    padding: 2px;
+    font-size: 16px;
+  }
+  .bottom-contact .information p span{
+    color: #1976d2;
+  }
+  .bottom-contact .information p .time{
+    color: #929292;
+  } 
+  .bottom-contact .information button{
+    padding: 7px 15px;
+    font-size: 15px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+  }
+  .bottom-contact .information button:hover{
+    cursor: pointer;
+  }
+  .bottom-contact .information p a{
+    color: #1976d2;
+  }
+  .main-container {
+    margin-top: 20px;
+    margin-left: 15%;
+    margin-bottom: 20px;
+    display: flex;
+    width: 80%;
+  }
+  
+  .main-container .right-container {
+    padding: 90px 50px;
+    margin-left: 5px;
+    background: #f6f6f6;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  }
+  .main-container .right-container .contact-box h1{
+    color: #1976d2;
+  }
+  .main-container .right-container .contact-box hr{
+  
+      width: 65px;
+      margin-left: 5px;
+      height: 3px;
+      background-color: #1976d2;
+      border: 1px solid #f6f6f6;
+      border-radius: 5px;
+  
+  }
+  .main-container .right-container .contact-box form {
+    padding: 20px 30px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .main-container .right-container .contact-box form input {
+    margin-top: 30px;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #000;
+    padding: 10px 20px;
+    width: 250px;
+    background: none;
+  }
+  .main-container .right-container .contact-box form textarea {
+    margin-top: 30px;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #000;
+    padding: 0px 20px;
+    width: 250px;
+    background: none;
+    resize: none;
+  }
+  .main-container .right-container .contact-box form button {
+    margin-top: 20px;
+    width: 100px;
+    padding: 10px 0px;
+    background: #1976d2;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+  .main-container .left-container {
+    width: 500px;
+    padding: 20px 30px;
+    height: 600px;
+    background: #f6f6f6;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  }
+  .main-container .left-container .closebtn{
+      margin-left: 100%;
+      border: none;
+      outline: none;
+      background: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
+  
+  .main-container .left-container .contact-info h1 {
+    margin-left: 10%;
+    margin-top: 10%;
+    color: #1976d2;
+  }
+  .main-container .left-container .contact-info hr {
+    width: 65px;
+    margin-left: 45px;
+    height: 3px;
+    background-color: #1976d2;
+    border: 1px solid #f6f6f6;
+    border-radius: 5px;
+  }
+  .main-container .left-container .contact-info p {
+    margin-top: 20px;
+    margin-left: 8%;
+  }
+  .main-container .left-container .icon-img h1{
+    color: #1976d2;
+  }
+  .main-container .left-container .address {
+    display: flex;
+    margin-top: 40px;
+    margin-left: 35px;
+  }
+  .main-container .left-container .address h5 {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+  .main-container .left-container .phone {
+    display: flex;
+    margin-top: 40px;
+    margin-left: 40px;
+  }
+  .main-container .left-container .phone h1 {
+    font-size: 25px;
+  }
+  .main-container .left-container .phone h5 {
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+  .main-container .left-container .phone p {
+    margin-left: 10px;
+    margin-top: 5px;
+    color: grey;
+  }
+  .main-container .left-container .email {
+    display: flex;
+    margin-top: 40px;
+    margin-left: 40px;
+  }
+  .main-container .left-container .email h1 {
+    font-size: 25px;
+  }
+  .main-container .left-container .email h5 {
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+  .main-container .left-container .email p {
+    margin-left: 10px;
+    margin-top: 4px;
+    color: grey;
+  }
+  .main-container .left-container .website {
+    display: flex;
+    margin-top: 40px;
+    margin-left: 40px;
+  }
+  .main-container .left-container .website h1 {
+    font-size: 25px;
+  }
+  .main-container .left-container .website h5 {
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+  .main-container .left-container .website p {
+    margin-left: 10px;
+    margin-top: 5px;
+    color: grey;
+  }
