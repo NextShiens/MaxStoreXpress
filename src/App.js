@@ -1,25 +1,17 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-// import Navbar from './components/common/Navbar';
-// import Home from './pages/Home';
-// import Unauthorized from './pages/Unauthorized';
-// import AdminComponent from './components/AdminComponent';
-// import UserComponent from './components/UserComponent';
-// import SellerComponent from './components/SellerComponent';
-// import ProtectedRoute from './components/ProtectedRoute';
-// import LoginComponent from './auth/Login.js';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
 import CircularProgress from '@mui/material/CircularProgress';
-import  Navbar  from './components/common/Navbar'
+import  Navbar  from './components/common/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+import Skeleton from '@mui/material/Skeleton';
 
-// const Navbar = React.lazy(() => import("./components/common/Navbar"));
-const Unauthorized = React.lazy(() => import("./components/AdminComponent"));
+const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
 const UserComponent = React.lazy(() => import("./components/UserComponent"));
 const SellerComponent = React.lazy(() => import("./components/SellerComponent"));
-const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
 const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
@@ -28,11 +20,9 @@ const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const App = () => {
   return (
     <>
-    
-    <React.Suspense fallback={<CircularProgress />}>
+      <React.Suspense fallback={<Skeleton variant="rectangular" width={210} height={118} />}>
         <Navbar />
         <Routes>
-
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
@@ -40,25 +30,23 @@ const App = () => {
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
           <Route
-            path="/admin/*"
+            path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
-            path="/user/*"
+            path="/user"
             element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
-            path="/seller/*"
+            path="/seller"
             element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
-         
-       
         </Routes>
         <Footer />
-        </React.Suspense>
-        </>
-    
+      </React.Suspense>
+    </>
   );
 };
+
 
 export default App;

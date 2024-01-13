@@ -19,7 +19,7 @@ const Login = () => {
       navigate("/");
     }
   }, [keycloak, navigate]);
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     keycloak.login();
