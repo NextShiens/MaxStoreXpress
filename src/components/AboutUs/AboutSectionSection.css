@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background-color: #fff;
+  }
+  .container img {
+    margin: 10px 60px;
+    height: 400px;
+    width: 90%;
+  }
+  .about-information {
+    background-color: #f1f1f1;
+    margin: 5px 60px;
+    height: auto;
+    width: 90%;
+    margin-bottom: 20px;
+  }
+  .about-information h1 {
+    padding-top: 10px;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #1976d2;
+  }
+  .about-information p {
+    width: 80%;
+    font-size: 16px;
+    margin-left: 10%;
+    text-align: center;
+    font-weight: 400;
+  }
+  .second-img img {
+    width: 90%;
+    margin: 5px 60px;
+  }
+  .about-us {
+    display: flex;
+    background-color: #f1f1f1;
+    width: 90%;
+    margin: 0px 50px;
+    height: auto;
+  }
+  .about-us .left-side {
+    padding-left: 50px;
+    padding-top: 50px;
+    width: 600px;
+  }
+  .about-us .left-side h1 {
+    margin-top: 10%;
+    padding-bottom: 10px;
+  }
+  .about-us .left-side p {
+    width: 450px;
+    font-size: 17px;
+    line-height: 30px;
+  }
+  .about-us .right-side {
+    display: flex;
+    background-color: #fff;
+    margin: 10px 20px;
+    padding: 50px;
+    width: 580px;
+    height: 500px;
+  }
+  .about-us .right-side h1 {
+    margin: 60% 30%;
+  }
+  .about-us .right-side p {
+    margin: 61% -27%;
+  }
+  .delivery-img img {
+    width: 90%;
+    margin: 10px 50px;
+    height: 400px;
+  }
+  .information h1 {
+    font-size: 30px;
+    text-align: center;
+    margin: 50px;
+    font-weight: 500;
+  }
+  .information .pictures1 {
+    width: 90%;
+    display: flex;
+    margin: 10px 50px;
+    justify-content: space-around;
+  }
+  .information .pictures1 img {
+    width: 200px;
+    height: 300px;
+  }
+  .information .pictures1 h5 {
+    font-size: 15px;
+    margin: 10px 10px;
+  }
+  .information .pictures2 {
+    width: 90%;
+    display: flex;
+    margin: 10px 50px;
+    justify-content: space-around;
+  }
+  .information .pictures2 img {
+    width: 200px;
+    height: 300px;
+  }
+  .information .pictures2 h5 {
+    font-size: 15px;
+    margin: 10px 10px;
+  }
+  .about-team h1 {
+    text-align: center;
+    margin: 50px;
+  }
+  .about-our {
+    display: flex;
+    width: 90%;
+    margin: 10px 50px;
+    justify-content: space-around;
+  }
+  .about-our img {
+    width: 300px;
+    height: 400px;
+  }
+  .about-our h4 {
+    font-size: 20px;
+    margin: 10px 50px;
+  }
