@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
+import logo from './logo2.png';
 
 const Navbar = () => {
   const { keycloak } = useKeycloak();
@@ -17,13 +18,13 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" color="inherit" sx={{ backgroundColor: '#fff' }}>
       <Toolbar>
         <IconButton 
           edge="start" 
           color="inherit" 
           aria-label="menu" 
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           <MenuIcon />
         </IconButton>
@@ -33,9 +34,9 @@ const Navbar = () => {
           component={RouterLink} 
           to="/"
           color="inherit"
-          sx={{ flexGrow: 1, textDecoration: 'none' }}
+          sx={{ flexGrow: 1, color: '#000' }}
         >
-          Your Logo
+          <img src={logo} alt="Logo" width="200" height="80" />
         </Typography>
 
         <Typography 
@@ -43,7 +44,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/products"
           color="inherit"
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           Products
         </Typography>
@@ -53,7 +54,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/about"
           color="inherit"
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           About Us
         </Typography>
@@ -63,7 +64,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/contact"
           color="inherit"
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           Contact Us
         </Typography>
@@ -73,7 +74,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/services"
           color="inherit"
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           Services
         </Typography>
@@ -83,7 +84,7 @@ const Navbar = () => {
           component={RouterLink} 
           to="/gallery"
           color="inherit"
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, color: '#000' }}
         >
           Gallery
         </Typography>
@@ -93,6 +94,7 @@ const Navbar = () => {
             color="inherit" 
             variant="outlined"
             onClick={handleLogout}
+            sx={{ color: '#000', borderColor: '#000' }}
           >
             Logout
           </Button>
@@ -102,6 +104,7 @@ const Navbar = () => {
             to="/login" 
             color="inherit" 
             variant="outlined"
+            sx={{ color: '#000', borderColor: '#000' }}
           >
             Login
           </Button>
