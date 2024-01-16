@@ -8,6 +8,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import logo from './logo2.png';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 
 const Navbar = () => {
   const { keycloak } = useKeycloak();
@@ -109,6 +111,14 @@ const Navbar = () => {
             Login
           </Button>
         )}
+            <IconButton
+            color="inherit"
+            component={RouterLink}
+            to="/cart"  
+            sx={{ ml: 2, color: '#000' }}  
+          >
+            <ShoppingCartIcon />
+          </IconButton>
       </Toolbar>
     </AppBar>
   );
