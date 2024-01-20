@@ -2,10 +2,12 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
-import CircularProgress from '@mui/material/CircularProgress';
 import  Navbar  from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Skeleton from '@mui/material/Skeleton';
+import UpdateUserForm from './pages/UserMangment/UserUpdate.js';
+import UserTable from './pages/UserMangment/UserTable.js';
+
 
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -29,6 +31,9 @@ const App = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
+          <Route path='/table' element={<UserTable />} />
+          <Route path='/update/:id' element={<UpdateUserForm />} />
+
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
