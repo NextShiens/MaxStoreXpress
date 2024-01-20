@@ -7,14 +7,19 @@ import { Menu, MenuItem } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-
-const CREATE_USER = gql`
-  mutation CreateUser($username: String!, $email: String!, $firstName: String!, $lastName: String!) {
-    createUser(input: { username: $username, email: $email, firstName: $firstName, lastName: $lastName }) {
+const CREATE_USER_MUTATION = gql`
+  mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!) {
+    createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, attributes: $attributes}) {
       id
+      username
+      email
+      firstName
+      lastName
+      attributes
     }
   }
 `;
+
 
 const GET_USERS = gql`
   query GetUsers {
@@ -24,6 +29,7 @@ const GET_USERS = gql`
       firstName
       lastName
       email
+      attributes
     }
   }
 `;
@@ -54,6 +60,9 @@ const UserComponent = () => {
   const [lastName, setLastName] = useState('');
   const [userId, setUserId] = useState('');
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [password, setPassword] = useState('');
+  const [attributes, setAttributes] = useState({ phone: '', address: '', dateOfBirth: '', preferredLanguage: '' });
+
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -64,25 +73,16 @@ const UserComponent = () => {
     setAnchorEl(null);
   };
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
-  const [createUser] = useMutation(CREATE_USER);
+  const [createUser] = useMutation(CREATE_USER_MUTATION);
   const { loading, error, data, refetch } = useQuery(GET_USERS);
   const [deleteUser] = useMutation(DELETE_USER);
 
   const [updateUser] = useMutation(UPDATE_USER);
-  const openUpdateUserDialog = async () => {
-    // Open a dialog and return the new user details
-    // This is just a placeholder - you'll need to implement this yourself
-    return {
-      username: 'newUsername',
-      email: 'newEmail@example.com',
-      firstName: 'newFirstName',
-      lastName: 'newLastName',
-    };
-  };
+
   const handleUpdateUser = async (id) => {
     // Open a dialog and get the new details for the user
     // This is just a placeholder - you'll need to implement this yourself
-    const { username, email, firstName, lastName } = await openUpdateUserDialog();
+    // const { username, email, firstName, lastName } = await openUpdateUserDialog();
 
     try {
       const { data } = await updateUser({ variables: { id, username, email, firstName, lastName } });
@@ -93,8 +93,18 @@ const UserComponent = () => {
     }
   };
   const handleCreateUser = async () => {
+
     try {
-      const { data } = await createUser({ variables: { username, email, firstName, lastName } });
+      const { data } = await createUser({
+        variables: {
+          username,
+          password,
+          email,
+          firstName,
+          lastName,
+          attributes:attributes
+        }
+      });
       console.log(data);
       refetch();
     } catch (error) {
@@ -146,6 +156,11 @@ const UserComponent = () => {
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="Email" onChange={e => setEmail(e.target.value)} />
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="First Name" onChange={e => setFirstName(e.target.value)} />
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="Last Name" onChange={e => setLastName(e.target.value)} />
+              <TextField size="small" className="mb-2 w-full" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+              <TextField size="small" className="mb-2 w-full" type="text" placeholder="Phone" onChange={e => setAttributes({ ...attributes, phone: e.target.value })} />
+              <TextField size="small" className="mb-2 w-full" type="text" placeholder="Address" onChange={e => setAttributes({ ...attributes, address: e.target.value })} />
+              <TextField size="small" className="mb-2 w-full" type="text" placeholder="Date Of Birth" onChange={e => setAttributes({ ...attributes, dateOfBirth: e.target.value })} />
+              <TextField size="small" className="mb-2 w-full" type="text" placeholder="Language" onChange={e => setAttributes({ ...attributes, preferredLanguage: e.target.value })} />
               <Button variant="contained" color="success" className="mb-4 w-full" onClick={handleCreateUser}>Create User</Button>
             </CardContent>
           </Card>
