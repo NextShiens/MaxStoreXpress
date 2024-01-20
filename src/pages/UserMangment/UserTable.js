@@ -1,7 +1,7 @@
 // usertable.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import users from './UserList';
+// import users from './UserList';
 import IconButton from '@mui/material/IconButton';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
@@ -16,15 +16,43 @@ import {
     Box,
     Typography
 } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import { useQuery, useMutation, gql } from '@apollo/client';
 
+const GET_USERS = gql`
+  query GetUsers {
+    getUsers {
+      id
+      username
+      firstName
+      lastName
+      email
+      attributes
+    }
+  }
+`;
 const UserTable = () => {
     const navigate = useNavigate();
 
-    const handleNavigateToUpdatePage = (userId) => {
-        const user = users.find((user) => user.id === userId);
-        navigate(`/update/${userId}`, { state: { user } });
-    };
 
+ 
+    const { loading, error, data, refetch } = useQuery(GET_USERS);
+    if (loading) {
+        return (
+          <div className="p-4">
+            <Skeleton variant="text" />
+            <Skeleton variant="circle" width={40} height={40} />
+            <Skeleton variant="rectangular" width={210} height={118} />
+          </div>
+        );
+      }
+        if (error) {
+            return <p>Error :(</p>;
+        }
+        const handleNavigateToUpdatePage = (userId) => {
+            const user = data.getUsers.find((user) => user.id === userId);
+            navigate(`/update/${userId}`, { state: { user } });
+        };
     return (
 
         <Box mx={2}>
@@ -47,7 +75,7 @@ const UserTable = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {users.map((user) =>
+                            {data.getUsers.map((user) =>
                                 <TableRow key={user.id}>
                                     <TableCell >
                                         <Avatar src={user.imageurl} />
