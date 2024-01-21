@@ -9,6 +9,7 @@ import UpdateUserForm from './pages/UserMangment/UserUpdate.js';
 import UserTable from './pages/UserMangment/UserTable.js';
 
 
+
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
@@ -18,6 +19,7 @@ const LoginComponent = React.lazy(() => import("./auth/Login.js"));
 const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
+const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 
 const App = () => {
   return (
@@ -29,6 +31,7 @@ const App = () => {
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/realproducts" element={<RealProducts />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
           <Route path='/table' element={<UserTable />} />
