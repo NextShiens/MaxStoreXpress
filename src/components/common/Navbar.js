@@ -40,9 +40,9 @@ const Navbar = () => {
   const id = open ? 'language-popover' : undefined;
 
   return (
-    <AppBar position="static" color="inherit" sx={{ backgroundColor: '#fff' }}>
+    <AppBar position="static" color="inherit" sx={{ backgroundColor: '#fff',height:'120px' }}>
       <Toolbar>
-        <div style={{ display: 'flex', marginRight: 'auto' }}>
+        <div style={{ display: 'flex', marginRight: 'auto',marginBottom:'30px' }}>
           <Typography
             variant="h6"
             component={RouterLink}
@@ -82,19 +82,16 @@ const Navbar = () => {
           >
             MaxStore Logistics Partner
           </Typography>
-
-
-
         </div>
       </Toolbar>
       <Toolbar>
-        <div style={{ display: 'flex', marginLeft: '30px', alignItems: 'center', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', marginBottom: '10px' }}>
           <Typography
             variant="h6"
             component={RouterLink}
             to="/"
             color="inherit"
-            sx={{ flexGrow: 1, color: '#000' }}
+            sx={{ flexGrow: 1, color: '#000', marginLeft:'40px',marginBottom:'30px' }}
           >
             <img src={logo} alt="Logo" width="200" height="80" />
           </Typography>
@@ -104,10 +101,10 @@ const Navbar = () => {
             label="Search"
             variant="outlined"
             sx={{
-              width: '800px',
+              width: '500px',
               height: '50px',
-              borderRadius: '10px',
-              marginBottom: '10px',
+              marginTop: '10px',
+              marginLeft:'250px'
             }}
             InputProps={{
               endAdornment: (
@@ -137,18 +134,18 @@ const Navbar = () => {
                 color="inherit"
                 variant="outlined"
                 startIcon={<PersonIcon />}
-                sx={{ color: '#000', height: '40px', marginBottom: '5px', marginLeft: "30px" }}
+                sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: "250px" }}
               >
                 Login
               </Button>
-              <hr style={{ width: '1px', height: "35px", background: 'black', marginLeft: '20px', marginBottom: '10px' }} />
+              <hr style={{ width: '1px', height: "35px", background: 'black', marginLeft: '20px', marginTop: '16px' }} />
               <Button
                 component={RouterLink}
                 to="/signup"
                 color="inherit"
                 variant="outlined"
                 startIcon={<AccountCircleIcon />}
-                sx={{ color: '#000', height: '40px', marginBottom: '5px', marginLeft: '20px' }}
+                sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: '20px' }}
               >
                 Sign Up
               </Button>
@@ -160,7 +157,7 @@ const Navbar = () => {
               color="inherit"
               aria-describedby={id}
               onClick={handleLanguageIconClick}
-              sx={{ color: '#000', marginLeft: "20px", marginBottom: '10px' }}
+              sx={{ color: '#000', marginLeft: "20px", marginTop: '8px', padding:'15px'}}
             >
               <LanguageIcon />
             </IconButton>
@@ -209,7 +206,8 @@ const Navbar = () => {
             color="inherit"
             component={RouterLink}
             to="/cart"
-            sx={{ color: '#000', marginLeft: "20px", marginBottom: '10px' }}
+            sx={{ color: '#000', marginLeft: "20px", marginBottom: '50px' }}
+          
           >
             <ShoppingCartIcon />
           </IconButton>
