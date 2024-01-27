@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Dialog, DialogTitle, DialogContent, Grid, Select, MenuItem, InputAdornment, InputLabel } from '@mui/material';
+import { Box, TextField, Button, Typography, Dialog, DialogTitle, DialogContent, Grid, Select, MenuItem, InputLabel } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Input } from '@mui/material';
-import EventIcon from '@mui/icons-material/Event';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -23,7 +22,7 @@ const CreateUserForm = ({ open, onClose }) => {
         role: '',
     });
     const [emailError, setEmailError] = useState('');
-    const [selectedImage, setSelectedImage] = useState('https://t4.ftcdn.net/jpg/04/81/13/43/360_F_481134373_0W4kg2yKeBRHNEklk4F9UXtGHdub3tYk.jpg');
+    const [selectedImage, setSelectedImage] = useState('https://static.thenounproject.com/png/3073402-200.png');
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -76,18 +75,18 @@ const CreateUserForm = ({ open, onClose }) => {
         }
     };
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md"  >
-            <Box >
+        <Dialog open={open} onClose={onClose} maxWidth="auto" height='auto' >
+            <Box style ={{border:'3px solid black', radius:'20px', width:'1200px', height:'500px'}}>
                 <DialogTitle style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography color="black" sx={{ textAlign: "left", marginTop: '20px', fontSize: '2.5rem' }}>
+                    <Typography color="black" sx={{ textAlign: "left", marginTop: '20px', fontSize: '2.0rem' }}>
                         Create User
                     </Typography>
-                    <Box sx={{ alignItems: 'center' }}>
+                    <Box >
                         {selectedImage && (
                             <img
                                 src={selectedImage}
                                 alt="Selected"
-                                style={{ width: '100px', height: '100px', marginRight: '60px', marginBottom: '10px', borderRadius: '20px' }}
+                                style={{ width: '100px', height: '100px', marginRight: '20px', marginBottom: '10px', borderRadius: '50%' }}
                             />
                         )}
                         <Input
@@ -101,7 +100,7 @@ const CreateUserForm = ({ open, onClose }) => {
                     </Box>
                 </DialogTitle>
                 <Box>
-                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '70px', marginTop: '-30px', border: '1px solid black', borderRadius: '5px' }}>
+                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '30px', marginTop: '-30px', border: '1px solid black', borderRadius: '5px' }}>
                         <Button
                             component="span"
                             style={{ color: 'black' }}
@@ -112,10 +111,12 @@ const CreateUserForm = ({ open, onClose }) => {
                 </Box>
 
 
-                <DialogContent style={{ width: '90%' }}>
+                <DialogContent style={{ width: '80%' }}>
                     <form onSubmit={handleSubmit}>
+                        
                         <Grid container spacing={2}>
-                            <Grid item style={{ marginLeft: '100px' }}>
+                        <div style={{display:'flex'}}>
+                            <Grid item style={{ marginLeft: '50px', }}>
                                 <TextField
                                     label="First Name"
                                     margin="normal"
@@ -125,7 +126,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                 />
                             </Grid>
 
-                            <Grid item style={{ marginLeft: '100px' }}>
+                            <Grid item style={{ marginLeft: '55px', width:'232  px' }}>
                                 <TextField
                                     label="Last Name"
                                     margin="normal"
@@ -134,7 +135,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('lastName')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '100px' }}>
+                            <Grid item style={{ marginLeft: '50px',  }}>
                                 <TextField
                                     label="Email"
                                     margin="normal"
@@ -145,7 +146,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('email')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '100px' }}>
+                            <Grid item style={{ marginLeft: '50px' }}>
                                 <TextField
                                     label="Phone"
                                     margin="normal"
@@ -154,7 +155,9 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('phone')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '100px' }}>
+                            </div>
+                            <div style={{display:'flex'}}>
+                            <Grid item style={{ marginLeft: '50px', width:'195px', marginTop:'15px'}}>
                                 <TextField
                                     label="Address"
                                     margin="normal"
@@ -163,21 +166,8 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('address')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '100px', width: '240px' }}>
-                                <TextField
-                                    label="Date of Birth"
-                                    margin="normal"
-                                    fullWidth
-                                    required
-                                    onChange={handleInputChange('dateOfBirth')}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end" style={{ cursor: 'pointer' }}>
-                                                <EventIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
+                            <Grid item style={{ marginLeft: '50px', width:'200px', marginTop:'23px' }}>
+                                
                                 <div>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DatePicker']}>
@@ -187,8 +177,8 @@ const CreateUserForm = ({ open, onClose }) => {
                                 </div>
                             </Grid>
 
-                            <Grid item style={{ marginLeft: '100px', width: '240px' }}>
-                                <InputLabel shrink>
+                            <Grid item style={{ marginLeft: '50px', width: '192px',  }}>
+                                <InputLabel shrink style={{marginTop:'5px'}}>
                                     Role
                                 </InputLabel>
                                 <Select
@@ -204,12 +194,14 @@ const CreateUserForm = ({ open, onClose }) => {
                                     <MenuItem value="Admin">Admin</MenuItem>
                                 </Select>
                             </Grid>
+                            </div>  
                         </Grid>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                            <Button type="submit" style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black' }}>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px', }}>
+                            <Button type="submit" style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black' , padding:'10px'}}>
                                 Create
                             </Button>
-                            <Button onClick={onClose} style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black', marginLeft: '10px' }}>
+                            <Button onClick={onClose} style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black', marginLeft: '10px', padding:'10px' }}>
                                 Cancel
                             </Button>
                         </Box>
