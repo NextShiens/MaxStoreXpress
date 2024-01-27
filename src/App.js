@@ -5,8 +5,8 @@ import Footer from './components/common/Footer.js';
 import  Navbar  from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Skeleton from '@mui/material/Skeleton';
-import UpdateUserForm from './pages/UserMangment/UserUpdate.js';
-import UserTable from './pages/UserMangment/UserTable.js';
+import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
+import UserTable from './pages/UserManagement/UserTable.js';
 
 
 
