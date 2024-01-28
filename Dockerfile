@@ -17,9 +17,9 @@ COPY . .
 EXPOSE 3000
 
 # Define environment variable
-ENV REACT_APP_KEYCLOAK_URL=http://localhost:8080/auth
-ENV REACT_APP_KEYCLOAK_REALM=MyAppRealm
-ENV REACT_APP_KEYCLOAK_CLIENT_ID=my-react-app-client
+ENV REACT_APP_KEYCLOAK_URL=http://localhost:8080/
+ENV REACT_APP_KEYCLOAK_REALM=maxstore
+ENV REACT_APP_KEYCLOAK_CLIENT_ID=maxstore-client
 
 # Run the application
-CMD ["npm", "start"]
+CMD ["npm", "react-scripts --openssl-legacy-provider start"]
