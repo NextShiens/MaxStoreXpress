@@ -122,7 +122,7 @@ const Navbar = () => {
               color="inherit"
               variant="outlined"
               onClick={handleLogout}
-              sx={{ color: '#000', }}
+              sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: "250px" }}
             >
               Logout
             </Button>
