@@ -14,6 +14,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 
+
 const Navbar = () => {
   const { keycloak } = useKeycloak();
   const [language, setLanguage] = useState('english');
