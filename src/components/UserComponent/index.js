@@ -34,9 +34,15 @@ const GET_USERS = gql`
   }
 `;
 const UPDATE_USER = gql`
-  mutation UpdateUser($id: ID!, $username: String!, $email: String!, $firstName: String!, $lastName: String!) {
-    updateUser(id: $id, input: { username: $username, email: $email, firstName: $firstName, lastName: $lastName }) {
+  mutation UpdateUser($id: ID!,$firstName: String!, $lastName: String!,$attributes:JSON) {
+    updateUser(id: $id, input: {firstName: $firstName, lastName: $lastName,attributes:$attributes}) {
       id
+      username
+      lastName
+      firstName
+      imageUrl
+      email
+      attributes
     }
   }
 `;
@@ -45,8 +51,6 @@ const DELETE_USER = gql`
     deleteUser(id: $id)
   }
 `;
-
-
 const UPDATE_USER_ROLES = gql`
   mutation UpdateUserRoles($id: ID!, $roles: [String]!) {
     updateUserRoles(id: $id, roles: $roles)
@@ -85,7 +89,7 @@ const UserComponent = () => {
     // const { username, email, firstName, lastName } = await openUpdateUserDialog();
 
     try {
-      const { data } = await updateUser({ variables: { id, username, email, firstName, lastName } });
+      const { data } = await updateUser({ variables: { id, username,firstName, lastName } });
       console.log(data);
       refetch();
     } catch (error) {

@@ -1,25 +1,27 @@
-    // UserTable.js
     import React, { useState } from 'react';
+    import { useQuery, gql } from '@apollo/client';
+    import { Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,Avatar,Button } from '@mui/material';
     import { useNavigate } from 'react-router-dom';
     import { users } from './UserList';
-    import { Button } from '@mui/material';
-    import IconButton from '@mui/material/IconButton';
+    import Skeleton from '@mui/material/Skeleton';
     import EditNoteIcon from '@mui/icons-material/EditNote';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableContainer,
-        TableHead,
-        TableRow,
-        Paper,
-        Avatar,
-        Box,
-        Typography,
-    } from '@mui/material';
     import CreateUserForm from './CreateUser';
     import { ToastContainer } from 'react-toastify';
     
+    const GET_USERS = gql`
+  query GetUsers {
+    getUsers {
+      id
+      username
+      firstName
+      lastName
+      email
+      imageUrl
+    }
+  }
+`;
+
+
     const UserTable = () => {
         const navigate = useNavigate();
         const [showCreateForm, setShowCreateForm] = useState(false);
@@ -33,6 +35,19 @@
         const handleCloseCreateForm = () => {
             setShowCreateForm(false);
         };
+        const { loading, error, data } = useQuery(GET_USERS);
+
+        if (loading) {
+            return (
+                <div className="p-4">
+                    <Skeleton variant="text" />
+                    <Skeleton variant="circle" width={40} height={40} />
+                    <Skeleton variant="rectangular" width={210} height={118} />
+                </div>
+            );
+        }
+        if (error) return `Error! ${error.message}`;
+    
         return (
             <Box >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -61,7 +76,7 @@
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {users.map((user) => (
+                                {data.getUsers.map((user) => (
                                     <TableRow key={user.id}>
                                         <TableCell>
                                             <Avatar src={user.imageurl} />

@@ -1,20 +1,34 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Dialog, DialogTitle, DialogContent, Grid, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, TextField, Button, Typography, Dialog, DialogTitle, DialogContent, Grid, Select, MenuItem, InputAdornment, InputLabel } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Input } from '@mui/material';
+import EventIcon from '@mui/icons-material/Event';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { useMutation, gql } from '@apollo/client';
 
-
+const CREATE_USER_MUTATION = gql`
+  mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!,$imageUrl:String) {
+    createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, attributes: $attributes,imageUrl:$imageUrl}) {
+      id
+      username
+      email
+      firstName
+      lastName
+      attributes
+    }
+  }
+`;
 
 const CreateUserForm = ({ open, onClose }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
+        username: '',
         phone: '',
         address: '',
         dateOfBirth: '',
@@ -22,9 +36,11 @@ const CreateUserForm = ({ open, onClose }) => {
         role: '',
     });
     const [emailError, setEmailError] = useState('');
-    const [selectedImage, setSelectedImage] = useState('https://static.thenounproject.com/png/3073402-200.png');
+    const [selectedImage, setSelectedImage] = useState('https://t4.ftcdn.net/jpg/04/81/13/43/360_F_481134373_0W4kg2yKeBRHNEklk4F9UXtGHdub3tYk.jpg');
 
-    const handleSubmit = (event) => {
+    const [createUserMutation] = useMutation(CREATE_USER_MUTATION);
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (!isValidEmail(formData.email)) {
@@ -32,18 +48,37 @@ const CreateUserForm = ({ open, onClose }) => {
             return;
         }
         setEmailError('');
-        console.log('Submitted data:', formData);
-        onClose();
 
-        toast.success('New User Added', {
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+        try {
+            const { data } = await createUserMutation({ variables: {
+                username: formData.username,
+                password: 'somePassword',
+                email: formData.email,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                attributes: {
+                    phone: formData.phone,
+                    address: formData.address,
+                    dateOfBirth: formData.dateOfBirth,
+                }
+            }});
+            console.log('User created:', data.createUser);
+            onClose();
+
+            toast.success('New User Added', {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        } catch (error) {
+            console.error('Failed to create user:', error);
+            toast.error('Failed to create user');
+        }
     };
+
     const handleInputChange = (field) => (event) => {
         setFormData({
             ...formData,
@@ -53,9 +88,11 @@ const CreateUserForm = ({ open, onClose }) => {
             setEmailError('');
         }
     };
+
     const isValidEmail = (email) => {
         return email.includes('@');
     };
+
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
 
@@ -74,19 +111,20 @@ const CreateUserForm = ({ open, onClose }) => {
             reader.readAsDataURL(file);
         }
     };
+
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="auto" height='auto' >
-            <Box style ={{border:'3px solid black', radius:'20px', width:'1200px', height:'355gpx'}}>
-                <DialogTitle style={{ display: 'flex',height:'50px', justifyContent: 'space-between',}}>
-                    <Typography color="black" sx={{ textAlign: "left", marginTop: '10px', fontSize: '2.0rem' }}>
+        <Dialog open={open} onClose={onClose} maxWidth="md"  >
+            <Box >
+                <DialogTitle style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography color="black" sx={{ textAlign: "left", marginTop: '20px', fontSize: '2.5rem' }}>
                         Create User
                     </Typography>
-                    <Box >
+                    <Box sx={{ alignItems: 'center' }}>
                         {selectedImage && (
                             <img
                                 src={selectedImage}
                                 alt="Selected"
-                                style={{ width: '100px', height: '100px', marginRight: '20px',  borderRadius: '50%' }}
+                                style={{ width: '100px', height: '100px', marginRight: '60px', marginBottom: '10px', borderRadius: '20px' }}
                             />
                         )}
                         <Input
@@ -100,7 +138,7 @@ const CreateUserForm = ({ open, onClose }) => {
                     </Box>
                 </DialogTitle>
                 <Box>
-                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '30px', marginTop: '35px', border: '1px solid black', borderRadius: '5px' }}>
+                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '70px', marginTop: '-30px', border: '1px solid black', borderRadius: '5px' }}>
                         <Button
                             component="span"
                             style={{ color: 'black' }}
@@ -111,12 +149,10 @@ const CreateUserForm = ({ open, onClose }) => {
                 </Box>
 
 
-                <DialogContent style={{ width: '80%' }}>
+                <DialogContent style={{ width: '90%' }}>
                     <form onSubmit={handleSubmit}>
-                        
                         <Grid container spacing={2}>
-                        <div style={{display:'flex'}}>
-                            <Grid item style={{ marginLeft: '30px', }}>
+                            <Grid item style={{ marginLeft: '100px' }}>
                                 <TextField
                                     label="First Name"
                                     margin="normal"
@@ -126,7 +162,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                 />
                             </Grid>
 
-                            <Grid item style={{ marginLeft: '30px', width:'232  px' }}>
+                            <Grid item style={{ marginLeft: '100px' }}>
                                 <TextField
                                     label="Last Name"
                                     margin="normal"
@@ -135,7 +171,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('lastName')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '30px',  }}>
+                            <Grid item style={{ marginLeft: '100px' }}>
                                 <TextField
                                     label="Email"
                                     margin="normal"
@@ -146,7 +182,16 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('email')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '30px' }}>
+                            <Grid item style={{ marginLeft: '100px' }}>
+                                <TextField
+                                    label="Username"
+                                    margin="normal"
+                                    fullWidth
+                                    required
+                                    onChange={handleInputChange('username')}
+                                />
+                            </Grid>
+                            <Grid item style={{ marginLeft: '100px' }}>
                                 <TextField
                                     label="Phone"
                                     margin="normal"
@@ -155,9 +200,7 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('phone')}
                                 />
                             </Grid>
-                            </div>
-                            <div style={{display:'flex'}}>
-                            <Grid item style={{ marginLeft: '30px', width:'214px', marginTop:'15px'}}>
+                            <Grid item style={{ marginLeft: '100px' }}>
                                 <TextField
                                     label="Address"
                                     margin="normal"
@@ -166,8 +209,21 @@ const CreateUserForm = ({ open, onClose }) => {
                                     onChange={handleInputChange('address')}
                                 />
                             </Grid>
-                            <Grid item style={{ marginLeft: '30px', width:'214px', marginTop:'23px' }}>
-                                
+                            <Grid item style={{ marginLeft: '100px', width: '240px' }}>
+                                <TextField
+                                    label="Date of Birth"
+                                    margin="normal"
+                                    fullWidth
+                                    required
+                                    onChange={handleInputChange('dateOfBirth')}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" style={{ cursor: 'pointer' }}>
+                                                <EventIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
                                 <div>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DatePicker']}>
@@ -177,8 +233,8 @@ const CreateUserForm = ({ open, onClose }) => {
                                 </div>
                             </Grid>
 
-                            <Grid item style={{ marginLeft: '30px', width: '214px',  }}>
-                                <InputLabel shrink style={{marginTop:'5px'}}>
+                            <Grid item style={{ marginLeft: '100px', width: '240px' }}>
+                                <InputLabel shrink>
                                     Role
                                 </InputLabel>
                                 <Select
@@ -194,14 +250,12 @@ const CreateUserForm = ({ open, onClose }) => {
                                     <MenuItem value="Admin">Admin</MenuItem>
                                 </Select>
                             </Grid>
-                            </div>  
                         </Grid>
-                        
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', }}>
-                            <Button type="submit" style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black' , padding:'10px'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                            <Button type="submit" style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black' }}>
                                 Create
                             </Button>
-                            <Button onClick={onClose} style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black', marginLeft: '10px', padding:'10px' }}>
+                            <Button onClick={onClose} style={{ borderRadius: '5px', color: 'black', margin: '10px', border: '1px solid black', marginLeft: '10px' }}>
                                 Cancel
                             </Button>
                         </Box>
@@ -211,4 +265,5 @@ const CreateUserForm = ({ open, onClose }) => {
         </Dialog>
     );
 };
+
 export default CreateUserForm;
