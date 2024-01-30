@@ -1,10 +1,11 @@
-    // UserTable.js
+
     import React, { useState } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { users } from './UserList';
     import { Button } from '@mui/material';
     import IconButton from '@mui/material/IconButton';
     import EditNoteIcon from '@mui/icons-material/EditNote';
+    import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
     import {
         Table,
         TableBody,
@@ -43,7 +44,7 @@
                         style={{ borderRadius: '5px',color:'black', margin: '10px',border:'1px solid black' }}
                         onClick={handleCreateButtonClick}
                     >
-                        Create New User
+                        Create New User <AddCircleOutlineIcon style={{marginLeft:'10px'}}/>
                     </Button>
                 </Box>
                 <Box sx={{ mx: "auto" }} width={'100%'}>
