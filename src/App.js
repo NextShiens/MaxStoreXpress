@@ -7,8 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Skeleton from '@mui/material/Skeleton';
 import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
 import UserTable from './pages/UserManagement/UserTable.js';
-
-
+import Review from './pages/Products/Review.js';
 
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -36,7 +35,7 @@ const App = () => {
           <Route path="/users" element={<Users />} />
           <Route path='/table' element={<UserTable />} />
           <Route path='/update/:id' element={<UpdateUserForm />} />
-
+          <Route path='/review' element={<Review />} />
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
