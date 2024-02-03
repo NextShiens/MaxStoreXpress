@@ -2,10 +2,13 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
-import CircularProgress from '@mui/material/CircularProgress';
 import  Navbar  from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Skeleton from '@mui/material/Skeleton';
+import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
+import UserTable from './pages/UserManagement/UserTable.js';
+
+
 
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -16,6 +19,7 @@ const LoginComponent = React.lazy(() => import("./auth/Login.js"));
 const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
+const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 
 const App = () => {
   return (
@@ -27,8 +31,12 @@ const App = () => {
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/realproducts" element={<RealProducts />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
+          <Route path='/table' element={<UserTable />} />
+          <Route path='/update/:id' element={<UpdateUserForm />} />
+
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
