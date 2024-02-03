@@ -1,4 +1,3 @@
-
     import React, { useState } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { users } from './UserList';
@@ -45,6 +44,8 @@
                         onClick={handleCreateButtonClick}
                     >
                         Create New User <AddCircleOutlineIcon style={{marginLeft:'10px'}}/>
+
+
                     </Button>
                 </Box>
                 <Box sx={{ mx: "auto" }} width={'100%'}>

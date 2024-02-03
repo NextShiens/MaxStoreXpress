@@ -9,8 +9,6 @@ import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
 import UserTable from './pages/UserManagement/UserTable.js';
 import Review from './pages/Products/Review.js';
 
-
-
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
@@ -38,7 +36,6 @@ const App = () => {
           <Route path='/table' element={<UserTable />} />
           <Route path='/update/:id' element={<UpdateUserForm />} />
           <Route path='/review' element={<Review />} />
-
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
