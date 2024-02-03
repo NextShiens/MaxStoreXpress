@@ -15,17 +15,9 @@ const Product = () => {
   useEffect(() => {
     const getProduct = async () => {
       try {
-<<<<<<< Updated upstream
         const response = await fetch(`https://fakestoreapi.com/products/${id}`);
         const data = await response.json();
         setProduct(data);
-=======
-        const selectedProduct = DataProduct.find(item => item.id === parseInt(id));
-        if (!selectedProduct) {
-          throw new Error("Product not found");
-        }
-        setProduct(selectedProduct);
->>>>>>> Stashed changes
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -50,7 +42,6 @@ const Product = () => {
           </Button>
         </div>
       </NavLink>
-<<<<<<< Updated upstream
       <div className="row">
         <div className="col-md-6">
           <div className="text-center p-4">
@@ -89,15 +80,6 @@ const Product = () => {
               </Button>
             </div>
           </div>
-=======
-      {error ? (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      ) : (
-        <div className="row">
-          {/* Product details JSX */}
->>>>>>> Stashed changes
         </div>
       </div>
     </div>
