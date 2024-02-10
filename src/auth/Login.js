@@ -16,7 +16,11 @@ const Login = () => {
 
   useEffect(() => {
     if (keycloak.authenticated) {
-      navigate("/");
+      if (keycloak.hasRealmRole('seller')) {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/");
+      }
     }
   }, [keycloak, navigate]);
   
