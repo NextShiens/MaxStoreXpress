@@ -18,7 +18,7 @@ const GET_SELLER_REQUESTS = gql`
 
 const UPDATE_SELLER_REQUEST_STATUS = gql`
   mutation UpdateSellerRequestStatus($user_id: ID!, $status: String!) {
-    updateSellerRequestStatus(user_id: $user_id, status: $status)
+    updateSellerRequest(user_id: $user_id, status: $status)
   }
 `;
 
