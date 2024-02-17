@@ -26,36 +26,34 @@ const Transactions = () => {
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-4">Transaction Table</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 border">ID</th>
-              <th className="px-4 py-2 border">Date</th>
-              <th className="px-4 py-2 border">Seller</th>
-              <th className="px-4 py-2 border">SKU</th>
-              <th className="px-4 py-2 border">Type</th>
-              <th className="px-4 py-2 border">Status</th>
-              <th className="px-4 py-2 border">Amount</th>
+    <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', fontFamily: 'Arial, sans-serif', textShadow: '1px 1px 2px #888888' }}>Transaction Table</h2>
+      <table style={{ width: '100%', borderCollapse: 'collapse', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', borderRadius: '8px',marginBottom:'12px' }}>
+        <thead>
+          <tr style={{ backgroundColor: '#f2f2f2' }}>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>ID</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Date</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Seller</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>SKU</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Type</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Status</th>
+            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.getTransactions.map(transaction => (
+            <tr key={transaction.id} style={{ backgroundColor: '#fff' }}>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.id}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.date}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.seller}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.sku}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.type}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.status}</td>
+              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.amount}</td>
             </tr>
-          </thead>
-          <tbody>
-            {data.getTransactions.map(transaction => (
-              <tr key={transaction.id} className="text-gray-700">
-                <td className="border px-4 py-2">{transaction.id}</td>
-                <td className="border px-4 py-2">{transaction.date}</td>
-                <td className="border px-4 py-2">{transaction.seller}</td>
-                <td className="border px-4 py-2">{transaction.sku}</td>
-                <td className="border px-4 py-2">{transaction.type}</td>
-                <td className="border px-4 py-2">{transaction.status}</td>
-                <td className="border px-4 py-2">{transaction.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
