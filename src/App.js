@@ -4,7 +4,7 @@ import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
 import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
-import  Navbar  from './components/common/Navbar'
+import  Navbar  from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './pages/transactions/transactions.js';
 import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
