@@ -26,34 +26,37 @@ const Transactions = () => {
   }
 
   return (
-    <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', fontFamily: 'Arial, sans-serif', textShadow: '1px 1px 2px #888888' }}>Transaction Table</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', borderRadius: '8px',marginBottom:'12px' }}>
-        <thead>
-          <tr style={{ backgroundColor: '#f2f2f2' }}>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>ID</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Date</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Seller</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>SKU</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Type</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Status</th>
-            <th style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>Amount</th>
+    <div>
+      <h2 className='m-4 font-bold text-[25px] ml-[40%]  inline-block text-shadow-lg
+      '> Transactions Record</h2>
+    <div className='w-[84%] ml-[8%] mb-12 max-h-[500px] overflow-y-auto border-[3px] border-b-0 rounded-md border-solid  '>
+      <table className='w-[100%]  rounded-[8px] border-collapse shadow-lg' >
+        <thead className='bg-[#1F51FF] sticky top-0 '>
+          <tr className='bg-[#1F51FF] p-3 text-white'>
+            <th className='p-3 pl-5 text-left'>ID</th>
+            <th className='p-3 text-left'>Date</th>
+            <th className='p-3 text-left'>Seller</th>
+            <th className='p-3 text-left'>SKU</th>
+            <th className='p-3 text-left'>Type</th>
+            <th className='p-3 text-left'>Status</th>
+            <th className='p-3 text-left'>Amount</th>
           </tr>
         </thead>
         <tbody>
           {data.getTransactions.map(transaction => (
-            <tr key={transaction.id} style={{ backgroundColor: '#fff' }}>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.id}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.date}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.seller}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.sku}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.type}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.status}</td>
-              <td style={{ padding: '0.5rem 1rem', border: '1px solid #ddd' }}>{transaction.amount}</td>
+            <tr key={transaction.id} >
+              <td className='p-3 border-b-[3px]   mb-1 border-solid border-gray-300'>{transaction.id}</td>
+              <td className='p-3 border-b-[3px]  mb-1 border-solid border-gray-300'>{transaction.date}</td>
+              <td className='p-3 border-b-[3px]  mb-1 border-solid border-gray-300'>{transaction.seller}</td>
+              <td className='p-3 border-b-[3px]  mb-1 border-solid border-gray-300'>{transaction.sku}</td>
+              <td className='p-3 border-b-[3px]  mb-1 border-solid border-gray-300'>{transaction.type}</td>
+              <td className='p-3 border-b-[3px]  mb-1 border-solid border-gray-300'>{transaction.status}</td>
+              <td className='p-3 border-b-[3px]  border-solid border-gray-300'>{transaction.amount}</td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };

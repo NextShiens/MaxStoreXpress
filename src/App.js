@@ -7,8 +7,13 @@ import Skeleton from '@mui/material/Skeleton';
 import  Navbar  from './components/common/Navbar'
 import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './pages/transactions/transactions.js';
+import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
+import CustomerPage from './pages/customers/customerPage.js';
+import UserTable from './pages/UserManagement/UserTable.js';
+import Review from './pages/Products/Review.js';
+
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
-const Unauthorized = React.lazy(() => import("./components/AdminComponent"));
+const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
 const UserComponent = React.lazy(() => import("./components/UserComponent"));
@@ -32,7 +37,11 @@ const App = () => {
           <Route path="/realproducts" element={<RealProducts />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/users" element={<Users />} />
+          <Route path='/table' element={<UserTable />} />
+          <Route path='/update/:id' element={<UpdateUserForm />} />
+          <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
+          <Route path= '/customers' element={<CustomerPage />} />
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
