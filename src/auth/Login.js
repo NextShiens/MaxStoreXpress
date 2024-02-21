@@ -16,7 +16,11 @@ const Login = () => {
 
   useEffect(() => {
     if (keycloak.authenticated) {
-      navigate("/");
+      if (keycloak.hasRealmRole('seller')) {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/");
+      }
     }
   }, [keycloak, navigate]);
   
@@ -62,15 +66,9 @@ const Login = () => {
               fullWidth
               sx={{ marginTop: '20px' }}
             >
-              Login with Keycloak
+              Login To Maxstore
             </Button>
-            <Typography variant="body2" textAlign="center" mt={2}>
-              Forgot password? <Link to="/forgot-password">Click here</Link>
-            </Typography>
           </form>
-          <Typography variant="body2" textAlign="center" mt={3}>
-            Don't have an account? <Link to="/signup">Sign up</Link>
-          </Typography>
         </Paper>
       </Grid>
     </Grid>
