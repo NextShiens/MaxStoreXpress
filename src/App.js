@@ -8,6 +8,7 @@ import Skeleton from '@mui/material/Skeleton';
 import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
 import UserTable from './pages/UserManagement/UserTable.js';
 import Review from './pages/Products/Review.js';
+import Sidebar from './pages/Sidebar/Sidebar.js';
 
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -26,6 +27,7 @@ const App = () => {
       <React.Suspense fallback={<Skeleton variant="rectangular" width={210} height={118} />}>
         <Navbar />
         <Routes>
+        <Route path="/sidebar" element={<Sidebar />} />
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
