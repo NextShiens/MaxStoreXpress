@@ -25,16 +25,17 @@ const CREATE_USER_MUTATION = gql`
 
 const CreateUserForm = ({ open, onClose }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        userName: '',
         email: '',
         username: '',
         phone: '',
         address: '',
+        password: '',
         dateOfBirth: '',
         imageUrl: '',
         role: '',
     });
+    const [showIcon, setShowIcon] = useState(true);
     const [emailError, setEmailError] = useState('');
     const [selectedImage, setSelectedImage] = useState('https://t4.ftcdn.net/jpg/04/81/13/43/360_F_481134373_0W4kg2yKeBRHNEklk4F9UXtGHdub3tYk.jpg');
 
@@ -47,6 +48,12 @@ const CreateUserForm = ({ open, onClose }) => {
             setEmailError('Invalid email format');
             return;
         }
+
+        if (!formData.dateOfBirth) {
+            setDateOfBirthError('Date of birth is required');
+            return;
+        }
+
         setEmailError('');
 
         try {
@@ -79,6 +86,7 @@ const CreateUserForm = ({ open, onClose }) => {
         }
     };
 
+
     const handleInputChange = (field) => (event) => {
         setFormData({
             ...formData,
@@ -89,25 +97,28 @@ const CreateUserForm = ({ open, onClose }) => {
         }
     };
 
+
     const isValidEmail = (email) => {
         return email.includes('@');
     };
 
+
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
-
+        
         if (file) {
             const reader = new FileReader();
-
+        
             reader.onloadend = () => {
                 setSelectedImage(reader.result);
-
+                setShowIcon(false); 
+        
                 setFormData({
                     ...formData,
                     imageUrl: reader.result,
                 });
             };
-
+        
             reader.readAsDataURL(file);
         }
     };
@@ -134,16 +145,15 @@ const CreateUserForm = ({ open, onClose }) => {
                             onChange={handleImageUpload}
                             style={{ display: 'none' }}
                         />
-
                     </Box>
                 </DialogTitle>
                 <Box>
                     <label htmlFor="image-upload" style={{ float: 'right', marginRight: '70px', marginTop: '-30px', border: '1px solid black', borderRadius: '5px' }}>
                         <Button
                             component="span"
-                            style={{ color: 'black' }}
+                            style={{ color: 'black', width: '30px', height: '30px', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}
                         >
-                            Upload Image
+                            Image
                         </Button>
                     </label>
                 </Box>
@@ -267,3 +277,4 @@ const CreateUserForm = ({ open, onClose }) => {
 };
 
 export default CreateUserForm;
+

@@ -90,7 +90,7 @@ const UpdateUserForm = () => {
   };
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: '#F9F9F9', display: 'flex', flexDirection: 'column' }}>
-      <Box style={{ backgroundColor: '#fff', padding: '10px', margin: '10px', color: 'black', textAlign: 'left', width: '97%', display: 'flex', justifyContent: 'space-between', fontFamily: 'Your-Font-Family-Here' }}>
+      <Box style={{ backgroundColor: '#fff', padding: '10px', margin: '10px', color: 'black', textAlign: 'left', width: '97%', display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h6" style={{ marginLeft: '20px', fontWeight: 'bold', fontStyle: 'italic', padding: '10px' }}>Settings</Typography>
         <Typography variant="body1" style={{ marginRight: '20px', backgroundColor: '#F9F9F9', padding: '10px', borderRadius: '5px', border: '1px solid #E2E1E1' }}>{getCurrentDateTime()}</Typography>
       </Box>
