@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
 import 'tailwindcss/tailwind.css';
-import { useKeycloak } from '@react-keycloak/web';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { useAuth } from 'react-oidc-context';
+
 const CREATE_SELLER_REQUEST = gql`
  mutation CreateSellerRequest(
   $user_id: ID!,
@@ -24,8 +25,6 @@ const CREATE_SELLER_REQUEST = gql`
     }
   )
 }
-
-
 `;
 
 const SellerAccessRequestForm = () => {
@@ -36,17 +35,19 @@ const SellerAccessRequestForm = () => {
     companyName: '',
     cnic: '',
   });
-  const { keycloak, initialized } = useKeycloak();
+  const { user, isAuthenticated } = useAuth();
   const [createSellerRequest, { loading }] = useMutation(CREATE_SELLER_REQUEST);
 
   useEffect(() => {
-    if (initialized) {
+    if (isAuthenticated) {
       setFormState((prevState) => ({
         ...prevState,
-        userId: keycloak.tokenParsed.sub,
+        userId: user.sub,
+        userName: user.username,
+        userEmail: user.email,
       }));
     }
-  }, [initialized, keycloak]);
+  }, [isAuthenticated, user]);
 
   const handleChange = (event) => {
     setFormState({

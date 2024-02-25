@@ -1,18 +1,32 @@
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from '@apollo/client';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import keycloak from './Keycloak';
 import './index.css';
 import 'tailwindcss/tailwind.css';
 import ErrorBoundary from './ErrorBoundry.js';
 import ReactDOM from 'react-dom';
 import { setContext } from '@apollo/client/link/context';
+import { AuthProvider } from "react-oidc-context";
+import { WebStorageStateStore } from 'oidc-client';
+import IdTokenProvider from './auth/idTokenProvider.js';
+import ProfileProvider from './auth/profileProvider.js';
 
+
+
+const oidcConfig = {
+  authority: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_ISSUER : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_UFvwQkLIA",
+  client_id: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_CLIENT_ID: "5kufp3lnmfirdb99e0lh5qgep8",
+  redirect_uri: process.env.NODE_ENV === 'production' ? `https://${process.env.REACT_APP_WEBAPP_DOMAIN}/` : "http://localhost:3000/",
+  moniterSession: false,
+  response_type: "code",
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
+
+};
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
 
+
 const authLink = setContext((_, { headers }) => {
-  const token = keycloak.token;
+  const token = localStorage.getItem('token');
   return {
     headers: {
       ...headers,
@@ -21,20 +35,29 @@ const authLink = setContext((_, { headers }) => {
   }
 });
 
-const client = new ApolloClient({
+const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
 
 ReactDOM.render(
   <ErrorBoundary>
-    <ReactKeycloakProvider authClient={keycloak}>
-      <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ApolloProvider>
-    </ReactKeycloakProvider>
+
+    <AuthProvider {...oidcConfig}>
+      <IdTokenProvider>
+        <ProfileProvider>
+
+          <ApolloProvider client={apolloClient}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </ApolloProvider>
+
+
+        </ProfileProvider>
+      </IdTokenProvider>
+    </AuthProvider>
+
   </ErrorBoundary>,
   document.getElementById('root')
 );
