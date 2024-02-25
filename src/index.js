@@ -11,6 +11,11 @@ import { WebStorageStateStore } from 'oidc-client';
 import IdTokenProvider from './auth/idTokenProvider.js';
 import ProfileProvider from './auth/profileProvider.js';
 
+console.log("NODE_ENV: ", process.env.NODE_ENV);
+console.log("REACT_APP_OPEN_ID_ISSUER: ", process.env.REACT_APP_OPEN_ID_ISSUER);
+console.log("REACT_APP_OPEN_ID_CLIENT_ID: ", process.env.REACT_APP_OPEN_ID_CLIENT_ID);
+console.log("REACT_APP_WEBAPP_DOMAIN: ", process.env.REACT_APP_WEBAPP_DOMAIN);
+console.log("REACT_APP_GRAPHQL_URI: ", process.env.REACT_APP_GRAPHQL_URI);
 
 
 const oidcConfig = {
@@ -22,6 +27,7 @@ const oidcConfig = {
   userStore: new WebStorageStateStore({ store: window.localStorage }),
 
 };
+console.log("oidcConfig: ", oidcConfig);  
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
 
 
