@@ -10,6 +10,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.14.20",
+    "@mui/x-charts": "^6.19.5",
     "@mui/x-date-pickers": "^6.19.2",
     "@react-keycloak/web": "^3.4.0",
     "@testing-library/jest-dom": "^6.1.5",
