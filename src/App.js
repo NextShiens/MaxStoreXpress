@@ -10,6 +10,7 @@ import UserTable from './pages/UserManagement/UserTable.js';
 import Review from './pages/Products/Review.js';
 import Sidebar from './pages/Sidebar/Sidebar.js';
 
+
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
@@ -20,7 +21,7 @@ const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
-
+const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
   return (
     <>
@@ -45,6 +46,10 @@ const App = () => {
           <Route
             path="/user"
             element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+          />
+          <Route
+            path="/seller-request"
+            element={<ProtectedRoute element={SellerAccessRequestForm} roles={[USER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/seller"
