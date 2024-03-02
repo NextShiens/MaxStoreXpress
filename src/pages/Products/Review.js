@@ -9,7 +9,9 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { Menu, MenuItem } from '@mui/material';
+
 import { users } from '../UserManagement/UserList';
+
 import {
     Table,
     TableBody,
@@ -27,6 +29,20 @@ function Review() {
     const [regularPercentage, setRegularPercentage] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [users, setUsers] = useState([]);
+    
+    
+    useEffect(() => {
+        fetch("http://localhost:4000/review")
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('User data:', data);
+                setUsers(data);
+            })
+            .catch((error) => console.error('Error fetching users:', error));
+    }, []);
+    
+      
 
 
 
