@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { useQuery,gql } from '@apollo/client';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import { PieChart } from '@mui/x-charts/PieChart';
 const GET_DATA=gql`
 query{
     chartData{
@@ -11,21 +12,10 @@ query{
   }
 }
 `;
-const COLORS = ['#00193B', '#7c3aed', '#FFBB28', '#FF8042'];
+const pieParams = { width:350, height: 350, margin: { right: 5 }  };
+const palette  = ['#00193B', '#7c3aed', '#FFBB28', '#FF8042'];
 
-const RADIAN = Math.PI / 180;
 
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
 export default function Piechart() {
   const { loading, error, data } = useQuery(GET_DATA);
 
@@ -41,26 +31,17 @@ export default function Piechart() {
   }
 
   return (
-    <div>
-      <ResponsiveContainer width="170%" height={400}>
-        <PieChart>
-          <Pie
-            data={data.chartData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            outerRadius={180}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {data.chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
+    <Stack direction="row" width="100%" textAlign="center" spacing={2}>
+    <Box flexGrow={1}>
+      <PieChart
+      
+       colors={palette}
+        series={[{ data: data.chartData }]}
+        {...pieParams}
+    
+      />
+    </Box>
+  </Stack>
   );
 }
 
