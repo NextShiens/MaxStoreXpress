@@ -1,10 +1,10 @@
-import  React, {useState} from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Link as RouterLink, } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import logo from './logo2.png';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -14,8 +14,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 
-
-// git stash example
 const Navbar = () => {
   const { keycloak } = useKeycloak();
   const [language, setLanguage] = useState('english');
@@ -42,90 +40,38 @@ const Navbar = () => {
   const id = open ? 'language-popover' : undefined;
 
   return (
-    <AppBar position="static" color="inherit" sx={{ backgroundColor: '#fff',height:'120px' }}>
-      <Toolbar>
-        <div style={{ display: 'flex', marginRight: 'auto',marginBottom:'30px' }}>
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/become-seller"
-            color="inherit"
-            sx={{ color: '#000', marginRight: '16px', fontSize: '15px' }}
-          >
-            Become a Seller
-          </Typography>
-
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/affiliate-program"
-            color="inherit"
-            sx={{ color: '#000', marginRight: '16px', fontSize: '15px' }}
-          >
-            MaxStore Affiliate Program
-          </Typography>
-
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/help-support"
-            color="inherit"
-            sx={{ color: '#000', marginRight: '16px', fontSize: '15px' }}
-          >
-            Help & Support
-          </Typography>
-
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/logistics-partner"
-            color="inherit"
-            sx={{ color: '#000', marginRight: '16px', fontSize: '15px' }}
-          >
-            MaxStore Logistics Partner
-          </Typography>
-        </div>
-      </Toolbar>
-      <Toolbar>
-        <div style={{ display: 'flex', marginBottom: '10px' }}>
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/"
-            color="inherit"
-            sx={{ flexGrow: 1, color: '#000', marginLeft:'40px',marginBottom:'30px' }}
-          >
-            <img src={logo} alt="Logo" width="200" height="80" />
-          </Typography>
-
-          <TextField
-            id="outlined-basic"
-            label="Search"
-            variant="outlined"
-            sx={{
-              width: '500px',
-              height: '50px',
-              marginTop: '10px',
-              marginLeft:'250px'
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
+    <AppBar position="static" color="inherit" sx={{marginTop:"12px",marginRight:"4px" , backgroundColor: '#fff', height: 'auto' }}>
+      <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          color="inherit"
+          sx={{ color: '#000', flexGrow: 1, textAlign: 'center', mb: { xs: 2, sm: 0 } }}
+        >
+          <img src={logo} alt="Logo" width="200" height="80" />
+        </Typography>
+        <TextField
+          id="outlined-basic"
+          label="Search in maxstore"
+          variant="outlined"
+          sx={{ flexGrow: 1, maxWidth: 500, mb: { xs: 2, sm: 0 } }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <div style={{ display: 'flex' }}>
+          <IconButton color="inherit" component={RouterLink} to="/cart" sx={{ color: '#000', mr: 1 }}>
+            <ShoppingCartIcon />
+          </IconButton>
           {keycloak.authenticated ? (
-            <Button
-              color="inherit"
-              variant="outlined"
-              onClick={handleLogout}
-              sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: "250px" }}
-            >
+             <Button color="inherit" variant="outlined" onClick={handleLogout} sx={{ color: '#000', mr: 1 }}>
               Logout
             </Button>
           ) : (
@@ -136,31 +82,24 @@ const Navbar = () => {
                 color="inherit"
                 variant="outlined"
                 startIcon={<PersonIcon />}
-                sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: "250px" }}
+                sx={{ color: '#000', mr: 1 }}
               >
                 Login
               </Button>
-              <hr style={{ width: '1px', height: "35px", background: 'black', marginLeft: '20px', marginTop: '16px' }} />
               <Button
                 component={RouterLink}
                 to="/signup"
                 color="inherit"
                 variant="outlined"
                 startIcon={<AccountCircleIcon />}
-                sx={{ color: '#000', height: '40px', marginTop: '15px', marginLeft: '20px' }}
+                sx={{ color: '#000', mr: 1 }}
               >
                 Sign Up
               </Button>
             </>
           )}
-
           <div style={{ position: 'relative' }}>
-            <IconButton
-              color="inherit"
-              aria-describedby={id}
-              onClick={handleLanguageIconClick}
-              sx={{ color: '#000', marginLeft: "20px", marginTop: '8px', padding:'15px'}}
-            >
+            <IconButton color="inherit" aria-describedby={id} onClick={handleLanguageIconClick} sx={{ color: '#000', mr: 1 }}>
               <LanguageIcon />
             </IconButton>
             <Popover
@@ -177,7 +116,7 @@ const Navbar = () => {
                 horizontal: 'right',
               }}
             >
-              <List >
+              <List>
                 <ListItem disablePadding>
                   <FormControlLabel
                     value="english"
@@ -203,16 +142,50 @@ const Navbar = () => {
               </List>
             </Popover>
           </div>
-
-          <IconButton
-            color="inherit"
+        </div>
+      </Toolbar>
+      <Toolbar  sx={{marginTop:"8px", flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'center',gap:"15px" }}>
+          <Typography
+         
+            variant="h6"
             component={RouterLink}
-            to="/cart"
-            sx={{ color: '#000', marginLeft: "20px", marginBottom: '50px' }}
-          
+            to="/become-seller"
+            color="inherit"
+            sx={{ color: '#000', mr: 2, fontSize: '15px'  }}
           >
-            <ShoppingCartIcon />
-          </IconButton>
+            Become a Seller
+          </Typography>
+
+          <Typography
+            variant="h6"
+            component={RouterLink}
+            to="/affiliate-program"
+            color="inherit"
+            sx={{ color: '#000', mr: 2, fontSize: '15px' }}
+          >
+            MaxStore Affiliate Program
+          </Typography>
+
+          <Typography
+            variant="h6"
+            component={RouterLink}
+            to="/help-support"
+            color="inherit"
+            sx={{ color: '#000', mr: 2, fontSize: '15px' }}
+          >
+            Help & Support
+          </Typography>
+
+          <Typography
+            variant="h6"
+            component={RouterLink}
+            to="/logistics-partner"
+            color="inherit"
+            sx={{ color: '#000', fontSize: '15px' }}
+          >
+            MaxStore Logistics Partner
+          </Typography>
         </div>
       </Toolbar>
     </AppBar>
