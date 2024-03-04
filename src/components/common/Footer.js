@@ -4,7 +4,7 @@ import { GitHub, Facebook, YouTube, LinkedIn } from "@mui/icons-material";
 import XIcon from '@mui/icons-material/X';
 const Footer = () => {
     return (
-        <footer className="bg-gray-800 shadow-lg p-3 text-white">
+        <footer className="bg-gray-800 shadow-lg mt-5 p-3 text-white">
             <div className="flex flex-row item-center justify-center gap-10 m-3">
 
             <a
