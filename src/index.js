@@ -21,7 +21,7 @@ console.log("Current Deployment URL: ", process.env.NEXT_PUBLIC_VERCEL_URL);
 const oidcConfig = {
   authority: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_ISSUER : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vmOgPnqzT",
   client_id: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_CLIENT_ID: "6c36b2mbh4i7ohplokggiui8s3",
-  redirect_uri: process.env.NODE_ENV === 'production' ? `${window.location.origin}/` : "http://localhost:3000/",  moniterSession: false,
+  redirect_uri: process.env.NODE_ENV === 'production' ? `https://e-store-react.vercel.app/` : "http://localhost:3000/",  moniterSession: false,
   response_type: "code",
   userStore: new WebStorageStateStore({ store: window.localStorage }),
 
