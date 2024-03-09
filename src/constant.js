@@ -22,5 +22,5 @@ export const USER_ROLES = [
 
 export const OPEN_ID_ISSUER = process.env.REACT_APP_OPEN_ID_ISSUER || "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vmOgPnqzT";
 export const OPEN_ID_CLIENT_ID = process.env.REACT_APP_OPEN_ID_CLIENT_ID || "6c36b2mbh4i7ohplokggiui8s3";
-export const WEBAPP_DOMAIN = process.env.REACT_APP_WEBAPP_DOMAIN    || "https://e-store-react.vercel.app";
+export const WEBAPP_DOMAIN = process.env.NODE_ENV === "production" ? "https://e-store-react.vercel.app/" : "http://localhost:3000/";
 export const GRAPHQL_URI = process.env.REACT_APP_GRAPHQL_URI    || "localhost:4000/graphql";

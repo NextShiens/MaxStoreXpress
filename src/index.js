@@ -15,7 +15,7 @@ import {getIdToken} from './auth/idTokenProvider.js';
 const oidcConfig = {
   authority: OPEN_ID_ISSUER ,
   client_id:OPEN_ID_CLIENT_ID,
-  redirect_uri:WEBAPP_DOMAIN || "http://localhost:3000/",
+  redirect_uri:WEBAPP_DOMAIN,
   moniterSession: false,
   response_type: "code",
   userStore: new WebStorageStateStore({ store: window.localStorage }),
