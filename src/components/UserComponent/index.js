@@ -22,14 +22,17 @@ const CREATE_USER_MUTATION = gql`
 
 
 const GET_USERS = gql`
-  query GetUsers {
-    getUsers {
-      id
-      username
-      firstName
-      lastName
-      email
-      attributes
+  query GetUsers($page: Int, $pageSize: Int, $sortField: String, $sortOrder: String) {
+    getUsers(page: $page, pageSize: $pageSize, sortField: $sortField, sortOrder: $sortOrder) {
+      Username
+      Attributes {
+        Name
+        Value
+      }
+      UserCreateDate
+      UserLastModifiedDate
+      Enabled
+      UserStatus
     }
   }
 `;
@@ -74,7 +77,14 @@ const UserComponent = () => {
   };
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
   const [createUser] = useMutation(CREATE_USER_MUTATION);
-  const { loading, error, data, refetch } = useQuery(GET_USERS);
+  const { loading, error, data, refetch } = useQuery(GET_USERS, {
+    variables: {
+      page: 1,
+      pageSize: 10,
+      sortField: 'Username',
+      sortOrder: 'asc'
+    }
+  });
   const [deleteUser] = useMutation(DELETE_USER);
 
   const [updateUser] = useMutation(UPDATE_USER);
@@ -102,7 +112,7 @@ const UserComponent = () => {
           email,
           firstName,
           lastName,
-          attributes:attributes
+          attributes: attributes
         }
       });
       console.log(data);
@@ -183,12 +193,13 @@ const UserComponent = () => {
               </TableHead>
               <TableBody>
                 {data.getUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.firstName}</TableCell>
-                    <TableCell>{user.lastName}</TableCell>
+                  <TableRow key={user.Username}>
+                    <TableCell>{user.Username}</TableCell>
+                    <TableCell>{user.Attributes.map(attr => `${attr.Name}: ${attr.Value}`).join(', ')}</TableCell>
+                    <TableCell>{user.UserCreateDate}</TableCell>
+                    <TableCell>{user.UserLastModifiedDate}</TableCell>
+                    <TableCell>{user.Enabled.toString()}</TableCell>
+                    <TableCell>{user.UserStatus}</TableCell>
                     <TableCell>
                       <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                         <ArrowDropDownIcon />
