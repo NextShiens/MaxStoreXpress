@@ -3,12 +3,12 @@ import { createContext, useContext } from 'react';
 
 import React from 'react';
 import { useAuth } from 'react-oidc-context';
-
+import {OPEN_ID_ISSUER, OPEN_ID_CLIENT_ID} from '../constant.js';
 export const getUser = () => {
   let oidcStorage = localStorage.getItem(
-    `oidc.user:${process.env.REACT_APP_OPEN_ID_ISSUER}:${process.env.REACT_APP_OPENID_CLIENT_ID}`
+    `oidc.user:${OPEN_ID_ISSUER}:${OPEN_ID_CLIENT_ID}`
   );
-
+    console.log("oidcStorage: ", oidcStorage);  
   if (!oidcStorage) {
     return null;
   }

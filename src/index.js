@@ -10,33 +10,29 @@ import { AuthProvider } from "react-oidc-context";
 import { WebStorageStateStore } from 'oidc-client';
 import IdTokenProvider from './auth/idTokenProvider.js';
 import ProfileProvider from './auth/profileProvider.js';
-
-console.log("NODE_ENV: ", process.env.NODE_ENV);
-console.log("REACT_APP_OPEN_ID_ISSUER: ", process.env.REACT_APP_OPEN_ID_ISSUER);
-console.log("REACT_APP_OPEN_ID_CLIENT_ID: ", process.env.REACT_APP_OPEN_ID_CLIENT_ID);
-console.log("REACT_APP_WEBAPP_DOMAIN: ", process.env.REACT_APP_WEBAPP_DOMAIN);
-console.log("REACT_APP_GRAPHQL_URI: ", process.env.REACT_APP_GRAPHQL_URI);
-console.log("Current Deployment URL: ", process.env.NEXT_PUBLIC_VERCEL_URL);
-
+import { OPEN_ID_CLIENT_ID, OPEN_ID_ISSUER, WEBAPP_DOMAIN, GRAPHQL_URI  } from './constant.js';
+import {getIdToken} from './auth/idTokenProvider.js';
 const oidcConfig = {
-  authority: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_ISSUER : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vmOgPnqzT",
-  client_id: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_CLIENT_ID: "6c36b2mbh4i7ohplokggiui8s3",
-  redirect_uri: process.env.NODE_ENV === 'production' ? `https://e-store-react.vercel.app/` : "http://localhost:3000/",  moniterSession: false,
+  authority: OPEN_ID_ISSUER ,
+  client_id:OPEN_ID_CLIENT_ID,
+  redirect_uri:WEBAPP_DOMAIN,
+  moniterSession: false,
   response_type: "code",
   userStore: new WebStorageStateStore({ store: window.localStorage }),
 
 };
-console.log("oidcConfig: ", oidcConfig);  
-const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
+console.log("oidcConfig: ", oidcConfig);
+const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('token');
+  const token = getIdToken();
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
     }
+
   }
 });
 
