@@ -27,7 +27,6 @@ const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
 const authLink = setContext((_, { headers }) => {
   const token = getIdToken();
-  console.log("Token: ", token);
   return {
     headers: {
       ...headers,
