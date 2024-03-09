@@ -19,8 +19,8 @@ console.log("REACT_APP_GRAPHQL_URI: ", process.env.REACT_APP_GRAPHQL_URI);
 console.log("Current Deployment URL: ", process.env.NEXT_PUBLIC_VERCEL_URL);
 
 const oidcConfig = {
-  authority: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_ISSUER : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_UFvwQkLIA",
-  client_id: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_CLIENT_ID: "5kufp3lnmfirdb99e0lh5qgep8",
+  authority: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_ISSUER : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vmOgPnqzT",
+  client_id: process.env.NODE_ENV === "production" ? process.env.REACT_APP_OPEN_ID_CLIENT_ID: "6c36b2mbh4i7ohplokggiui8s3",
   redirect_uri: process.env.NODE_ENV === 'production' ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "http://localhost:3000/",
   moniterSession: false,
   response_type: "code",

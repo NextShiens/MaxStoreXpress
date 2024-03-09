@@ -4,8 +4,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Link as RouterLink } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 import logo from './logo2.png';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { TextField, InputAdornment, Radio, FormControlLabel, Popover, List, ListItem } from '@mui/material';
@@ -15,12 +15,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 
 const Navbar = () => {
-  const { keycloak } = useKeycloak();
+  const { user, signinRedirect, isAuthenticated, } = useAuth();
   const [language, setLanguage] = useState('english');
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const navigate = useNavigate();
   const handleLogout = () => {
-    keycloak.logout({ redirectUri: window.location.origin + '/login' });
+    signinRedirect();
+    navigate('/login');
   };
 
   const handleLanguageChange = (event) => {
@@ -70,7 +71,7 @@ const Navbar = () => {
           <IconButton color="inherit" component={RouterLink} to="/cart" sx={{ color: '#000', mr: 1 }}>
             <ShoppingCartIcon />
           </IconButton>
-          {keycloak.authenticated ? (
+          {isAuthenticated ? (
              <Button color="inherit" variant="outlined" onClick={handleLogout} sx={{ color: '#000', mr: 1 }}>
               Logout
             </Button>
