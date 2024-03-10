@@ -108,7 +108,7 @@ const CreateUserForm = ({ open, onClose }) => {
                             <img
                                 src={selectedImage}
                                 alt="Selected"
-                                style={{ width: '80px', height: '80px', marginRight: '20px', borderRadius: '50%', }}
+                                style={{ width: '75px', height: '75px', marginRight: '20px', borderRadius: '50%', }}
                             />
                         )}
                         <Input
@@ -121,7 +121,7 @@ const CreateUserForm = ({ open, onClose }) => {
                     </Box>
                 </DialogTitle>
                 <Box>
-                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '50px', marginTop: '20px', border: '1px solid black', borderRadius: '5px' }}>
+                    <label htmlFor="image-upload" style={{ float: 'right', marginRight: '50px', marginTop: '45px', border: '1px solid black', borderRadius: '5px' }}>
                         <Button
                             component="span"
                             style={{ color: 'black', width: '30px', height: '30px', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}
@@ -130,7 +130,7 @@ const CreateUserForm = ({ open, onClose }) => {
                         </Button>
                     </label>
                 </Box>
-                <DialogContent style={{ width: '80%' }}>
+                <DialogContent style={{ width: '90%' }}>
                     <form onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
                             <div style={{ display: 'flex' }}>
