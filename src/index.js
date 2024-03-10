@@ -7,20 +7,12 @@ import ErrorBoundary from './ErrorBoundry.js';
 import ReactDOM from 'react-dom';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from "react-oidc-context";
-import { WebStorageStateStore } from 'oidc-client';
+
 import IdTokenProvider from './auth/idTokenProvider.js';
 import ProfileProvider from './auth/profileProvider.js';
-import { OPEN_ID_CLIENT_ID, OPEN_ID_ISSUER, WEBAPP_DOMAIN, GRAPHQL_URI  } from './constant.js';
+import {  GRAPHQL_URI, oidcConfig  } from './constant.js';
 import {getIdToken} from './auth/idTokenProvider.js';
-const oidcConfig = {
-  authority: OPEN_ID_ISSUER ,
-  client_id:OPEN_ID_CLIENT_ID,
-  redirect_uri:WEBAPP_DOMAIN,
-  moniterSession: false,
-  response_type: "code",
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
 
-};
 console.log("oidcConfig: ", oidcConfig);
 const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 

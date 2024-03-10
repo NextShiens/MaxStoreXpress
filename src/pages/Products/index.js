@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
+import { useAuth } from 'react-oidc-context';
 
 const GET_PRODUCTS = gql`
-  query GetProducts($limit: Int, $skip: Int) {
-    getProducts(limit: $limit, skip: $skip) {
+  query GetProducts($filter: ProductFilterInput, $limit: Int, $skip: Int) {
+    getProducts(filter: $filter, limit: $limit, skip: $skip) {
       id
       name
       price
       description
+      tenantID
     }
   }
 `;
 
 const Products = () => {
+  const { user, isAuthenticated } = useAuth();
+  useEffect(() => {
+    if (isAuthenticated) {
+    }
+  }, [user, isAuthenticated]);
+  const tenantID = user?.profile['custom:tenatID'];
   const [page, setPage] = useState(1);
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
-    variables: { limit: 10, skip: (page - 1) * 10 },
+    variables: { 
+      filter:{
+        tenantID: tenantID 
+      },
+      limit: 10, skip: (page - 1) * 10, tenantID }, 
   });
 
   if (loading) return <p>Loading...</p>;
