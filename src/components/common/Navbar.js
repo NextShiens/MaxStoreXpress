@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -13,16 +13,30 @@ import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
+import { UserManager } from 'oidc-client';
 
+import { oidcConfig } from '../../constant';
 const Navbar = () => {
-  const { user, signinRedirect, isAuthenticated, } = useAuth();
+  const { user, isAuthenticated, } = useAuth();
   const [language, setLanguage] = useState('english');
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const handleLogout = () => {
-    signinRedirect();
-    navigate('/login');
+  const userManagers = new UserManager(oidcConfig);
+  const handleLogout = async () => {
+    debugger
+    console.log(userManagers)
+    try {
+      await userManagers.signoutRedirect();
+    } catch (error) {
+      console.error("Error logging out: ", error);
+    }
   };
+  useEffect(()=>{
+    if(isAuthenticated){
+    }
+    console.log("user: ", user);  
+
+  },[user,isAuthenticated,navigate ])
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
