@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import Skeleton from '@mui/material/Skeleton';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, Typography } from '@mui/material';
@@ -6,30 +6,35 @@ import { Grid, Card, CardContent } from '@mui/material';
 import { Menu, MenuItem } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useAuth } from "react-oidc-context";
 
 const CREATE_USER_MUTATION = gql`
-  mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!) {
-    createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, attributes: $attributes}) {
-      id
-      username
-      email
-      firstName
-      lastName
-      attributes
+  mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!, $tenantID: String!) {
+    createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, attributes: $attributes, tenantID: $tenantID}) {
+      Username
+      Attributes {
+        Name
+        Value
+      }
+      Enabled
+      UserStatus
     }
   }
 `;
 
 
 const GET_USERS = gql`
-  query GetUsers {
-    getUsers {
-      id
-      username
-      firstName
-      lastName
-      email
-      attributes
+  query GetUsers($page: Int, $pageSize: Int, $sortField: String, $sortOrder: String) {
+    getUsers(page: $page, pageSize: $pageSize, sortField: $sortField, sortOrder: $sortOrder) {
+      Username
+      Attributes {
+        Name
+        Value
+      }
+      UserCreateDate
+      UserLastModifiedDate
+      Enabled
+      UserStatus
     }
   }
 `;
@@ -54,6 +59,9 @@ const UPDATE_USER_ROLES = gql`
 `;
 
 const UserComponent = () => {
+  const { user, isAuthenticated, } = useAuth();
+  console.log("user: ", user);
+  console.log("isAuthenticated: ", isAuthenticated);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -62,8 +70,19 @@ const UserComponent = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [password, setPassword] = useState('');
   const [attributes, setAttributes] = useState({ phone: '', address: '', dateOfBirth: '', preferredLanguage: '' });
+  const [tenantID, setTenantID] = useState('');
 
   const open = Boolean(anchorEl);
+  useEffect(() => {
+    if (user && user.signInUserSession) {
+      const groups = user.signInUserSession.idToken.payload['cognito:groups'];
+      if (groups && groups.includes('SuperAdmin')) {
+        console.log('User is a SuperAdmin');
+      } else {
+        console.log('User is not a SuperAdmin');
+      }
+    }
+  }, [user]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -74,7 +93,14 @@ const UserComponent = () => {
   };
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
   const [createUser] = useMutation(CREATE_USER_MUTATION);
-  const { loading, error, data, refetch } = useQuery(GET_USERS);
+  const { loading, error, data, refetch } = useQuery(GET_USERS, {
+    variables: {
+      page: 1,
+      pageSize: 10,
+      sortField: 'Username',
+      sortOrder: 'asc'
+    }
+  });
   const [deleteUser] = useMutation(DELETE_USER);
 
   const [updateUser] = useMutation(UPDATE_USER);
@@ -93,7 +119,6 @@ const UserComponent = () => {
     }
   };
   const handleCreateUser = async () => {
-
     try {
       const { data } = await createUser({
         variables: {
@@ -102,7 +127,8 @@ const UserComponent = () => {
           email,
           firstName,
           lastName,
-          attributes:attributes
+          tenantID,
+          attributes: JSON.stringify(attributes)
         }
       });
       console.log(data);
@@ -161,11 +187,11 @@ const UserComponent = () => {
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="Address" onChange={e => setAttributes({ ...attributes, address: e.target.value })} />
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="Date Of Birth" onChange={e => setAttributes({ ...attributes, dateOfBirth: e.target.value })} />
               <TextField size="small" className="mb-2 w-full" type="text" placeholder="Language" onChange={e => setAttributes({ ...attributes, preferredLanguage: e.target.value })} />
+              <TextField size="small" className="mb-2 w-full" type="text" placeholder="Tenant ID" onChange={e => setTenantID(e.target.value)} />
               <Button variant="contained" color="success" className="mb-4 w-full" onClick={handleCreateUser}>Create User</Button>
             </CardContent>
           </Card>
         </Grid>
-
 
         <Grid item xs={12}>
           <Typography variant="h5" className="mb-2">Get Users</Typography>
@@ -178,17 +204,20 @@ const UserComponent = () => {
                   <TableCell>Email</TableCell>
                   <TableCell>First Name</TableCell>
                   <TableCell>Last Name</TableCell>
+                  <TableCell>Tenant ID</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data.getUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.firstName}</TableCell>
-                    <TableCell>{user.lastName}</TableCell>
+                  <TableRow key={user.Username}>
+                    <TableCell>{user.Username}</TableCell>
+                    <TableCell>{user.Attributes.map(attr => `${attr.Name}: ${attr.Value}`).join(', ')}</TableCell>
+                    <TableCell>{user.UserCreateDate}</TableCell>
+                    <TableCell>{user.UserLastModifiedDate}</TableCell>
+                    <TableCell>{user.Enabled.toString()}</TableCell>
+                    <TableCell>{user.UserStatus}</TableCell>
+                    <TableCell>{user.Attributes.find(attr => attr.Name === 'custom:tenantID')?.Value}</TableCell>
                     <TableCell>
                       <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                         <ArrowDropDownIcon />
@@ -229,6 +258,6 @@ const UserComponent = () => {
       </Grid>
     </div>
   );
-};
+}
 
 export default UserComponent;

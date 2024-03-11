@@ -1,35 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 
-const ProtectedRoute = ({ roles, element: Element, ...props }) => {
-  const { initialized, keycloak } = useKeycloak();
+const ProtectedRoute = ({ element: Component, roles, unauthorizedPath, loginPath, ...rest }) => {
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(false);
 
-  useEffect(() => {
-    if (!initialized) return;
+  const userHasRole = useMemo(() => {
+    return user && user.profile && user.profile['cognito:groups'] && roles.some(role => user.profile['cognito:groups'].includes(role));
+  }, [user, roles]);
 
-    let isMounted = true;
-
-    if (!keycloak.authenticated || (roles && !roles.some(role => keycloak.hasResourceRole(role)))) {
-      if (isMounted) {
-        navigate('/login'); // Redirect to login if not authenticated
-      }
-    } else {
-      setIsAuthorized(true);
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [initialized, keycloak, navigate, roles]);
-
-  if (!initialized || !isAuthorized) {
+  if (!isAuthenticated) {
+    navigate(loginPath);
     return null;
   }
 
-  return <Element {...props} />;
+  if (!userHasRole) {
+    navigate(unauthorizedPath);
+    return null;
+  }
+
+  return <Component {...rest} />;
 };
 
 export default ProtectedRoute;

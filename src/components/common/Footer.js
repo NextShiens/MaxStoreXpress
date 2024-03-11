@@ -1,53 +1,56 @@
-
 import React from "react";
-import "./footer.css";
 import PrivacyModal from "./PrivacyModal";
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import CopyrightIcon from '@mui/icons-material/Copyright';
-import FacebookIcon from '@mui/icons-material/Facebook';
-// updated
+import { GitHub, Facebook, YouTube, LinkedIn } from "@mui/icons-material";
+import XIcon from '@mui/icons-material/X';
 const Footer = () => {
     return (
-        <footer className="footer">
-            <div className="footer-container">
-                <div className="item1">
-                    <PrivacyModal />
-                </div>
+        <footer className="bg-gray-800 shadow-lg mt-5 p-3 text-white">
+            <div className="flex flex-row item-center justify-center gap-10 m-3">
 
-                <div className="item2">
-                    <span style={{ paddingRight: 5 }}>Copyright </span>
-                    <CopyrightIcon />{" "}
-                    <span style={{ paddingLeft: 5 }}>
-                        {new Date().getFullYear()} YourCompany. All Rights
-                        Reserved.
-                    </span>
-                </div>
-                <a
-                    href="https://github.com/sudiptob2/simple-react-footer"
+            <a
+                    href="https://github.com/Maxed-Store"
                     target="_blank"
-                    className="item3"
                 >
-                    <GitHubIcon/>
-                </a>
-                <a
-                    href="http://fb.com/sudiptob2"
-                    target="_blank"
-                    className="item4"
-                >
-                    <FacebookIcon />
-                </a>
-                <a
-                    href="https://www.youtube.com/"
-                    target="_blank"
-                    className="item5"
-                >
-                    <YouTubeIcon />
+                    <GitHub
+                        sx={{ fontSize: 31 }}
+                        className="flex items-center justify-center text-[40px]  text-white  hover:text-black transition duration-400 rounded-lg"
+
+                    />
                 </a>
 
-                {false && <PrivacyModal click={true} />}
+                <a
+                    href="#"
+                    target="_blank"
+                >
+                    <XIcon
+                        sx={{ fontSize: 31 }}
+                        className="flex items-center justify-center text-[40px]  text-white hover:text-black transition duration-400 rounded-lg"
+
+                    />
+                </a>
+                <a
+                    href="#"
+                    target="_blank"
+                >
+                    <Facebook sx={{ fontSize: 31 }}
+                        className="flex items-center justify-center text-[40px]  text-white hover:text-blue-700 transition duration-400 rounded-lg"
+                    />  </a>
+                <a
+                    href="#"
+                    target="_blank"
+                >
+                    <LinkedIn sx={{ fontSize: 31 }}
+                        className="flex items-center justify-center text-[40px]  text-white hover:text-blue-700 transition duration-400 rounded-lg"
+                    /></a> 
             </div>
-        </footer>
+            <div className=" mx-auto flex items-center justify-center">
+                <div className="hover:text-blue-700 text-blue-500">  <PrivacyModal /></div>
+                <div className="flex items-center justify-center">
+                    <span className="pr-1"> &nbsp; &nbsp; &#169;</span>
+                    <span className="pl-1">{new Date().getFullYear()} MaxStore. All Rights Reserved.</span>
+                </div>
+
+</div> </footer>
     );
 };
 

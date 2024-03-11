@@ -1,40 +1,56 @@
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from '@apollo/client';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import keycloak from './Keycloak';
 import './index.css';
 import 'tailwindcss/tailwind.css';
 import ErrorBoundary from './ErrorBoundry.js';
 import ReactDOM from 'react-dom';
 import { setContext } from '@apollo/client/link/context';
+import { AuthProvider } from "react-oidc-context";
 
-const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
+import IdTokenProvider from './auth/idTokenProvider.js';
+import ProfileProvider from './auth/profileProvider.js';
+import {  GRAPHQL_URI, oidcConfig  } from './constant.js';
+import {getIdToken} from './auth/idTokenProvider.js';
+
+console.log("oidcConfig: ", oidcConfig);
+const httpLink = new HttpLink({ uri: GRAPHQL_URI });
+
 
 const authLink = setContext((_, { headers }) => {
-  const token = keycloak.token;
+  const token = getIdToken();
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
     }
+
   }
 });
 
-const client = new ApolloClient({
+const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
 
 ReactDOM.render(
   <ErrorBoundary>
-    <ReactKeycloakProvider authClient={keycloak}>
-      <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ApolloProvider>
-    </ReactKeycloakProvider>
+
+    <AuthProvider {...oidcConfig}>
+      <IdTokenProvider>
+        <ProfileProvider>
+
+          <ApolloProvider client={apolloClient}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </ApolloProvider>
+
+
+        </ProfileProvider>
+      </IdTokenProvider>
+    </AuthProvider>
+
   </ErrorBoundary>,
   document.getElementById('root')
 );

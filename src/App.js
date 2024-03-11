@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE } from './constant';
+import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE, SUPER_ADMIN_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
 import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
@@ -39,27 +39,29 @@ const App = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/realproducts" element={<RealProducts />} />
           <Route path="/product/:id" element={<Product />} />
-          <Route path="/users" element={<Users />} />
           <Route path='/table' element={<UserTable />} />
           <Route path='/update/:id' element={<UpdateUserForm />} />
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
           <Route
+            path="/users"
+            element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />
+          <Route
             path="/admin"
-            element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+            element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/user"
-            element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+            element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/seller-request"
-            element={<ProtectedRoute element={SellerAccessRequestForm} roles={[USER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+            element={<ProtectedRoute element={SellerAccessRequestForm} roles={[USER_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/seller"
-            element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+            element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
         </Routes>
         <Footer />
@@ -70,3 +72,4 @@ const App = () => {
 
 
 export default App;
+
