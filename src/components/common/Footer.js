@@ -1,54 +1,137 @@
-
 import React from "react";
-import "./footer.css";
-import PrivacyModal from "./PrivacyModal";
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import CopyrightIcon from '@mui/icons-material/Copyright';
+import { Link } from 'react-router-dom';
 import FacebookIcon from '@mui/icons-material/Facebook';
-// updated
+import TwitterIcon from '@mui/icons-material/Twitter';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import LanguageIcon from '@mui/icons-material/Language';
+
 const Footer = () => {
-    return (
-        <footer className="footer">
-            <div className="footer-container">
-                <div className="item1">
-                    <PrivacyModal />
-                </div>
+  const Customers = {
+    heading: 'Customer Care',
+    text1: 'Help Center',
+    text2: 'How to Buy',
+    text3: 'Corporate & Bulk Purchasing',
+    text4: 'Return & Refunds',
+    text5: 'MaxStore',
+    text6: 'Contact Us',
+    text7: 'Purchase Protection',
+    text8: 'MaxStore Pick up Points',
+  };
 
-                <div className="item2">
-                    <span style={{ paddingRight: 5 }}>Copyright </span>
-                    <CopyrightIcon />{" "}
-                    <span style={{ paddingLeft: 5 }}>
-                        {new Date().getFullYear()} YourCompany. All Rights
-                        Reserved.
-                    </span>
-                </div>
-                <a
-                    href="https://github.com/sudiptob2/simple-react-footer"
-                    target="_blank"
-                    className="item3"
-                >
-                    <GitHubIcon/>
-                </a>
-                <a
-                    href="http://fb.com/sudiptob2"
-                    target="_blank"
-                    className="item4"
-                >
-                    <FacebookIcon />
-                </a>
-                <a
-                    href="https://www.youtube.com/"
-                    target="_blank"
-                    className="item5"
-                >
-                    <YouTubeIcon />
-                </a>
+  const Money = {
+    heading: 'Make Money With Us',
+    text1: 'MaxStore University',
+    text2: 'Sell on MaxStore',
+    text3: 'Join MaxStore Affiliate Program',
+  };
 
-                {false && <PrivacyModal click={true} />}
-            </div>
-        </footer>
-    );
+  const MaxStore = {
+    heading: 'MaxStore',
+    text1: 'About Us',
+    text2: 'Digital Payments',
+    text3: 'MaxStore Donates',
+    text4: 'MaxStore Blog',
+    text5: 'Terms & Conditions',
+    text6: 'Privacy Policy',
+    text7: 'Online Shopping App',
+    text8: 'Online Grocery Shopping',
+    text9: 'MaxStore Exclusive',
+  };
+
+  const Payment = {
+    heading: 'Payment Methods',
+    images: [
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfLQE9oArUpGqvHQO_iFkC_6i5b5sgr-X2o7QxGezcYluJPPvhkV-0Ce2u9DHgS1U9e8w&usqp=CAU',
+      'https://cdn4.iconfinder.com/data/icons/flat-brand-logo-2/512/visa-512.png',
+      'https://cdn.iconscout.com/icon/free/png-256/free-mastercard-credit-debit-card-bank-transaction-32303.png',
+      'https://brandlogovector.com/wp-content/uploads/2021/09/Easypaisa-New-Icon-Logo.png',
+      'https://play-lh.googleusercontent.com/uNsO0CueIvfXSNf6R7WaGwdx6vsUDLjqTmdR0KO84ku7SR0teFBWdCenrngxJEVzM80',
+    ]
+  };
+
+  return (
+    <footer style={{ display: 'flex', justifyContent: 'space-between', borderTop:'1px solid silver'}}>
+      <div>
+        <div>
+          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{Customers.heading}</h3>
+          <ul>
+            <li><Link to="/help">{Customers.text1}</Link></li>
+            <li><Link to="/how-to-buy">{Customers.text2}</Link></li>
+            <li><Link to="/corporate">{Customers.text3}</Link></li>
+            <li><Link to="/return-refunds">{Customers.text4}</Link></li>
+            <li><Link to="/maxstore">{Customers.text5}</Link></li>
+            <li><Link to="/contact">{Customers.text6}</Link></li>
+            <li><Link to="/purchase-protection">{Customers.text7}</Link></li>
+            <li><Link to="/pick-up-points">{Customers.text8}</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div>
+          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{Money.heading}</h3>
+          <ul>
+            <li><Link to="/maxstore-university">{Money.text1}</Link></li>
+            <li><Link to="/sell-on-maxstore">{Money.text2}</Link></li>
+            <li><Link to="/affiliate-program">{Money.text3}</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div>
+          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{MaxStore.heading}</h3>
+          <ul>
+            <li><Link to="/about-us">{MaxStore.text1}</Link></li>
+            <li><Link to="/digital-payments">{MaxStore.text2}</Link></li>
+            <li><Link to="/maxstore-donates">{MaxStore.text3}</Link></li>
+            <li><Link to="/maxstore-blog">{MaxStore.text4}</Link></li>
+            <li><Link to="/terms-conditions">{MaxStore.text5}</Link></li>
+            <li><Link to="/privacy-policy">{MaxStore.text6}</Link></li>
+            <li><Link to="/online-shopping-app">{MaxStore.text7}</Link></li>
+            <li><Link to="/online-grocery-shopping">{MaxStore.text8}</Link></li>
+            <li><Link to="/maxstore-exclusive">{MaxStore.text9}</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div>
+          <h3 style={{fontSize:'25px', fontWeight:'500' , marginTop:'20px'}}>{Payment.heading}</h3>
+          <div style={{display:'flex', marginRight:'40px'}}>
+            {Payment.images.map((image, index) => (
+              <img key={index} src={image} alt="payment" style={{ width: '50px', height: '30px', marginRight: '10px',marginTop:'20px', cursor:'pointer', }} />
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop:'50px'}}>
+            <h3 style={{fontSize:'25px', fontWeight:'500'}}>Follow Us</h3>
+        <div style={{ display: 'flex', marginTop:'15px'}}>
+           
+        <Link to="/website"><LanguageIcon style={{ cursor:'pointer'}}/></Link>
+        <Link to="/facebook"><FacebookIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
+        <Link to="/twitter"> <TwitterIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
+        <Link to="/instagram"><InstagramIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
+        <Link to="/youtube"> <YouTubeIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
+        </div>
+        </div>
+      </div>
+<style>
+  {`
+    li {
+      font-size: 18px;
+      position: relative;
+      display: flex;
+      margin-bottom: 5px;
+    }
+    li:hover {
+      color: grey; 
+    }
+  `}
+</style>
+
+
+
+    </footer>
+  );
 };
 
 export default Footer;
