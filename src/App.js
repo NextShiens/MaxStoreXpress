@@ -14,6 +14,7 @@ import Review from './pages/Products/Review.js';
 import Sidebar from './pages/Sidebar/Sidebar.js';
 
 
+
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -25,6 +26,7 @@ const Products = React.lazy(() => import("./components/Products/Page.js"));
 const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
+const ProductUpdate = React.lazy(() => import ("./components/ProductManagement/ProductUpdate.js"))
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
   return (
@@ -41,6 +43,7 @@ const App = () => {
           <Route path="/product/:id" element={<Product />} />
           <Route path='/table' element={<UserTable />} />
           <Route path='/update/:id' element={<UpdateUserForm />} />
+          <Route path='/updateproduct' element={<ProductUpdate/>} />
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
