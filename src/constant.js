@@ -27,6 +27,7 @@ export const OPEN_ID_ISSUER = process.env.REACT_APP_OPEN_ID_ISSUER || "https://c
 export const OPEN_ID_CLIENT_ID = process.env.REACT_APP_OPEN_ID_CLIENT_ID || "6c36b2mbh4i7ohplokggiui8s3";
 export const WEBAPP_DOMAIN = process.env.NODE_ENV === "production" ? "https://e-store-react.vercel.app/" : "http://localhost:3000/";
 export const GRAPHQL_URI = process.env.REACT_APP_GRAPHQL_URI    || "localhost:4000/graphql";
+export const REACT_APP_AWS_REGION = process.env.REACT_APP_AWS_REGION || "us-east-1";
 
 export const oidcConfig = {
     authority: OPEN_ID_ISSUER ,
