@@ -35,7 +35,7 @@ const CREATE_PRODUCT = gql`
   }
 `;
 
-const Products = () => {
+const DemoProducts = () => {
   const { user, isAuthenticated } = useAuth();
   const [files, setFiles] = useState([]);
   const tenantID = user?.profile['custom:tenantID'];
@@ -211,4 +211,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default DemoProducts;
