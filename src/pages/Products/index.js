@@ -54,7 +54,19 @@ const Products = () => {
   });
   const onUploadWithGraphQL = async () => {
     try {
-      const response = await uploadFiles({ variables: { files } });
+      // Read the file data for each file
+      const fileDataPromises = files.map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ path: file.name, data: reader.result });
+          reader.onerror = reject;
+          reader.readAsArrayBuffer(file);
+        });
+      });
+  
+      const filesData = await Promise.all(fileDataPromises);
+  
+      const response = await uploadFiles({ variables: { files: filesData } });
       console.log('Upload response:', response);
       alert('Files uploaded successfully with GraphQL');
     } catch (error) {
