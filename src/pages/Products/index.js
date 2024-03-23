@@ -18,12 +18,12 @@ const GET_PRODUCTS = gql`
 
 const Products = () => {
   const { user, isAuthenticated } = useAuth();
-  // const [tenantID, setTenantID] = useState(null); // Commented out tenantID
+  const [tenantID, setTenantID] = useState("testid"); // Commented out tenantID
 
   useEffect(() => {
-    // if (isAuthenticated && user && user.profile && user.profile['custom:tenatID']) {
-    //   setTenantID(user.profile['custom:tenatID']);
-    // }
+    if (isAuthenticated && user && user.profile && user.profile['custom:tenatID']) {
+      setTenantID(user.profile['custom:tenatID']);
+    }
   }, [user, isAuthenticated]);
 
   const [page, setPage] = useState(1);

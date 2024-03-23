@@ -11,7 +11,7 @@ const CREATE_PRODUCT_MUTATION = gql`
     $minPrice: Float!
     $description: String!
     $rating: String!
-    $images: [String!]!
+    $imageUrl: [String!]!
   ) {
     createProduct(
       Name: $Name
