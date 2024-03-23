@@ -18,7 +18,6 @@ const Login = () => {
   }, [isAuthenticated, user, navigate]);
 
   const handleLogin = () => {
-    console.log('Login clicked');
     signinRedirect().catch(err => console.error('Error redirecting to login page', err));
   };
   if (error) {

@@ -13,7 +13,6 @@ import ProfileProvider from './auth/profileProvider.js';
 import {  GRAPHQL_URI, oidcConfig  } from './constant.js';
 import {getIdToken} from './auth/idTokenProvider.js';
 
-console.log("oidcConfig: ", oidcConfig);
 const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
 
