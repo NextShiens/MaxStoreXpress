@@ -24,12 +24,12 @@ export const USER_ROLES = [
     ];
 
 
-export const OPEN_ID_ISSUER = process.env.REACT_APP_OPEN_ID_ISSUER || "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_V87vLExzh";
-export const OPEN_ID_CLIENT_ID = process.env.REACT_APP_OPEN_ID_CLIENT_ID || "5uhn7pn7ruv50jphbfqmvvtgbn";
+export const OPEN_ID_ISSUER = process.env.REACT_APP_OPEN_ID_ISSUER || "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_0GyC6RUVj";
+export const OPEN_ID_CLIENT_ID = process.env.REACT_APP_OPEN_ID_CLIENT_ID || "3mjr8elclnf2qohg1heb9jvene";
 export const WEBAPP_DOMAIN = process.env.NODE_ENV === "production" ? "https://e-store-react.vercel.app/" : "http://localhost:3000/";
 export const GRAPHQL_URI = process.env.REACT_APP_GRAPHQL_URI    || "localhost:4000/graphql";
 export const REACT_APP_AWS_REGION = process.env.REACT_APP_AWS_REGION || "us-east-1";
-export const AWS_COGNITO_DOMAIN = process.env.REACT_APP_AWS_COGNITO_DOMAIN || "maxstore.auth.us-east-1.amazoncognito.com";
+export const AWS_COGNITO_DOMAIN = process.env.REACT_APP_AWS_COGNITO_DOMAIN || "maxstore-1-dev.auth.us-east-1.amazoncognito.com";
 export const REACT_APP_GRAPHQL_FILE_UPLOAD_URI = process.env.REACT_APP_GRAPHQL_FILE_UPLOAD_URI || "http://localhost:4000/upload";
 
 export const oidcConfig = {
