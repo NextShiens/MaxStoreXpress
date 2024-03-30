@@ -8,7 +8,6 @@ export const getUser = () => {
   let oidcStorage = localStorage.getItem(
     `oidc.user:${OPEN_ID_ISSUER}:${OPEN_ID_CLIENT_ID}`
   );
-    console.log("oidcStorage: ", oidcStorage);  
   if (!oidcStorage) {
     return null;
   }

@@ -6,6 +6,8 @@ import { Button, Grid, Typography, Card, CardContent, TextField } from '@materia
 import Skeleton from '@mui/material/Skeleton';
 import axios from 'axios';
 import { REACT_APP_GRAPHQL_FILE_UPLOAD_URI } from '../../constant';
+import { getIdToken } from '../../auth/idTokenProvider';
+
 const UPLOAD_FILES = gql`
   mutation UploadFiles($files: [Upload!]!) {
     uploadResolver(files: $files)
@@ -35,7 +37,7 @@ const CREATE_PRODUCT = gql`
   }
 `;
 
-const Products = () => {
+const DemoProducts = () => {
   const { user, isAuthenticated } = useAuth();
   const [files, setFiles] = useState([]);
   const tenantID = user?.profile['custom:tenantID'];
@@ -43,6 +45,7 @@ const Products = () => {
   const [filesUploaded, setFilesUploaded] = useState(false);
   const [createProduct, { data: createProductData }] = useMutation(CREATE_PRODUCT);
   const [uploadFiles, { data: uploadFilesData }] = useMutation(UPLOAD_FILES);
+
 
   const [product, setProduct] = useState({
     name: '',
@@ -54,19 +57,7 @@ const Products = () => {
   });
   const onUploadWithGraphQL = async () => {
     try {
-      // Read the file data for each file
-      const fileDataPromises = files.map(file => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve({ path: file.name, data: reader.result });
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(file);
-        });
-      });
-  
-      const filesData = await Promise.all(fileDataPromises);
-  
-      const response = await uploadFiles({ variables: { files: filesData } });
+      const response = await uploadFiles({ variables: { files } });
       console.log('Upload response:', response);
       alert('Files uploaded successfully with GraphQL');
     } catch (error) {
@@ -117,20 +108,24 @@ const Products = () => {
     onDrop,
     maxFiles: 5 - files.length
   });
-
   const onUpload = async () => {
     const formData = new FormData();
     files.forEach((file, index) => {
       formData.append('files', file);
     });
-
+debugger
     try {
+      const token = await getIdToken();
       const response = await axios.post(REACT_APP_GRAPHQL_FILE_UPLOAD_URI, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+        onUploadProgress: function (progressEvent) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(percentCompleted);
         }
       });
-      console.log('Upload response:', response);
 
       if (response.data && Array.isArray(response.data)) {
         const urls = response.data.map(file => file.url);
@@ -139,11 +134,8 @@ const Products = () => {
           imageUrl: urls
         }));
       }
-
-      alert('Files uploaded successfully');
     } catch (error) {
       console.error('Error uploading files:', error);
-      alert('Error uploading files');
     }
   };
 
@@ -171,7 +163,7 @@ const Products = () => {
   }
 
   if (error) return <Typography>Error :(</Typography>;
-
+console.log("component chal pia")
   return (
     <div>
       <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
@@ -223,4 +215,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default DemoProducts;

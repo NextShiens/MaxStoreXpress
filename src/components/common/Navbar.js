@@ -15,28 +15,29 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 import { UserManager } from 'oidc-client';
 
-import { oidcConfig } from '../../constant';
+import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
+
 const Navbar = () => {
-  const { user, isAuthenticated, } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [language, setLanguage] = useState('english');
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const userManagers = new UserManager(oidcConfig);
   const handleLogout = async () => {
-    debugger
-    console.log(userManagers)
     try {
       await userManagers.signoutRedirect();
+      window.location.href = `https://maxstore.auth.${REACT_APP_AWS_REGION}.amazoncognito.com/logout?client_id=${OPEN_ID_CLIENT_ID}&logout_uri=${WEBAPP_DOMAIN}`;
     } catch (error) {
       console.error("Error logging out: ", error);
     }
   };
-  useEffect(()=>{
-    if(isAuthenticated){
+  useEffect(() => {
+    if (isAuthenticated) {
+    console.log("User: LoggendIn")
     }
-    console.log("user: ", user);  
+    
 
-  },[user,isAuthenticated,navigate ])
+  }, [user, isAuthenticated, navigate])
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -55,7 +56,7 @@ const Navbar = () => {
   const id = open ? 'language-popover' : undefined;
 
   return (
-    <AppBar position="static" color="inherit" sx={{marginTop:"12px",marginRight:"4px" , backgroundColor: '#fff', height: 'auto' }}>
+    <AppBar position="static" color="inherit" sx={{ marginTop: "12px", marginRight: "4px", backgroundColor: '#fff', height: 'auto' }}>
       <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Typography
           variant="h6"
@@ -85,8 +86,12 @@ const Navbar = () => {
           <IconButton color="inherit" component={RouterLink} to="/cart" sx={{ color: '#000', mr: 1 }}>
             <ShoppingCartIcon />
           </IconButton>
-          {isAuthenticated ? (
-             <Button color="inherit" variant="outlined" onClick={handleLogout} sx={{ color: '#000', mr: 1 }}>
+          {isLoading ? (
+            <Button color="inherit" variant="outlined" sx={{ color: '#000', mr: 1 }}>
+              Loading...
+            </Button>
+          ) : isAuthenticated ? (
+            <Button color="inherit" variant="outlined" onClick={handleLogout} sx={{ color: '#000', mr: 1 }}>
               Logout
             </Button>
           ) : (
@@ -159,15 +164,15 @@ const Navbar = () => {
           </div>
         </div>
       </Toolbar>
-      <Toolbar  sx={{marginTop:"8px", flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'center',gap:"15px" }}>
+      <Toolbar sx={{ marginTop: "8px", flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: "15px" }}>
           <Typography
-         
+
             variant="h6"
             component={RouterLink}
             to="/become-seller"
             color="inherit"
-            sx={{ color: '#000', mr: 2, fontSize: '15px'  }}
+            sx={{ color: '#000', mr: 2, fontSize: '15px' }}
           >
             Become a Seller
           </Typography>
