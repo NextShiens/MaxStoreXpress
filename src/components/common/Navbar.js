@@ -33,8 +33,9 @@ const Navbar = () => {
   };
   useEffect(() => {
     if (isAuthenticated) {
+    console.log("User: LoggendIn")
     }
-    console.log("user: ", user);
+    
 
   }, [user, isAuthenticated, navigate])
 
