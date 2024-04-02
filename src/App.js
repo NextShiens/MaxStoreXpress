@@ -30,6 +30,7 @@ const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 const DemoProducts = React.lazy(() => import("./pages/Products/demoRealProducts.js"));
+const ProductUpdate = React.lazy(() => import("./components/ProductManagement/ProductUpdate.js"))
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
   return (
