@@ -8,6 +8,11 @@ import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useAuth } from "react-oidc-context";
 
+const SOME_NAME = gql`query ($helloInput: InputHello) {
+  hello3(helloInput: $helloInput)
+
+}`
+
 const CREATE_USER_MUTATION = gql`
   mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!, $tenantID: String!) {
     createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, attributes: $attributes, tenantID: $tenantID}) {
@@ -91,6 +96,10 @@ const UserComponent = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const { loading:loadingFromSomeName, error:errorFROMSomeNAme } = useQuery(SOME_NAME, {variables: {helloInput: {
+    name:"umer farooq",
+    address: "lahore"
+  }}})
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
   const [createUser] = useMutation(CREATE_USER_MUTATION);
   const { loading, error, data, refetch } = useQuery(GET_USERS, {
