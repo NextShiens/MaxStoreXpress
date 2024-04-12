@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Grid, Paper, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
@@ -6,20 +6,11 @@ import { useAuth } from 'react-oidc-context';
 const Login = () => {
   const { user, isLoading, isAuthenticated, signinRedirect, error } = useAuth();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const userGroups = user['cognito:groups'];
-      if (userGroups && userGroups.includes('seller')) {
-        navigate('/seller-dashboard');
-      } else {
-        navigate('/');
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = () => {
-    signinRedirect().catch(err => console.error('Error redirecting to login page', err));
+    signinRedirect().catch((err) => console.error('Error redirecting to login page', err));
   };
+
   if (error) {
     console.error('Error', error);
     return (
@@ -53,6 +44,15 @@ const Login = () => {
         </Grid>
       </Grid>
     );
+  }
+
+  if (isAuthenticated && user) {
+    const userGroups = user['cognito:groups'];
+    if (userGroups && userGroups.includes('seller')) {
+      navigate('/seller-dashboard');
+    } else {
+      navigate('/');
+    }
   }
 
   return (
