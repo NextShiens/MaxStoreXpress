@@ -67,17 +67,15 @@ const CREATE_USER_PREFERENCES = gql`
 
 const ProfileContext = createContext({});
 
-export const useProfile = () => {
-  return useContext(ProfileContext);
-};
-const ProfileProvider = ({ children }) => {
+
+export const ProfileProvider = ({ children = "null" }) => {
   const { user, isAuthenticated } = useAuth();
   const [preferencesCreated, setPreferencesCreated] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
   const [updateUserPreferences, { data: updateData, loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER_PREFERENCES);
   const [createUserPreferences, { data: createData, loading: createLoading, error: createError }] = useMutation(CREATE_USER_PREFERENCES);
-  
-  const { data: userPreferencesData, loading: userPreferencesLoading, error: userPreferencesError } =  useQuery(GET_USER_PREFERENCES, {
+
+  const { data: userPreferencesData, loading: userPreferencesLoading, error: userPreferencesError } = useQuery(GET_USER_PREFERENCES, {
     skip: !user?.profile?.email,
     variables: { email: user?.profile?.email },
   });
@@ -87,7 +85,7 @@ const ProfileProvider = ({ children }) => {
       setUserPreferences(userPreferencesData.getUserPreferencesByEmail);
     }
   }, [userPreferencesData]);
-  
+
   useEffect(() => {
     const fetchUserPreferences = async () => {
       if (isAuthenticated && user?.profile?.email && !userPreferencesLoading) {
@@ -105,7 +103,7 @@ const ProfileProvider = ({ children }) => {
             },
             lastLoggedIn: new Date().toISOString(),
           };
-  
+
           let userPreferencesResult;
           if (userPreferencesData?.getUserPreferencesByEmail) {
             userPreferencesResult = await updateUserPreferences({
@@ -122,7 +120,7 @@ const ProfileProvider = ({ children }) => {
             });
             setPreferencesCreated(true);
           }
-  
+
           setUserPreferences(userPreferencesResult?.data?.createUserPreferences || userPreferencesResult?.data?.updateUserPreferences);
         } catch (error) {
           console.error('Error fetching user preferences:', error);
@@ -130,14 +128,15 @@ const ProfileProvider = ({ children }) => {
         }
       }
     };
-  
+
     fetchUserPreferences();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, userPreferencesLoading]);
 
   return (
     <ProfileContext.Provider
       value={{
-        profile: user?.profile || {},
+        user: user || {},
         userPreferences,
         createLoading,
         updateLoading,
@@ -149,4 +148,7 @@ const ProfileProvider = ({ children }) => {
   );
 };
 
-export default ProfileProvider;
+
+export const useProfile = () => {
+  return useContext(ProfileContext);
+};

@@ -9,7 +9,7 @@ import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from "react-oidc-context";
 
 import IdTokenProvider from './auth/idTokenProvider.js';
-import ProfileProvider from './auth/profileProvider.js';
+import { ProfileProvider } from './auth/profileProvider.js';
 import { GRAPHQL_URI, oidcConfig } from './constant.js';
 import { getIdToken } from './auth/idTokenProvider.js';
 
