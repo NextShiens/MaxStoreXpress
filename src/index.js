@@ -9,9 +9,9 @@ import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from "react-oidc-context";
 
 import IdTokenProvider from './auth/idTokenProvider.js';
-import ProfileProvider from './auth/profileProvider.js';
-import {  GRAPHQL_URI, oidcConfig  } from './constant.js';
-import {getIdToken} from './auth/idTokenProvider.js';
+import { ProfileProvider } from './auth/profileProvider.js';
+import { GRAPHQL_URI, oidcConfig } from './constant.js';
+import { getIdToken } from './auth/idTokenProvider.js';
 
 const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
@@ -34,22 +34,17 @@ const apolloClient = new ApolloClient({
 
 ReactDOM.render(
   <ErrorBoundary>
-
     <AuthProvider {...oidcConfig}>
-      <IdTokenProvider>
-        <ProfileProvider>
-
-          <ApolloProvider client={apolloClient}>
+      <ApolloProvider client={apolloClient}>
+        <IdTokenProvider>
+          <ProfileProvider>
             <BrowserRouter>
               <App />
             </BrowserRouter>
-          </ApolloProvider>
-
-
-        </ProfileProvider>
-      </IdTokenProvider>
+          </ProfileProvider>
+        </IdTokenProvider>
+      </ApolloProvider>
     </AuthProvider>
-
   </ErrorBoundary>,
   document.getElementById('root')
 );

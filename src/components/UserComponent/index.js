@@ -6,7 +6,7 @@ import { Grid, Card, CardContent } from '@mui/material';
 import { Menu, MenuItem } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useAuth } from "react-oidc-context";
+import { useProfile } from '../../auth/profileProvider.js';
 
 const CREATE_USER_MUTATION = gql`
   mutation CreateUser($username: String!, $password: String!, $email: String!, $firstName: String!, $lastName: String!, $attributes: JSON!, $tenantID: String!) {
@@ -59,9 +59,7 @@ const UPDATE_USER_ROLES = gql`
 `;
 
 const UserComponent = () => {
-  const { user, isAuthenticated, } = useAuth();
-  console.log("user: ", user);
-  console.log("isAuthenticated: ", isAuthenticated);
+  const { user, userPreferences, createLoading, updateLoading, createError } = useProfile();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
