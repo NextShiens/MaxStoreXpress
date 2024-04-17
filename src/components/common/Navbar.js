@@ -11,39 +11,26 @@ import SearchIcon from '@mui/icons-material/Search';
 import LanguageIcon from '@mui/icons-material/Language';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from 'react-oidc-context';
-import PetsIcon from '@mui/icons-material/Pets';
-import HealthIcon from '@mui/icons-material/HealthAndSafety';
-import FashionIcon from '@mui/icons-material/ShoppingBag';
-import BabyIcon from '@mui/icons-material/ChildFriendly';
-import HomeIcon from '@mui/icons-material/Home';
-import ElectronicsIcon from '@mui/icons-material/DevicesOther';
-import AccessoryIcon from '@mui/icons-material/Smartphone';
-import TvIcon from '@mui/icons-material/Tv';
-import SportsIcon from '@mui/icons-material/Sports';
-import AccessoriesIcon from '@mui/icons-material/Watch';
-import AutomotiveIcon from '@mui/icons-material/DriveEta';
+import { useQuery, gql } from '@apollo/client'; 
 
-const categories = [
-  { text: "Groceries & Pets", icon: <PetsIcon />, key: 'Groceries & Pets', path: '/groceries' },
-  { text: "Health & Beauty", icon: <HealthIcon />, key: 'Health & Beauty', path: '/health-beauty' },
-  { text: "Men's Fashion", icon: <FashionIcon />, key: "Men's Fashion", path: '/mens-fashion' },
-  { text: "Mother & Baby", icon: <BabyIcon />, key: 'Mother & Baby', path: '/mother-baby' },
-  { text: "Home & Lifestyle", icon: <HomeIcon />, key: 'Home & Lifestyle', path: '/home-lifestyle' },
-  { text: "Electronics Devices", icon: <ElectronicsIcon />, key: 'Electronics Devices', path: '/electronics-devices' },
-  { text: "Electronic Accessories", icon: <AccessoryIcon />, key: 'Electronic Accessories', path: '/electronic-accessories' },
-  { text: "TV & Home Appliances", icon: <TvIcon />, key: 'TV & Home Appliances', path: '/tv-home-appliances' },
-  { text: "Sports & Outdoor", icon: <SportsIcon />, key: 'Sports & Outdoor', path: '/sports-outdoor' },
-  { text: "Watches Bags & Jewellery", icon: <AccessoriesIcon />, key: 'Watches Bags & Jewellery', path: '/watches-bags-jewellery' },
-  { text: "Automotive & Motorbike", icon: <AutomotiveIcon />, key: 'Automotive & Motorbike', path: '/automotive-motorbike' },
-];
+
+const GET_CATEGORIES = gql`
+  query GetCategories {
+    categories {
+      text
+      icon
+      key
+      path
+    }
+  }
+`;
+
 
 const languages = ['English', 'Urdu', 'Arabic', 'German', 'Chinese'];
-
 
 const Navbar = () => {
   const [hoveredLogo, setHoveredLogo] = useState(false);
   const [hoveredLocation, setHoveredLocation] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const [hoveredAll, setHoveredAll] = useState(false);
   const [hoveredSearchIcon, setHoveredSearchIcon] = useState(false);
   const [hoveredCart, setHoveredCart] = useState(false);
@@ -59,6 +46,8 @@ const Navbar = () => {
   const [hoveredSignup, setHoveredSignup] = useState(false);
   const { isAuthenticated, signoutRedirect } = useAuth();
   const [hoveredLanguageIcon, setHoveredLanguageIcon] = useState(false);
+  const { loading, error, data } = useQuery(GET_CATEGORIES);
+
 
   const handleMouseEnterLanguageIcon = () => {
     setHoveredLanguageIcon(true);
@@ -123,22 +112,22 @@ const Navbar = () => {
 
   const handleMouseEnterAll = () => {
     setHoveredAll(true);
+    document.body.style.cursor = 'pointer';
   };
 
   const handleMouseLeaveAll = () => {
     setHoveredAll(false);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchValue(event.target.value);
+    document.body.style.cursor = 'default';
   };
 
   const handleMouseEnterSearchIcon = () => {
     setHoveredSearchIcon(true);
+    document.body.style.cursor = 'pointer';
   };
 
   const handleMouseLeaveSearchIcon = () => {
     setHoveredSearchIcon(false);
+    document.body.style.cursor = 'default';
   };
 
   const handleClickLocation = (event) => {
@@ -173,7 +162,7 @@ const Navbar = () => {
 
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'black' }}>
+    <AppBar position="static" sx={{ backgroundColor: 'black', width:'100%' }}>
       <Toolbar>
         <div
           style={{
@@ -192,7 +181,6 @@ const Navbar = () => {
             aria-label="logo"
             sx={{
               padding: '0',
-
             }}
           >
             <img
@@ -202,6 +190,7 @@ const Navbar = () => {
                 width: 100,
                 height: 50,
                 marginLeft: '10px',
+
               }}
             />
           </IconButton>
@@ -222,16 +211,16 @@ const Navbar = () => {
             display: 'flex',
             alignItems: 'center',
             width: '200px',
-            marginLeft: '50px'
+            marginLeft: '20px'
           }}
         >
           <LocationOnIcon style={{ marginRight: '10px' }} />
           {selectedCity || selectedCountry ? (
-            <div>
-              <Typography variant="body1" sx={{ color: 'white', marginLeft: '5px', fontSize: '17px' }}>
-                {selectedCity}
+            <div style={{display:'flex'}}>
+              <Typography variant="body1" sx={{ color: 'white', fontSize: '17px' }}>
+                {selectedCity} ,
               </Typography>
-              <Typography variant="body2" sx={{ color: 'white' }}>
+              <Typography variant="body2" sx={{ color: 'white',marginLeft:'2px',marginTop:'2px' }}>
                 {selectedCountry}
               </Typography>
             </div>
@@ -245,7 +234,7 @@ const Navbar = () => {
           anchorEl={anchorEl}
           onClose={handleClosePopover}
           anchorReference="anchorPosition"
-          anchorPosition={{ top: 300, left: 600 }}
+          anchorPosition={{ top: 230, left: 450 }}
           transformOrigin={{
             vertical: 'top',
             horizontal: 'left',
@@ -261,7 +250,7 @@ const Navbar = () => {
             </Typography>
             <Button
               color="primary"
-              sx={{ mt: 2, ml: 14, border: '1px solid black', borderRadius: '10px', backgroundColor: 'lightgrey' }}
+              sx={{ mt: 2, ml: 14, border: '1px solid black', borderRadius: '10px', backgroundColor: 'lightgrey', color:'black' }}
               component={RouterLink}
               to="/login"
               onClick={handleClosePopover}
@@ -291,7 +280,7 @@ const Navbar = () => {
               value={cityInput}
               onChange={handleCityInputChange}
             />
-            <Button onClick={handleApplyLocation} variant="contained" sx={{ mt: 2, ml: 1, mb: 3, float: 'right' }}>
+            <Button onClick={handleApplyLocation} variant="contained" sx={{ mt: 2, ml: 1, mb: 3, float: 'right', }}>
               Apply
             </Button>
           </div>
@@ -299,97 +288,81 @@ const Navbar = () => {
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
-            border: `2px solid ${hoveredAll ? 'white' : 'black'}`,
+            border: '4px solid black',
             borderRadius: '5px',
-            marginLeft: '100px',
-            cursor: 'pointer',
+            transition: 'border-color 0.3s ease',
+            marginLeft: '60px',
+            height:'50px'
           }}
-          onMouseEnter={handleMouseEnterAll}
-          onMouseLeave={handleMouseLeaveAll}
         >
-          <Typography
-            variant="body1"
-            sx={{
-              alignSelf: "center",
-              backgroundColor: "transparent",
-              padding: "5px",
-              paddingLeft: "10px",
-              borderRadius: "5px",
-              marginRight: "10px",
-              display: "flex",
-              color: hoveredAll ? "orange" : "inherit",
+          <h6
+            style={{
+              borderRight: '2px solid gray',
+              borderRadius: '5px 0px 0px 5px',
+              color: 'black',
+              width: '70px',
+              height: '43px',
+              textAlign: 'center',
+              alignContent: 'center',
+              backgroundColor: hoveredAll ? '#D4D4D4' : '#ECECEC',
+              transition: 'background-color 0.3s ease',
             }}
             onMouseEnter={handleMouseEnterAll}
             onMouseLeave={handleMouseLeaveAll}
             onClick={handleAllClick}
           >
-            All
-            <ArrowDropDownIcon
-              sx={{
-                color: hoveredAll ? "orange" : "inherit",
-              }}
-            />
-          </Typography>
+            All <ArrowDropDownIcon onClick={handleAllClick} />
+          </h6>
           <Popover
-            id="category-popover"
-            open={Boolean(categoryAnchorEl)}
-            anchorEl={categoryAnchorEl}
-            onClose={handleCloseCategoryPopover}
-            anchorReference="anchorPosition"
-            anchorPosition={{ top: 65, left: 400 }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-          >
-            <div style={{ padding: '5px' }}>
-              {categories.map((category) => (
-                <MenuItem
-                  key={category.key}
-                  component={RouterLink}
-                  to={category.path}
-                  onClick={handleCloseCategoryPopover}
-                >
-                  {category.icon}
-                  <Typography variant="body1" sx={{ ml: 1 }}>
-                    {category.text}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </div>
-          </Popover>
-          <TextField
-            variant="outlined"
-            placeholder="Search"
-            fullWidth
-            sx={{
+          id="category-popover"
+          open={Boolean(categoryAnchorEl)}
+          anchorEl={categoryAnchorEl}
+          onClose={handleCloseCategoryPopover}
+          anchorReference="anchorPosition"
+          anchorPosition={{ top: 64, left: 350 }} 
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+        >
+          <div style={{ padding: '5px' }}>
+            {loading && <MenuItem>Loading...</MenuItem>}
+            {error && <MenuItem>Error fetching categories</MenuItem>}
+            {data && data.categories.map((category) => (
+              <MenuItem
+                key={category.key}
+                component={RouterLink}
+                to={category.path}
+                onClick={handleCloseCategoryPopover}
+              >
+                <Typography variant="body1">
+                  {category.text}
+                </Typography>
+              </MenuItem>
+            ))}
+          </div>
+        </Popover>
+          <input
+            style={{
               backgroundColor: 'white',
               width: '400px',
-              borderRadius: '0',
-              borderTopRightRadius: '5px',
-              borderBottomRightRadius: '5px',
+              height:'43px',
+              marginBottom:'10px'
             }}
-            value={searchValue}
-            onChange={handleSearchChange}
           />
-          <IconButton
-            component="span"
-            color="inherit"
-            aria-label="search"
-            sx={{
-              backgroundColor: hoveredSearchIcon ? 'yellow' : 'black',
-              borderRadius: '0 5px 5px 0',
-              padding: '15px',
-              '&:hover': {
-                backgroundColor: hoveredSearchIcon ? '#ff9933' : '#ffb366',
-              },
+          <SearchIcon
+            style={{
+              borderLeft: '2px solid gray',
+              backgroundColor: hoveredSearchIcon ? '#ff9800' : '#ffb74d',
+              width: '60px',
+              color: 'black',
+              height: '43px',
+              borderRadius: '0px 5px 5px 0px',
+              padding: '10px'
             }}
             onMouseEnter={handleMouseEnterSearchIcon}
             onMouseLeave={handleMouseLeaveSearchIcon}
-          >
-            <SearchIcon />
-          </IconButton>
+          />
         </div>
         <IconButton
           color="inherit"
@@ -400,7 +373,7 @@ const Navbar = () => {
           sx={{
             border: `2px solid ${hoveredLanguageIcon ? 'white' : 'black'}`,
             borderRadius: '5px',
-            marginLeft: '170px',
+            marginLeft: '80px',
             width: '150px',
             padding: '15px',
             display: 'flex',
@@ -409,14 +382,14 @@ const Navbar = () => {
           }}
         >
           <LanguageIcon style={{ marginRight: '10px', fontSize: '22px' }} />
-          {selectedLanguage ? ( // Display selected language if available
+          {selectedLanguage ? (
             <>
               <Typography variant="body1" sx={{ color: 'white', fontSize: '15px', marginLeft: '5px' }}>
                 {selectedLanguage}
               </Typography>
             </>
           ) : (
-            <Typography variant="body1" sx={{ color: 'white', fontSize: '15px' }}>Language</Typography> // Display default text if no language is selected
+            <Typography variant="body1" sx={{ color: 'white', fontSize: '15px' }}>Language</Typography>
           )}
         </IconButton>
 
@@ -426,7 +399,7 @@ const Navbar = () => {
           anchorEl={languageAnchorEl}
           onClose={handleCloseLanguagePopover}
           anchorReference="anchorPosition"
-          anchorPosition={{ top: 65, left: 1150 }}
+          anchorPosition={{ top: 65, left: 1030 }}
           transformOrigin={{
             vertical: 'top',
             horizontal: 'left',
@@ -434,7 +407,7 @@ const Navbar = () => {
         >
           <div style={{ padding: '20px' }}>
             {languages.map((language) => (
-              <MenuItem key={language} onClick={() => handleLanguageSelect(language)}>
+              <MenuItem  key={language} onClick={() => handleLanguageSelect(language)}>
                 {language}
               </MenuItem>
             ))}
