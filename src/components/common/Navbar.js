@@ -16,13 +16,11 @@ import { useQuery, gql } from '@apollo/client';
 
 const GET_CATEGORIES = gql`
   query GetCategories {
-    categories {
-      text
-      icon
-      key
-      path
-    }
+  getCategories {
+    text
+    path
   }
+}
 `;
 
 
@@ -328,9 +326,9 @@ const Navbar = () => {
           <div style={{ padding: '5px' }}>
             {loading && <MenuItem>Loading...</MenuItem>}
             {error && <MenuItem>Error fetching categories</MenuItem>}
-            {data && data.categories.map((category) => (
+            {data && data.getCategories.map((category) => (
               <MenuItem
-                key={category.key}
+                text={category.text}
                 component={RouterLink}
                 to={category.path}
                 onClick={handleCloseCategoryPopover}
