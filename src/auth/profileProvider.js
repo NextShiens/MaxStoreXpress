@@ -89,7 +89,6 @@ export const ProfileProvider = ({ children = "null" }) => {
     }
   }, [userPreferencesData]);
 
-  
   useEffect(() => {
     const fetchUserPreferences = async () => {
       if (isAuthenticated && user?.profile?.email && !userPreferencesLoading) {
