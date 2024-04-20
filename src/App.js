@@ -26,6 +26,8 @@ const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 const DemoProducts = React.lazy(() => import("./pages/Products/demoRealProducts.js"));
+const Cart = React.lazy(() => import("./pages/Products/cart.js"));
+const ProductsPage = React.lazy(() => import("./pages/Products/productPage.js"));
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
   return (
@@ -46,6 +48,8 @@ const App = () => {
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/productsPage' element={<ProductsPage />} />
           <Route
             path="/users"
             element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />

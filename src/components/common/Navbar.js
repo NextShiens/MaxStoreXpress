@@ -14,11 +14,27 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 import { UserManager } from 'oidc-client';
+import Badge from '@mui/material/Badge';
+import { useQuery, gql } from '@apollo/client';
 
 import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
 
+const GET_CART_ITEMS = gql`
+query GetCartItems($userID: ID!) {
+  getCartItems(userID: $userID) {
+    products {
+      id
+    }
+  }
+}
+`;
+
 const Navbar = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { data: cartData } = useQuery(GET_CART_ITEMS, {
+    variables: { userID: user?.profile?.sub },
+  });
+
   const [language, setLanguage] = useState('english');
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -33,9 +49,9 @@ const Navbar = () => {
   };
   useEffect(() => {
     if (isAuthenticated) {
-    console.log("User: LoggendIn")
+      console.log("User: LoggendIn")
     }
-    
+
 
   }, [user, isAuthenticated, navigate])
 
@@ -83,9 +99,13 @@ const Navbar = () => {
           }}
         />
         <div style={{ display: 'flex' }}>
-          <IconButton color="inherit" component={RouterLink} to="/cart" sx={{ color: '#000', mr: 1 }}>
-            <ShoppingCartIcon />
-          </IconButton>
+          {isAuthenticated && (
+            <IconButton color="inherit" component={RouterLink} to="/cart" sx={{ color: '#000', mr: 1 }}>
+              <Badge badgeContent={cartData?.getCartItems?.products?.length || 0} color="primary">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+          )}
           {isLoading ? (
             <Button color="inherit" variant="outlined" sx={{ color: '#000', mr: 1 }}>
               Loading...

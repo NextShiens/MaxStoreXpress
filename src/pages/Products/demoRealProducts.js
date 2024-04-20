@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useQuery, gql, useMutation } from '@apollo/client';
 import { useAuth } from 'react-oidc-context';
 import { useDropzone } from 'react-dropzone';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Button, Grid, Typography, Card, CardContent, TextField } from '@material-ui/core';
 import Skeleton from '@mui/material/Skeleton';
 import axios from 'axios';
@@ -18,10 +20,20 @@ const GET_PRODUCTS = gql`
   query GetProducts($filter: ProductFilterInput, $limit: Int, $skip: Int) {
     getProducts(filter: $filter, limit: $limit, skip: $skip) {
       id
-      name
-      price
-      description
       tenantID
+      name
+      slug
+      brand
+      price
+      minPrice
+      maxPrice
+      description
+      category
+      tags
+      imageUrl
+      rating
+      stock
+      discount
     }
   }
 `;
@@ -30,9 +42,27 @@ const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: ProductInput!) {
     createProduct(input: $input) {
       id
+      tenantID
       name
+      slug
+      brand
       price
+      minPrice
+      maxPrice
       description
+      category
+      tags
+      imageUrl
+      rating
+      stock
+      discount
+    }
+  }
+`;
+const DELETE_PRODUCT = gql`
+  mutation deleteProduct($id: ID!) {
+    deleteProduct(id: $id) {
+      id
     }
   }
 `;
@@ -45,34 +75,48 @@ const DemoProducts = () => {
   const [filesUploaded, setFilesUploaded] = useState(false);
   const [createProduct, { data: createProductData }] = useMutation(CREATE_PRODUCT);
   const [uploadFiles, { data: uploadFilesData }] = useMutation(UPLOAD_FILES);
+  const [deleteProductMutation] = useMutation(DELETE_PRODUCT);
 
 
   const [product, setProduct] = useState({
+    tenantID: '',
     name: '',
-    price: '',
+    slug: '',
+    brand: '',
+    price: 0,
+    minPrice: 0,
+    maxPrice: 0,
     description: '',
     category: '',
-    imageUrl: '',
-    tenantID: ''
+    tags: [],
+    imageUrl: [],
+    rating: 0,
+    stock: 0,
+    discount: 0
   });
   const onUploadWithGraphQL = async () => {
     try {
       const response = await uploadFiles({ variables: { files } });
       console.log('Upload response:', response);
-      alert('Files uploaded successfully with GraphQL');
     } catch (error) {
       console.error('Error uploading files with GraphQL:', error);
-      alert('Error uploading files with GraphQL');
+     
     }
   };
-
   const handleChange = (event) => {
+    const { name, value } = event.target;
+    const parsedValue = ['price', 'minPrice','maxPrice'].includes(name) ? parseFloat(value) : value;
+  
+    console.log(name + typeof(parsedValue));
+    
     setProduct({
       ...product,
-      [event.target.name]: event.target.value
+      [name]: parsedValue
     });
   };
-
+  
+  
+  
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
     variables: {
       filter: {
@@ -86,13 +130,17 @@ const DemoProducts = () => {
     event.preventDefault();
     try {
       await createProduct({ variables: { input: product } });
-      alert('Product created successfully');
     } catch (error) {
       console.error('Error creating product:', error);
-      alert('Error creating product');
     }
   };
-
+  const onDeleteProduct = async (productId) => {
+    try {
+      await deleteProductMutation({ variables: { id: productId }});
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
   const onDrop = useCallback(acceptedFiles => {
     if (files.length + acceptedFiles.length > 5) {
       alert('You can only upload up to 5 images.');
@@ -113,7 +161,6 @@ const DemoProducts = () => {
     files.forEach((file, index) => {
       formData.append('files', file);
     });
-debugger
     try {
       const token = await getIdToken();
       const response = await axios.post(REACT_APP_GRAPHQL_FILE_UPLOAD_URI, formData, {
@@ -146,24 +193,15 @@ debugger
 
   if (loading) {
     return (
-      <div>
-        <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-          <input {...getInputProps()} />
-          <Typography>Drag 'n' drop some files here, or click to select files</Typography>
-        </div>
-        <Grid container spacing={3}>
-          {[...Array(10)].map((_, index) => (
-            <Grid item xs={3} key={index}>
-              <Skeleton variant="rect" height={150} />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
+      <Box sx={{ display: 'flex' }}>
+      <CircularProgress />
+    </Box>
+
     );
   }
 
-  if (error) return <Typography>Error :(</Typography>;
-console.log("component chal pia")
+  if (error) return <Typography>Error :</Typography>;
+  console.log("working properly")
   return (
     <div>
       <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
@@ -171,12 +209,21 @@ console.log("component chal pia")
         <Typography>Drag 'n' drop some files here, or click to select files</Typography>
       </div>
       <form onSubmit={handleSubmit}>
-        <TextField name="name" value={product.name} onChange={handleChange} label="Name" />
-        <TextField name="price" value={product.price} onChange={handleChange} label="Price" />
-        <TextField name="description" value={product.description} onChange={handleChange} label="Description" />
-        <TextField name="category" value={product.category} onChange={handleChange} label="Category" />
-        <TextField name="imageUrl" value={product.imageUrl} onChange={handleChange} label="Image URL" />
-        <TextField name="tenantID" value={product.tenantID} onChange={handleChange} label="Tenant ID" />
+        <TextField name="name" value={product.name} onChange={handleChange} label="Name" required/>
+        <TextField name="description" value={product.description} onChange={handleChange} label="Description" required/>
+        <TextField name="category" value={product.category} onChange={handleChange} label="Category" required/>
+        <TextField name="price" value={Number(product.price)} onChange={handleChange} label="Price" required/>
+        <TextField name="tenantID" value={product.tenantID} onChange={handleChange} label="Tenant ID" required/>
+        <TextField name="slug" value={product.slug} onChange={handleChange} label="Slug" required/>
+        <TextField name="brand" value={product.brand} onChange={handleChange} label="Brand" required/>
+        <TextField name="minPrice" value={product.minPrice} onChange={handleChange} label="Min Price" required/>
+        <TextField name="maxPrice" value={product.maxPrice} onChange={handleChange} label="Max Price" required/>
+        <TextField name="tags" value={product.tags} onChange={handleChange} label="Tags" required/>
+        <TextField name="rating" value={product.rating} onChange={handleChange} label="Rating" required/>
+        <TextField name="stock" value={product.stock} onChange={handleChange} label="Stock" required/>
+        <TextField name="discount" value={product.discount} onChange={handleChange} label="Discount" required/>
+        <TextField name="imageUrl" value={product.imageUrl} onChange={handleChange} label="Image URL" required/>
+
         <Button type="submit">Create Product</Button>
       </form>
       <Button variant="contained" color="primary" onClick={onUpload} disabled={files.length === 0}>
@@ -194,12 +241,15 @@ console.log("component chal pia")
       </Grid>
       <Grid container spacing={3}>
         {data.getProducts.map(({ id, name, price, description }) => (
-          <Grid item xs={4} key={id}>
+          
+          <Grid item xs={6} key={id}>
             <Card>
               <CardContent>
                 <Typography variant="h5">{name}</Typography>
-                <Typography>{description}</Typography>
                 <Typography>{price}</Typography>
+                <Typography>{description}</Typography>
+                <Button variant="danger" onClick={() => onDeleteProduct(id)}>Delete Item</Button>
+               
               </CardContent>
             </Card>
           </Grid>
