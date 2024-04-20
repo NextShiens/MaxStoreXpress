@@ -11,6 +11,7 @@ const UPDATE_USER_PREFERENCES = gql`
       userName
       preferredLanguage
       currencyPreference
+      defaultAddress
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -32,6 +33,7 @@ const GET_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
+      defaultAddress
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -53,6 +55,7 @@ const CREATE_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
+      defaultAddress
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -95,7 +98,8 @@ export const ProfileProvider = ({ children = "null" }) => {
             userName: user.profile['cognito:username'],
             email: user.profile.email,
             preferredLanguage: 'en',
-            currencyPreference: 'USD',
+            currencyPreference: 'PKR',
+            defaultAddress: 'no Address yet',
             notificationSettings: {
               newProductUpdates: true,
               orderUpdates: true,
@@ -106,10 +110,20 @@ export const ProfileProvider = ({ children = "null" }) => {
 
           let userPreferencesResult;
           if (userPreferencesData?.getUserPreferencesByEmail) {
+            const updatedPreferencesInput = {
+              userId: userPreferencesData.userId ? userPreferencesData.userId : userPreferencesInput.userId,
+              email: userPreferencesData.email ? userPreferencesData.email : userPreferencesInput.email,
+              currencyPreference: userPreferencesData.currencyPreference ? userPreferencesData.currencyPreference : userPreferencesInput.currencyPreference,
+              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress,
+              preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
+              userName: userPreferencesData.userName ? userPreferencesData.userName : userPreferencesInput.userName,
+              lastLoggedIn: new Date().toISOString(),
+            };
+
             userPreferencesResult = await updateUserPreferences({
               variables: {
                 id: userPreferencesData.getUserPreferencesByEmail.id,
-                input: userPreferencesInput,
+                input: updatedPreferencesInput,
               },
             });
           } else if (!preferencesCreated) {
@@ -124,7 +138,7 @@ export const ProfileProvider = ({ children = "null" }) => {
           setUserPreferences(userPreferencesResult?.data?.createUserPreferences || userPreferencesResult?.data?.updateUserPreferences);
         } catch (error) {
           console.error('Error fetching user preferences:', error);
-          // Handle the error, e.g., display an error message to the user
+
         }
       }
     };
