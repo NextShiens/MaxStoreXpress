@@ -1,12 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import LanguageIcon from '@mui/icons-material/Language';
+import { connect } from 'react-redux';
+import { actionCreators } from "../../globalReduxStore/actions";
+import { useSelector } from 'react-redux';
+const getProductById = (state, productId) => {
+  return state.product.products.find(product => product.id === productId);
+};
 
-const Footer = () => {
+// both connect and useSelector have their use cases.For smaller, functional components,
+// useSelector can make your code cleaner and easier to understand.For larger, 
+// lass- based components, or for components that need to optimize rendering 
+// performance, connect might be a better choice.
+const Footer = ({ product, setProduct }) => {
+  // dispatch(actionCreators.setProduct(product));
+  const productId = 2;
+  const [localProduct, setlocalProduct] = useState(null);
+  const productById = useSelector(state => getProductById(state, productId));
+  console.log(productById, 'productById from redux');
+
+
+
+
+  console.log(localProduct);
+
+  useEffect(() => {
+    const demoProduct = {
+      id: 1,
+      name: 'Demo Product',
+      price: '$19.99',
+      description: 'This is a demo product description.',
+    };
+    setProduct(demoProduct);
+  }, [setProduct]);
+  console.log(product, 'product from redux');
+
   const Customers = {
     heading: 'Customer Care',
     text1: 'Help Center',
@@ -51,10 +83,10 @@ const Footer = () => {
   };
 
   return (
-    <footer style={{ display: 'flex', justifyContent: 'space-between', borderTop:'1px solid silver'}}>
+    <footer style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid silver' }}>
       <div>
         <div>
-          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{Customers.heading}</h3>
+          <h3 style={{ fontSize: '25px', fontWeight: '500', marginTop: '20px' }}>{Customers.heading}</h3>
           <ul>
             <li><Link to="/help">{Customers.text1}</Link></li>
             <li><Link to="/how-to-buy">{Customers.text2}</Link></li>
@@ -69,7 +101,7 @@ const Footer = () => {
       </div>
       <div>
         <div>
-          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{Money.heading}</h3>
+          <h3 style={{ fontSize: '25px', fontWeight: '500', marginTop: '20px' }}>{Money.heading}</h3>
           <ul>
             <li><Link to="/maxstore-university">{Money.text1}</Link></li>
             <li><Link to="/sell-on-maxstore">{Money.text2}</Link></li>
@@ -79,7 +111,7 @@ const Footer = () => {
       </div>
       <div>
         <div>
-          <h3 style={{fontSize:'25px', fontWeight:'500', marginTop:'20px'}}>{MaxStore.heading}</h3>
+          <h3 style={{ fontSize: '25px', fontWeight: '500', marginTop: '20px' }}>{MaxStore.heading}</h3>
           <ul>
             <li><Link to="/about-us">{MaxStore.text1}</Link></li>
             <li><Link to="/digital-payments">{MaxStore.text2}</Link></li>
@@ -95,27 +127,27 @@ const Footer = () => {
       </div>
       <div>
         <div>
-          <h3 style={{fontSize:'25px', fontWeight:'500' , marginTop:'20px'}}>{Payment.heading}</h3>
-          <div style={{display:'flex', marginRight:'40px'}}>
+          <h3 style={{ fontSize: '25px', fontWeight: '500', marginTop: '20px' }}>{Payment.heading}</h3>
+          <div style={{ display: 'flex', marginRight: '40px' }}>
             {Payment.images.map((image, index) => (
-              <img key={index} src={image} alt="payment" style={{ width: '50px', height: '30px', marginRight: '10px',marginTop:'20px', cursor:'pointer', }} />
+              <img key={index} src={image} alt="payment" style={{ width: '50px', height: '30px', marginRight: '10px', marginTop: '20px', cursor: 'pointer', }} />
             ))}
           </div>
         </div>
-        <div style={{ marginTop:'50px'}}>
-            <h3 style={{fontSize:'25px', fontWeight:'500'}}>Follow Us</h3>
-        <div style={{ display: 'flex', marginTop:'15px'}}>
-           
-        <Link to="/website" className="icon"><LanguageIcon style={{ cursor:'pointer'}} /></Link>
-        <Link to="/facebook" className="icon"><FacebookIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
-        <Link to="/twitter" className="icon"> <TwitterIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
-        <Link to="/instagram" className="icon"><InstagramIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
-        <Link to="/youtube" className="icon"> <YouTubeIcon style={{marginLeft:'10px', cursor:'pointer'}}/></Link>
-        </div>
+        <div style={{ marginTop: '50px' }}>
+          <h3 style={{ fontSize: '25px', fontWeight: '500' }}>Follow Us</h3>
+          <div style={{ display: 'flex', marginTop: '15px' }}>
+
+            <Link to="/website" className="icon"><LanguageIcon style={{ cursor: 'pointer' }} /></Link>
+            <Link to="/facebook" className="icon"><FacebookIcon style={{ marginLeft: '10px', cursor: 'pointer' }} /></Link>
+            <Link to="/twitter" className="icon"> <TwitterIcon style={{ marginLeft: '10px', cursor: 'pointer' }} /></Link>
+            <Link to="/instagram" className="icon"><InstagramIcon style={{ marginLeft: '10px', cursor: 'pointer' }} /></Link>
+            <Link to="/youtube" className="icon"> <YouTubeIcon style={{ marginLeft: '10px', cursor: 'pointer' }} /></Link>
+          </div>
         </div>
       </div>
-<style>
-  {`
+      <style>
+        {`
     li {
       font-size: 18px;
       position: relative;
@@ -129,7 +161,7 @@ const Footer = () => {
       color : gray;
     }
   `}
-</style>
+      </style>
 
 
 
@@ -137,4 +169,14 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+const mapStateToProps = (state) => ({
+  product: state,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setProduct: (product) => {
+    dispatch(actionCreators.setProduct(product));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Footer);
