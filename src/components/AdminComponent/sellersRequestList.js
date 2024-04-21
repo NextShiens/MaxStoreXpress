@@ -9,9 +9,15 @@ const GET_SELLER_REQUESTS = gql`
       user_name
       user_email
       company_name
+      address
+      country
+      branch_code
+      phone_number
+      bank_name
       cnic
-      request_date
       status
+      request_date
+      image_urls
     }
   }
 `;
@@ -36,13 +42,19 @@ const SellerRequests = () => {
 return (
   data &&
   data.getSellerRequests &&
-  data.getSellerRequests.map(({ user_id, user_name, user_email, company_name, cnic_name, request_date, status }) => (
+  data.getSellerRequests.map(({ user_id, user_name,address, user_email, company_name, cnic, request_date, status,country,branch_code,phone_number,bank_name,image_urls}) => (
      <div key={user_id}>
       <p>{`User ID: ${user_id}`}</p>
       <p>{`User Name: ${user_name}`}</p>
-      <p>{`User Email: ${user_email}`}</p>
       <p>{`Company Name: ${company_name}`}</p>
-      <p>{`CNIC: ${cnic_name}`}</p>
+      <p>{`CNIC: ${cnic}`}</p>
+      <p>{`Address: ${address}`}</p>
+      <p>{`Country: ${country}`}</p>
+      <p>{`Branch Code: ${branch_code}`}</p>
+      <p>{`Phone Number: ${phone_number}`}</p>
+      <p>{`Bank Name: ${bank_name}`}</p>
+      <p>{`Email: ${user_email}`}</p>
+      <p>{`Image URLs: ${image_urls}`}</p>
       <p>{`Request Date: ${new Date(request_date).toLocaleDateString()}`}</p>
       <p>{`Status: ${status}`}</p>
       <Button onClick={() => handleStatusUpdate(user_id)} variant="contained" color="primary">Set Active</Button>
