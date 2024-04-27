@@ -12,9 +12,14 @@ import IdTokenProvider from './auth/idTokenProvider.js';
 import { ProfileProvider } from './auth/profileProvider.js';
 import { GRAPHQL_URI, oidcConfig } from './constant.js';
 import { getIdToken } from './auth/idTokenProvider.js';
+import { legacy_createStore as createStore} from 'redux'
+
+import rootReducer from './globalReduxStore/reducers.js';
+import { Provider } from 'react-redux';
 
 const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
+const store = createStore(rootReducer);
 
 const authLink = setContext((_, { headers }) => {
   const token = getIdToken();
@@ -23,7 +28,6 @@ const authLink = setContext((_, { headers }) => {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
     }
-
   }
 });
 
@@ -36,13 +40,15 @@ ReactDOM.render(
   <ErrorBoundary>
     <AuthProvider {...oidcConfig}>
       <ApolloProvider client={apolloClient}>
-        <IdTokenProvider>
-          <ProfileProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </ProfileProvider>
-        </IdTokenProvider>
+        <Provider store={store}>
+          <IdTokenProvider>
+            <ProfileProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </ProfileProvider>
+          </IdTokenProvider>
+        </Provider>
       </ApolloProvider>
     </AuthProvider>
   </ErrorBoundary>,

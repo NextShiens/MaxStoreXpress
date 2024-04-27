@@ -222,3 +222,4 @@ function ResponsiveStepper({ steps, activeStep, isWideScreen }) {
 }
 
 export default SellerAccessRequestForm;
+

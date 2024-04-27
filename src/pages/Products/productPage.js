@@ -12,6 +12,7 @@ query GetProducts {
     price
     stock
     imageUrl
+    description
   }
 }
 `;
@@ -24,6 +25,7 @@ const ADD_TO_CART = gql`
         price
         quantity
         imageUrl
+        description
       }
       userID
     }
@@ -47,76 +49,91 @@ const Products = () => {
     const timerForAlert = setTimeout(() => {
       setShowAlert(false);
     }, 1500);
-    return () => 
-    clearTimeout(timerForAlert)
+    return () =>
+      clearTimeout(timerForAlert)
     clearTimeout(timer);
-  
-  }, [data, errorMessage,showAlert]);
 
-  
+  }, [data, errorMessage, showAlert]);
+
+
 
   const handleAddToCart = async (product) => {
     setShowAlert(true);
-    const { id, name, price, imageUrl } = product;
-  
+    const { id, name, price, imageUrl, description } = product;
+
     try {
-      await addToCart({ 
-        variables: { 
-          cartInput: { 
-            products: [{ id, name, price, imageUrl, quantity: 1 }],
-            userID: user.profile.sub 
+      await addToCart({
+        variables: {
+          cartInput: {
+            products: [{ id, name, price, imageUrl, quantity: 1, description }],
+            userID: user.profile.sub
           }
-        } 
+        }
       });
     } catch (error) {
-      if (error.message === 'Product already exists in cart') {
-        setErrorMessage('Product already exists in cart');
-      } else {
-        setErrorMessage('An error occurred',error.message);
+        setErrorMessage('An error occurred', error.message);
       }
-    }
   };
-  
 
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="container mx-auto p-8">
-      {errorMessage && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error!</strong>
-          <span className="block sm:inline">{errorMessage}</span>
-        </div>
-      )}
-       
+    <>
+      <div className="container mx-auto p-8">
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong className="font-bold">Error!</strong>
+            <span className="block sm:inline">{errorMessage}</span>
+          </div>
+        )}
+
         {showAlert && (
           <Alert icon={<CheckIcon fontSize="inherit" />} severity="success" className="mb-4">
-            Item added to cart 
+            Item added to cart
           </Alert>
         )}
+
+      </div>
      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <section className="flex w-full flex-wrap  justify-center gap-6 px-3 md:px-6 py-4">
         {data.getProducts.map((product) => (
-          <div key={product.id} className="border border-gray-300 rounded-lg overflow-hidden shadow-md">
-            <img className="w-full h-48 object-cover" src={product.imageUrl} alt={product.name} />
-            <div className="p-4">
-              <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-              <p className="text-gray-700 text-lg mb-2">Brand: {product.brand}</p>
-              <p className="text-gray-700 text-lg mb-2">Price: ${product.price}</p>
-              <p className="text-gray-700 text-lg mb-2">Stock: {product.stock}</p>
-              <button
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded mt-2"
-                onClick={() => handleAddToCart(product)}
-              >
+          <div className="bg-white w-72  border-2 border-slate-200 rounded-lg shadow-md overflow-hidden dark:bg-gray-950">
+            <div className="relative">
+              <img
+                alt={product.name}
+                className="w-full h-64 object-cover"
+                height={400}
+                src={product.imageUrl}
+                style={{
+                  aspectRatio: "400/400",
+                  objectFit: "cover",
+                }}
+                width={400}
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{product.brand}</p>
+                </div>
+                <p className="text-lg font-bold">{product.price}</p>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{product.description}
+              </p>
+              <button onClick={() => handleAddToCart(product)} className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">
                 Add to Cart
               </button>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </section>
+
+      
+
+    </>
   );
 };
 
