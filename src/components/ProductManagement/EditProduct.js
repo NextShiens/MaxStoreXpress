@@ -1,14 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { TextField, Button, Box, Typography, Grid, Select, MenuItem, Snackbar } from '@mui/material';
 import { useMutation, gql } from '@apollo/client';
 import { useDropzone } from 'react-dropzone';
-import axios from 'axios';
-import { REACT_APP_GRAPHQL_FILE_UPLOAD_URI } from '../../constant';
-import { getIdToken } from '../../auth/idTokenProvider';
+import { useParams, useLocation } from 'react-router-dom';
 
-const CREATE_PRODUCT_MUTATION = gql`
-  mutation CreateProduct($input: ProductInput!) {
-    createProduct(input: $input) {
+const UPDATE_PRODUCT_MUTATION = gql`
+  mutation UpdateProduct($id: ID!, $input: ProductInput!) {
+    updateProduct(id: $id, input: $input) {
       id
       name
       price
@@ -27,13 +25,12 @@ const CREATE_PRODUCT_MUTATION = gql`
   }
 `;
 
-const UPLOAD_FILES_MUTATION = gql`
-  mutation UploadFiles($files: [Upload!]!) {
-    uploadFiles(files: $files)
-  }
-`;
+const EditProduct = ({ tenantID }) => {
+  const { id } = useParams();
+  const location = useLocation(); 
+  const searchParams = new URLSearchParams(location.search);
+  const productIdFromQuery = searchParams.get('productId'); 
 
-const CreateProductForm = ({ tenantID }) => {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -42,157 +39,133 @@ const CreateProductForm = ({ tenantID }) => {
     minPrice: '',
     description: '',
     rating: '',
-    tenantID: tenantID,
     slug: '',
     brand: '',
-    tags: [],
+    tags: '',
     stock: '',
     discount: '',
-    imageUrl:[],
+    imageUrl: [],
   });
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [files, setFiles] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [product,setProduct]=useState({})
+  const [isUploading, setIsUploading] = useState(true);
 
-  const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION);
-  const [uploadFiles] = useMutation(UPLOAD_FILES_MUTATION);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION);
+
+  useEffect(() => {
+    async function fetchProductData(productId) {
+      try {
+        const fetchedProductData = await fetchProductData(productId);
+        if (fetchedProductData) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            name: fetchedProductData.name || prevFormData.name,
+            price: fetchedProductData.price || prevFormData.price,
+            category: fetchedProductData.category || prevFormData.category,
+            maxPrice: fetchedProductData.maxPrice || prevFormData.maxPrice,
+            minPrice: fetchedProductData.minPrice || prevFormData.minPrice,
+            description: fetchedProductData.description || prevFormData.description,
+            rating: fetchedProductData.rating || prevFormData.rating,
+            slug: fetchedProductData.slug || prevFormData.slug,
+            brand: fetchedProductData.brand || prevFormData.brand,
+            tags: fetchedProductData.tags ? fetchedProductData.tags.join(', ') : prevFormData.tags,
+            stock: fetchedProductData.stock || prevFormData.stock,
+            discount: fetchedProductData.discount || prevFormData.discount,
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching product data:', error);
+      }
+    }
+
+    if (productIdFromQuery) {
+      fetchProductData(productIdFromQuery);
+    } else {
+      fetchProductData(id); 
+    }
+  }, [id, productIdFromQuery]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
   };
 
   const handleSaveToDraft = async () => {
     try {
       const input = {
         ...formData,
-        stock: parseInt(formData.stock), 
+        stock: parseInt(formData.stock),
         discount: parseInt(formData.discount),
-        status: 'non-active', 
       };
-  
-      await createProduct({ variables: { input } });
+
+      const productId = id.trim(); 
+
+      await updateProduct({ variables: { id: productId, input } });
       setOpenSnackbar(true);
-      clearForm();
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('Error saving product to draft:', error);
       showAlert('Error saving product to draft');
     }
   };
-  
-  const handlePublish = async () => {
+
+  const handleUpdate = async () => {
     try {
       const input = {
-        ...formData,
-        stock: parseInt(formData.stock),
-        discount: parseInt(formData.discount),
-        status: 'active', 
+        ...(formData.name && { name: formData.name }),
+        ...(formData.price && { price: formData.price }),
+        ...(formData.category && { category: formData.category }),
+        ...(formData.maxPrice && { maxPrice: formData.maxPrice }),
+        ...(formData.minPrice && { minPrice: formData.minPrice }),
+        ...(formData.description && { description: formData.description }),
+        ...(formData.rating && { rating: formData.rating }),
+        ...(formData.imageUrl.length > 0 && { imageUrl: formData.imageUrl }),
+        ...(formData.slug && { slug: formData.slug }),
+        ...(formData.brand && { brand: formData.brand }),
+        ...(formData.tags && { tags: formData.tags.split(',').map(tag => tag.trim()) }),
+        ...(formData.stock && { stock: parseInt(formData.stock) }),
+        ...(formData.discount && { discount: parseInt(formData.discount) }),
       };
   
-      console.log('Publishing product with data:', input);
+      const productId = id.trim();
   
-      await createProduct({ variables: { input } });
+      await updateProduct({ variables: { id: productId, input } });
       setOpenSnackbar(true);
-      clearForm();
     } catch (error) {
-      console.error('Error publishing product:', error);
-      showAlert('Error publishing product');
+      console.error('Error updating product:', error);
+      showAlert('Error updating product');
     }
   };
   
+  const handleChangeCategory = (e) => {
+    const value = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      category: value,
+    }));
+  };
   
-
-  const handleImageUpload = async () => {
-    const token = await getIdToken();
-
-    try {
-      setIsUploading(true);
-
-      const formData = new FormData();
-      files.forEach((file, index) => {
-        console.log('Uploading file:', file);
-        formData.append('files', file);
-      });
-
-      const response = await axios.post(REACT_APP_GRAPHQL_FILE_UPLOAD_URI, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
-        }
-      });
-
-      const uploadedImageUrls = response.data.urls;
-      console.log(response);
-      const imageUrlArray = Array.isArray(uploadedImageUrls) ? uploadedImageUrls.map(url => String(url)) : [String(uploadedImageUrls)];
-console.log(imageUrlArray)
-      setFormData({
-        ...formData,
-        imageUrl: uploadedImageUrls
-      });
-
-      console.log('Upload response:', response);
-      showAlert('Files uploaded successfully');
-      clearFiles();
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      showAlert('Error uploading files');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const clearForm = () => {
-    setFormData({
-      name: '',
-      price: '',
-      category: '',
-      maxPrice: '',
-      minPrice: '',
-      description: '',
-      rating: '',
-      tenantID: tenantID,
-      slug: '',
-      brand: '',
-      tags: [],
-      stock: '', 
-      discount: '', 
-    });
-  };
-
-  const clearFiles = () => {
-    setFiles([]);
-  };
 
   const showAlert = (message) => {
     alert(message);
   };
 
-  const handleChangeCategory = (e) => {
-    setFormData({
-      ...formData,
-      category: e.target.value,
-    });
-  };
-
-  const onDrop = useCallback(acceptedFiles => {
+  const onDrop = useCallback((acceptedFiles) => {
     if (files.length + acceptedFiles.length > 5) {
       showAlert('You can only upload up to 5 images.');
       return;
     }
-    setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file, {
-      preview: URL.createObjectURL(file)
+    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles.map((file) => Object.assign(file, {
+      preview: URL.createObjectURL(file),
     }))]);
   }, [files]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
     onDrop,
-    maxFiles: 5 - files.length
+    maxFiles: 5 - files.length,
   });
 
   return (
@@ -210,13 +183,13 @@ console.log(imageUrlArray)
             </Grid>
           ))}
         </Grid>
-        <Button variant="contained" color="primary" onClick={handleImageUpload} disabled={files.length === 0 || isUploading}>
+        <Button variant="contained" color="primary" disabled={files.length === 0 || isUploading}>
           {isUploading ? 'Uploading...' : 'Upload Images'}
         </Button>
       </Box>
 
       <Box width="50%" p={2} style={{ marginTop: '20px' }}>
-        <Typography variant="h2" gutterBottom>Create Product</Typography>
+        <Typography variant="h2" gutterBottom>Update Product</Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField label="Name" name="name" value={formData.name} onChange={handleInputChange} fullWidth />
@@ -264,12 +237,12 @@ console.log(imageUrlArray)
             <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Tenant ID" name="tenantID" value={formData.tenantID} onChange={handleInputChange} fullWidth />
+            <TextField label="Tenant ID" name="tenantID" value={tenantID} disabled fullWidth />
           </Grid>
         </Grid>
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button variant="contained" color="primary" onClick={handleSaveToDraft}>Save to Draft</Button>
-          <Button variant="contained" color="primary" onClick={handlePublish} disabled={!formData.imageUrl || formData.imageUrl.length === 0}>Publish</Button>
+          <Button variant="contained" color="primary" onClick={handleSaveToDraft}>Save Changes</Button>
+          <Button variant="contained" color="primary" onClick={handleUpdate}>Update</Button>
         </Box>
       </Box>
 
@@ -277,10 +250,10 @@ console.log(imageUrlArray)
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
-        message="Product successfully published"
+        message="Product successfully updated"
       />
     </Box>
   );
 };
 
-export default CreateProductForm;
+export default EditProduct;

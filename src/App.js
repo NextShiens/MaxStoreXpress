@@ -30,6 +30,7 @@ const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 const DemoProducts = React.lazy(() => import("./pages/Products/demoRealProducts.js"));
+const EditProduct = React.lazy(() => import("./components/ProductManagement/EditProduct.js"))
 const ProductUpdate = React.lazy(() => import("./components/ProductManagement/ProductUpdate.js"))
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/product/:id" element={<Product />} />
           <Route path='/table' element={<UserTable />} />
           <Route path='/update/:id' element={<UpdateUserForm />} />
+          <Route path='/editproduct/:id' element={<EditProduct/>} />
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
