@@ -15,7 +15,10 @@ import { useAuth } from 'react-oidc-context';
 import { useQuery, gql } from '@apollo/client'; 
 import { UserManager } from 'oidc-client';
 import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { actionCreators } from '../../globalReduxStore/actions';
+import { useFetchCartData } from '../../globalReduxStore/reducers/cartOperations';
+import Badge from '@mui/material/Badge';
 
 // const GET_CATEGORIES = gql`
 //   query GetCategories {
@@ -30,6 +33,8 @@ import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } fr
 const languages = ['English', 'Urdu', 'Arabic', 'German', 'Chinese'];
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+
   const [hoveredLogo, setHoveredLogo] = useState(false);
   const [hoveredLocation, setHoveredLocation] = useState(false);
   const [hoveredAll, setHoveredAll] = useState(false);
@@ -46,6 +51,9 @@ const Navbar = () => {
   const [hoveredLogin, setHoveredLogin] = useState(false);
   const [hoveredSignup, setHoveredSignup] = useState(false);
   const { user, isAuthenticated, isLoading } = useAuth();
+  const userID= user?.profile?.sub || null;
+  const { loading, error, data, refetch } = useFetchCartData(userID);
+  const cart = useSelector((state) => state.cart.cart);
   const [hoveredLanguageIcon, setHoveredLanguageIcon] = useState(false);
   // const { loading, error, data } = useQuery(GET_CATEGORIES);
   const userManagers = new UserManager(oidcConfig);
@@ -64,13 +72,12 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-    console.log("User: LoggendIn")
-    }
-    
 
-  }, [user, isAuthenticated, navigate])
+  useEffect(() => {
+    if (data && data.getCartItems) {
+      dispatch(actionCreators.setCart(data.getCartItems.products));
+    }
+  }, [dispatch, data]);
 
   const handleMouseEnterLanguageIcon = () => {
     setHoveredLanguageIcon(true);
@@ -519,7 +526,9 @@ const Navbar = () => {
           onMouseEnter={handleMouseEnterCart}
           onMouseLeave={handleMouseLeaveCart}
         >
+         <Badge badgeContent={cart.length} color="secondary">
           <ShoppingCartIcon />
+          </Badge>
         </IconButton>
       </Toolbar>
     </AppBar>
