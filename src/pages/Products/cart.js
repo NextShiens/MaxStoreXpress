@@ -11,7 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const userID = user.profile.sub;
+  const userID = user?.profile?.sub || null;
   const { loading, error, data, refetch } = useFetchCartData(userID);
   const deleteCartItem = useDeleteCartItem();
   const clearCart = useClearCart();
@@ -62,6 +62,19 @@ const Cart = () => {
       console.error('Error updating item quantity:', err);
     }
   };
+  if (userID === null) {
+    return (
+      <div className="container mx-auto p-8 relative">
+        <div className="flex flex-col items-center justify-center max-h-128 gap-6">
+          <div className="grid gap-2 text-center">
+            <h2 className="text-2xl font-bold">Please sign in to view your cart</h2>
+          </div>
+          <button onClick={() => window.location.href = "/login"} className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Sign in</button>
+        </div>
+      </div>
+    );
+  };
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
