@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { actionTypes } from './actions';
+import cartReducer from './reducers/cartReducer';
 
 const initialUserState = {
   users: [],
@@ -98,6 +99,7 @@ const rootReducer = combineReducers({
   transaction: transactionReducer,
   review: reviewReducer,
   order: orderReducer,
+  cart: cartReducer,
 });
 
 export default rootReducer;
