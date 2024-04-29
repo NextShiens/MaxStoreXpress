@@ -2,9 +2,13 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE, SUPER_ADMIN_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
-import  Navbar  from './components/common/Navbar';
+import  Navbar  from './components/common/Navbar'
+// import TopProducts from './components/TopProducts/TopProducts';
+// import EditProduct from './components/Products/EditProduct';
+
 import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './pages/transactions/transactions.js';
 import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
@@ -26,6 +30,7 @@ const Product = React.lazy(() => import("./components/Product/Page.js"));
 const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 const DemoProducts = React.lazy(() => import("./pages/Products/demoRealProducts.js"));
+const ProductUpdate = React.lazy(() => import("./components/ProductManagement/ProductUpdate.js"))
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
 const App = () => {
   return (
@@ -46,6 +51,7 @@ const App = () => {
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
+          <Route path='/updateproduct' element={<ProductUpdate/>} />
           <Route
             path="/users"
             element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />
