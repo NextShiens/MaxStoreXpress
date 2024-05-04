@@ -113,13 +113,13 @@ const SellerAccessRequestForm = () => {
     if (isAuthenticated) {
       setFormState((prevState) => ({
         ...prevState,
-        userId: user.sub,
-        userName: user.username,
-        userEmail: user.email,
+        userId: user.profile.sub,
+        userName: user.profile.name,
+        userEmail: user.profile.email,
       }));
-      setValue('user_id', user.sub || 'demoYUser');
-      setValue('userName', user.username || 'demoasdf');
-      setValue('userEmail', user.email || "demo value");
+      setValue('user_id', user.profile.sub);
+      setValue('userName', user.profile.name);
+      setValue('userEmail', user.profile.email);
     }
   }, [isAuthenticated, user, setValue]); 
 
@@ -146,7 +146,7 @@ const SellerAccessRequestForm = () => {
           console.log(percentCompleted);
         }
       });
-      const uploadedImageUrls = response.data;
+      const uploadedImageUrls = response.data.urls;
       const imageUrlArray = Array.isArray(uploadedImageUrls) ? uploadedImageUrls.map(url => String(url)) : [String(uploadedImageUrls)];
       setFiles(imageUrlArray);
       setIsUploaded(true); 
