@@ -282,7 +282,6 @@ const Navbar = () => {
            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
            <LanguageIcon
              style={{ marginRight: '10px', color: 'black', cursor: 'pointer' }}
-             onClick={handleLanguageClick}
              aria-controls="language-menu"
              aria-haspopup="true"
            />
