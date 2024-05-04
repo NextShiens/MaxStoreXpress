@@ -17,7 +17,7 @@ import Sidebar from './pages/Sidebar/Sidebar.js';
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
-const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
+const AdminComponent = React.lazy(() => import("./components/AdminComponent/sellersRequestList.js"));
 const UserComponent = React.lazy(() => import("./components/UserComponent"));
 const SellerComponent = React.lazy(() => import("./components/SellerComponent"));
 const LoginComponent = React.lazy(() => import("./auth/Login.js"));
