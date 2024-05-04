@@ -15,6 +15,8 @@ import Sidebar from './pages/Sidebar/Sidebar.js';
 
 
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
+const Cart = React.lazy(() => import("./pages/Products/cart.js"));
+const ProductsPage = React.lazy(() => import("./pages/Products/productPage.js"));
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
 const AdminComponent = React.lazy(() => import("./components/AdminComponent"));
@@ -46,6 +48,8 @@ const App = () => {
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
           <Route path= '/customers' element={<CustomerPage />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/productsPage' element={<ProductsPage />} />
           <Route
             path="/users"
             element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />
