@@ -16,6 +16,21 @@ const GET_CART = gql`
     }
   }
 `;
+const ADD_TO_CART = gql`
+  mutation addToCart($cartInput: CartInput!) {
+    addToCart(cartInput: $cartInput) {
+      products {
+        id
+        name
+        price
+        quantity
+        imageUrl
+        description
+      }
+      userID
+    }
+  }
+`;
 
 const DELETE_ITEM = gql`
   mutation deleteFromCart($userID: ID!, $productID: ID!) {
@@ -53,7 +68,11 @@ export const useFetchCartData = (userID) => {
 
   return { data, loading, error, refetch };
 };
+export const useAddToCart = () => {
+  const [addToCart] = useMutation(ADD_TO_CART);
 
+  return addToCart;
+};
 export const useDeleteCartItem = () => {
   const [deleteCartItem] = useMutation(DELETE_ITEM);
 

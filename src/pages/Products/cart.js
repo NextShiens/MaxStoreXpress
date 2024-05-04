@@ -109,9 +109,9 @@ const Cart = () => {
             </div>
             <div className=" w-full max-h-128  overflow-y-auto  grid gap-8 md:w-12/12">
 
-              {cart.map(({ id, name, price, imageUrl, quantity, description }) => (
+              {cart.length > 0 && cart.map(({ id, name, price, imageUrl, quantity, description }) => (
 
-                <div className="w-full max-w-2xl mx-auto">
+                <div  key={id} className="w-full max-w-2xl mx-auto">
                   <div className="relative flex flex-col md:flex-row items-start gap-6 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-950">
 
                     <CloseIcon

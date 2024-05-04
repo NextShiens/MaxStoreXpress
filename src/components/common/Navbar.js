@@ -1,111 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-// Import useNavigate from react-router-dom
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Typography, TextField, Button, Popover, MenuItem, Select, Divider } from '@mui/material';
+import { AppBar, Toolbar, Typography, ListItem, ListItemIcon, ListItemText, Menu,Popover, Button, MenuItem, InputAdornment, IconButton, TextField, styled } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from './logo2.png';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ReorderIcon from '@mui/icons-material/Reorder';
 import LanguageIcon from '@mui/icons-material/Language';
+import SearchIcon from '@mui/icons-material/Search';
+import { useQuery, gql } from '@apollo/client';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useAuth } from 'react-oidc-context';
-import { useQuery, gql } from '@apollo/client'; 
-import { UserManager } from 'oidc-client';
-import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useSelector, useDispatch } from 'react-redux';
 import { actionCreators } from '../../globalReduxStore/actions';
 import { useFetchCartData } from '../../globalReduxStore/reducers/cartOperations';
+import { useAuth } from 'react-oidc-context';
 import Badge from '@mui/material/Badge';
+import { UserManager } from 'oidc-client';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
 
-// const GET_CATEGORIES = gql`
-//   query GetCategories {
-//   getCategories {
-//     text
-//     path
-//   }
-// }
-// `;
+const GET_CATEGORIES = gql`
+  query GetCategories {
+    getCategories {
+      text
+      path
+    }
+  }
+`;
 
-
-const languages = ['English', 'Urdu', 'Arabic', 'German', 'Chinese'];
+const CustomTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#ccc',
+    },
+    '&:hover fieldset': {
+      borderColor: '#ccc',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'black',
+    },
+  },
+});
 
 const Navbar = () => {
   const dispatch = useDispatch();
-
-  const [hoveredLogo, setHoveredLogo] = useState(false);
-  const [hoveredLocation, setHoveredLocation] = useState(false);
-  const [hoveredAll, setHoveredAll] = useState(false);
-  const [hoveredSearchIcon, setHoveredSearchIcon] = useState(false);
-  const [hoveredCart, setHoveredCart] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [cityInput, setCityInput] = useState('');
-  const [countryInput, setCountryInput] = useState('');
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [hoveredLogin, setHoveredLogin] = useState(false);
-  const [hoveredSignup, setHoveredSignup] = useState(false);
+  const [showCategories, setShowCategories] = useState(window.innerWidth > 992);
+  const [showLanguage, setShowLanguage] = useState(window.innerWidth > 992);
+  const [showListIcon, setShowListIcon] = useState(window.innerWidth <= 992);
+  const [showLoginSignup, setShowLoginSignup] = useState(window.innerWidth > 760);
+
+  const { loading, error, data } = useQuery(GET_CATEGORIES);
   const { user, isAuthenticated, isLoading } = useAuth();
-  const userID= user?.profile?.sub || null;
-  const { loading, error, data, refetch } = useFetchCartData(userID);
-  const cart = useSelector((state) => state.cart.cart);
-  const [hoveredLanguageIcon, setHoveredLanguageIcon] = useState(false);
-  // const { loading, error, data } = useQuery(GET_CATEGORIES);
   const userManagers = new UserManager(oidcConfig);
   const navigate = useNavigate();
+  const [listPopupAnchorEl, setListPopupAnchorEl] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [popupSearchValue, setPopupSearchValue] = useState('');
+  const [hoveredLogin, setHoveredLogin] = useState(false);
+  const [hoveredSignup, setHoveredSignup] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+    const userID= user?.profile?.sub || null;
+    const { loading: isLoadingCart, error: cartError, data: cartData, refetch } = useFetchCartData(userID);
+  const cart = useSelector((state) => state.cart.cart);
 
 
+  const languages = ['English', 'Urdu', 'French', 'Arabic'];
 
-  const handleLogout = async () => {
-    try {
-      // Use UserManager from the imported oidcConfig
-      const userManager = new UserManager(oidcConfig);
-      await userManager.signoutRedirect();
-      window.location.href = `https://maxstore.auth.${REACT_APP_AWS_REGION}.amazoncognito.com/logout?client_id=${OPEN_ID_CLIENT_ID}&logout_uri=${WEBAPP_DOMAIN}`;
-    } catch (error) {
-      console.error("Error logging out: ", error);
-    }
+  const handleListIconClick = (event) => {
+    setListPopupAnchorEl(event.currentTarget);
   };
 
-
-  useEffect(() => {
-    if (data && data.getCartItems) {
-      dispatch(actionCreators.setCart(data.getCartItems.products));
-    }
-  }, [dispatch, data]);
-
-  const handleMouseEnterLanguageIcon = () => {
-    setHoveredLanguageIcon(true);
+  const handleCloseListPopup = () => {
+    setListPopupAnchorEl(null);
   };
 
-  const handleMouseLeaveLanguageIcon = () => {
-    setHoveredLanguageIcon(false);
+  const handleCategoryClick = (event) => {
+    setCategoryAnchorEl(event.currentTarget);
   };
 
   const handleMouseEnterLogin = () => {
     setHoveredLogin(true);
-  };
-
-  const handleLanguageIconClick = (event) => {
-    setLanguageAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseLanguagePopover = () => {
-    setLanguageAnchorEl(null);
-  };
-
-  const handleLanguageSelect = (language) => {
-    setSelectedLanguage(language);
-    setLanguageAnchorEl(null);
-  };
-
-  const handleMouseLeaveLogin = () => {
-    setHoveredLogin(false);
   };
 
   const handleMouseEnterSignup = () => {
@@ -116,420 +93,401 @@ const Navbar = () => {
     setHoveredSignup(false);
   };
 
-  const handleMouseEnterCart = () => {
-    setHoveredCart(true);
+  const handleMouseLeaveLogin = () => {
+    setHoveredLogin(false);
+  };
+  const handleCartClick = () => {
+    navigate('/cart');
   };
 
-  const handleMouseLeaveCart = () => {
-    setHoveredCart(false);
+  const handleLogout = async () => {
+    try {
+      await userManagers.signoutRedirect();
+      window.location.href = `https://maxstore.auth.${REACT_APP_AWS_REGION}.amazoncognito.com/logout?client_id=${OPEN_ID_CLIENT_ID}&logout_uri=${WEBAPP_DOMAIN}`;
+    } catch (error) {
+      console.error("Error logging out: ", error);
+    }
   };
 
-  const handleMouseEnterLogo = () => {
-    setHoveredLogo(true);
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      setShowCategories(window.innerWidth > 992);
+      setShowLanguage(window.innerWidth > 992);
+      setShowListIcon(window.innerWidth <= 992);
+      setShowLoginSignup(window.innerWidth > 760);
+    };
 
-  const handleMouseLeaveLogo = () => {
-    setHoveredLogo(false);
-  };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+    useEffect(() => {
+    if (data && data.getCartItems) {
+      dispatch(actionCreators.setCart(data.getCartItems.products));
+    }
+  }, [dispatch, data]);
 
-  const handleMouseEnterLocation = () => {
-    setHoveredLocation(true);
-  };
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User: LoggedIn")
+    }
+  }, [user, isAuthenticated, navigate])
 
-  const handleMouseLeaveLocation = () => {
-    setHoveredLocation(false);
-  };
-
-  const handleMouseEnterAll = () => {
-    setHoveredAll(true);
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handleMouseLeaveAll = () => {
-    setHoveredAll(false);
-    document.body.style.cursor = 'default';
-  };
-
-  const handleMouseEnterSearchIcon = () => {
-    setHoveredSearchIcon(true);
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handleMouseLeaveSearchIcon = () => {
-    setHoveredSearchIcon(false);
-    document.body.style.cursor = 'default';
-  };
-
-  const handleClickLocation = (event) => {
+  const handleLanguageClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClosePopover = () => {
+  const handleCloseLanguageMenu = () => {
     setAnchorEl(null);
-  };
-
-  const handleApplyLocation = () => {
-    setSelectedCountry(countryInput);
-    setSelectedCity(cityInput);
-    setAnchorEl(null);
-  };
-
-  const handleCountryChange = (event) => {
-    setCountryInput(event.target.value);
-  };
-
-  const handleCityInputChange = (event) => {
-    setCityInput(event.target.value);
-  };
-
-  const handleAllClick = (event) => {
-    setCategoryAnchorEl(event.currentTarget);
   };
 
   const handleCloseCategoryPopover = () => {
     setCategoryAnchorEl(null);
   };
 
+  const handleCloseLanguagePopover = () => {
+    setLanguageAnchorEl(null);
+  };
+
+  const handleLoginClick = () => {
+    console.log('Login clicked');
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 992) {
+        setListPopupAnchorEl(null);
+      }
+      setShowLoginSignup(window.innerWidth > 760);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const handleSearchInputChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  const handlePopupSearchInputChange = (event) => {
+    setPopupSearchValue(event.target.value);
+  };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'black', width:'100%' }}>
+    <AppBar position="static" sx={{ backgroundColor: '#eaeaea' }}>
       <Toolbar>
-        <div
-          style={{
-            border: `2px solid ${hoveredLogo ? 'white' : 'black'}`,
-            borderRadius: '5px',
-            padding: '5px',
-          }}
-          onMouseEnter={handleMouseEnterLogo}
-          onMouseLeave={handleMouseLeaveLogo}
-        >
-          <IconButton
-            component={RouterLink}
-            to="/"
-            edge="start"
-            color="inherit"
-            aria-label="logo"
-            sx={{
-              padding: '0',
-            }}
-          >
-            <img
-              src={logo}
-              alt="Logo"
-              style={{
-                width: 100,
-                height: 50,
-                marginLeft: '10px',
+        <div className="flex w-full items-center">
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <div
+              className="flex items-center"
+              style={{ padding: '5px', height: '60px', border: '2px solid transparent', borderRadius: '5px', marginRight: '20px' }}
 
-              }}
-            />
-          </IconButton>
-        </div>
-        <IconButton
-          component={RouterLink}
-          to="/location"
-          edge="end"
-          color="inherit"
-          aria-label="location"
-          onClick={handleClickLocation}
-          onMouseEnter={handleMouseEnterLocation}
-          onMouseLeave={handleMouseLeaveLocation}
-          sx={{
-            border: `2px solid ${hoveredLocation ? 'white' : 'black'}`,
-            borderRadius: '5px',
-            padding: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            width: '200px',
-            marginLeft: '20px'
-          }}
-        >
-          <LocationOnIcon style={{ marginRight: '10px' }} />
-          {selectedCity || selectedCountry ? (
-            <div style={{display:'flex'}}>
-              <Typography variant="body1" sx={{ color: 'white', fontSize: '17px' }}>
-                {selectedCity} ,
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'white',marginLeft:'2px',marginTop:'2px' }}>
-                {selectedCountry}
+            >
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-14 my-2 md:my-2 cursor-pointer"
+              />
+              <Typography variant="h5" component="div" style={{ color: 'black', }}>
+                MaxStore
               </Typography>
             </div>
-          ) : (
-            <Typography variant="body1" sx={{ color: 'white' }}>Select Location</Typography>
+          </Link>
+
+          {showCategories && (
+            <div
+              className="flex items-center"
+              style={{
+                width: '160px',
+                marginLeft: '50px',
+                border: '2px solid transparent',
+                borderRadius: '5px',
+                padding: '5px',
+                backgroundColor: 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.cursor = 'pointer';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.cursor = 'none';
+              }}
+              onClick={handleCategoryClick}
+            >
+              <ListItem sx={{ backgroundColor: 'transparent' }}>
+                <ListItemIcon>
+                  <ReorderIcon style={{ color: 'black', marginLeft: '-15px' }} />
+                </ListItemIcon>
+                <ListItemText primary="Categories" style={{ color: 'black', marginLeft: '-35px' }} />
+                <ListItemIcon>
+                  <KeyboardArrowDownIcon style={{ color: 'black', marginLeft: '80px' }} />
+                </ListItemIcon>
+              </ListItem>
+            </div>
           )}
-        </IconButton>
-        <Popover
-          id={anchorEl ? 'location-popover' : undefined}
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          onClose={handleClosePopover}
-          anchorReference="anchorPosition"
-          anchorPosition={{ top: 230, left: 450 }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          <div style={{ padding: '20px' }}>
-            <Typography variant="h6" gutterBottom>
-              Choose your location
-            </Typography>
-            <Divider />
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              Delivery options and delivery speeds may vary for different locations.
-            </Typography>
-            <Button
-              color="primary"
-              sx={{ mt: 2, ml: 14, border: '1px solid black', borderRadius: '10px', backgroundColor: 'lightgrey', color:'black' }}
-              component={RouterLink}
-              to="/login"
-              onClick={handleClosePopover}
-            >
-              Log in to see your address
-            </Button>
-            <Divider sx={{ mt: 2 }} />
-            <Select
-              value={countryInput}
-              onChange={handleCountryChange}
-              variant="outlined"
-              fullWidth
-              displayEmpty
-              sx={{ mt: 2 }}
-            >
-              <MenuItem value="">Choose a country</MenuItem>
-              <MenuItem value="Pakistan">Pakistan</MenuItem>
-              <MenuItem value="USA">USA</MenuItem>
-              <MenuItem value="UK">UK</MenuItem>
-              <MenuItem value="Canada">Canada</MenuItem>
-            </Select>
-            <TextField
-              variant="outlined"
-              placeholder="Enter your location"
-              fullWidth
-              sx={{ mt: 2 }}
-              value={cityInput}
-              onChange={handleCityInputChange}
-            />
-            <Button onClick={handleApplyLocation} variant="contained" sx={{ mt: 2, ml: 1, mb: 3, float: 'right', }}>
-              Apply
-            </Button>
-          </div>
-        </Popover>
-        <div
-          style={{
-            display: 'flex',
-            border: '4px solid black',
-            borderRadius: '5px',
-            transition: 'border-color 0.3s ease',
-            marginLeft: '60px',
-            height:'50px'
-          }}
-        >
-          <h6
-            style={{
-              borderRight: '2px solid gray',
-              borderRadius: '5px 0px 0px 5px',
-              color: 'black',
-              width: '70px',
-              height: '43px',
-              textAlign: 'center',
-              alignContent: 'center',
-              backgroundColor: hoveredAll ? '#D4D4D4' : '#ECECEC',
-              transition: 'background-color 0.3s ease',
-            }}
-            onMouseEnter={handleMouseEnterAll}
-            onMouseLeave={handleMouseLeaveAll}
-            onClick={handleAllClick}
-          >
-            All <ArrowDropDownIcon onClick={handleAllClick} />
-          </h6>
+
           <Popover
-          id="category-popover"
-          open={Boolean(categoryAnchorEl)}
-          anchorEl={categoryAnchorEl}
-          onClose={handleCloseCategoryPopover}
-          anchorReference="anchorPosition"
-          anchorPosition={{ top: 64, left: 350 }} 
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          {/* <div style={{ padding: '5px' }}>
+            id="category-popover"
+            open={Boolean(categoryAnchorEl)}
+            anchorEl={categoryAnchorEl}
+            onClose={handleCloseCategoryPopover}
+            anchorReference="anchorPosition"
+            anchorPosition={{ top: 54, left: 270 }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <div style={{ padding: '5px' }}>
+              {loading && <MenuItem>Loading...</MenuItem>}
+              {error && <MenuItem>Error fetching categories</MenuItem>}
+              {data && data.getCategories.map((category) => (
+                <MenuItem
+                  key={category.text}
+                  component={Link}
+                  to={category.path}
+                  onClick={handleCloseCategoryPopover}
+                >
+                  <Typography variant="body1">
+                    {category.text}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </div>
+          </Popover>
+
+          <div style={{ position: 'relative', marginLeft: 'auto' }}>
+            <div style={{ border: '2px solid #ccc', borderRadius: '5px', padding: '3px', marginRight: '10px' }}>
+              <CustomTextField
+                variant="outlined"
+                placeholder="Search..."
+                size="small"
+                value={searchValue}
+                onChange={handleSearchInputChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          </div>
+          {showLanguage && (
+           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+           <LanguageIcon
+             style={{ marginRight: '10px', color: 'black', cursor: 'pointer' }}
+             onClick={handleLanguageClick}
+             aria-controls="language-menu"
+             aria-haspopup="true"
+           />
+           <Typography
+             variant="body1"
+             style={{ color: 'black', cursor: 'pointer' }}
+             onClick={handleLanguageClick}
+           >
+             Language
+             <ArrowDropDownIcon/>
+           </Typography>
+           <Menu
+             id="language-menu"
+             anchorEl={anchorEl}
+             open={Boolean(anchorEl)}
+             onClose={handleCloseLanguageMenu}
+             anchorOrigin={{
+               vertical: 'bottom',
+               horizontal: 'right',
+             }}
+             transformOrigin={{
+               vertical: 'top',
+               horizontal: 'right',
+             }}
+           >
+             {languages.map((language) => (
+               <MenuItem key={language} onClick={handleCloseLanguageMenu}>
+                 <Typography variant="body1">{language}</Typography>
+               </MenuItem>
+             ))}
+           </Menu>
+         </div>
+       )}
+
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+            {showLoginSignup && (
+              <>
+                {isLoading ? (
+                  <Button
+                    color="inherit"
+                    variant="outlined"
+                    onClick={handleLogout}
+                    onMouseEnter={handleMouseEnterLogin}
+                    onMouseLeave={handleMouseLeaveLogin}
+                    style={{
+                      marginLeft: '20px',
+                      padding: '15px',
+                      borderRadius: '5px',
+                      color: 'black',
+                    }}
+                  >
+                    Loading...
+                  </Button>
+                ) : isAuthenticated ? (
+                  <Button
+                    color="inherit"
+                    variant="outlined"
+                    onClick={handleLogout}
+                    style={{
+                      padding: '10px',
+                      border: '2px solid black',
+                      borderRadius: '5px',
+                      color: 'black',
+                    }}
+                  >
+                    LogOut
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      color="inherit"
+                      variant="outlined"
+                      component={Link}
+                      to="/login"
+                      onMouseEnter={handleMouseEnterLogin}
+                      onMouseLeave={handleMouseLeaveLogin}
+                      style={{
+                        marginLeft: '20px',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        color: 'black',
+                      }}
+                    >
+                      LogIn
+                    </Button>
+                    <Button
+                      color="inherit"
+                      variant="outlined"
+                      component={Link}
+                      to="/signup"
+                      onMouseEnter={handleMouseEnterSignup}
+                      onMouseLeave={handleMouseLeaveSignup}
+                      style={{
+                        marginLeft: '20px',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        color: 'black',
+                      }}
+                    >
+                      SignUp
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+            <IconButton
+              color="inherit"
+              aria-label="cart"
+              onClick={handleCartClick}
+              style={{
+                marginLeft: '20px',
+                padding: '15px',
+                borderRadius: '50%',
+                color: 'black',
+              }}
+            >
+              <Badge badgeContent={cart.length} color="secondary">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+          </div>
+          {showListIcon && (
+            <IconButton
+              aria-label="list"
+              color="inherit"
+              onClick={handleListIconClick}
+            >
+              <ReorderIcon style={{ color: 'black' }} />
+            </IconButton>
+          )}
+          <Popover
+            open={Boolean(listPopupAnchorEl)}
+            anchorEl={listPopupAnchorEl}
+            onClose={handleCloseListPopup}
+            anchorReference="anchorPosition"
+            anchorPosition={{ top: 0, right: 0 }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            PaperProps={{
+              sx: {
+                width: 300,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                right: 0,
+                marginTop: '50px',
+                padding: '0px',
+              },
+            }}
+          >
+            <div style={{ position: 'relative', marginLeft: 'auto' }}>
+              <div style={{ border: '2px solid #ccc', borderRadius: '5px', padding: '3px', marginRight: '10px', marginTop: '20px', marginBottom: '20px' }}>
+                <CustomTextField
+                  variant="outlined"
+                  placeholder="Search..."
+                  size="small"
+                  value={popupSearchValue}
+                  onChange={handlePopupSearchInputChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <IconButton>
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </div>
+            </div>
             {loading && <MenuItem>Loading...</MenuItem>}
             {error && <MenuItem>Error fetching categories</MenuItem>}
             {data && data.getCategories.map((category) => (
-              <MenuItem
-                text={category.text}
-                component={RouterLink}
-                to={category.path}
-                onClick={handleCloseCategoryPopover}
-              >
-                <Typography variant="body1">
-                  {category.text}
-                </Typography>
-              </MenuItem>
+              popupSearchValue.trim() === '' || category.text.toLowerCase().includes(popupSearchValue.toLowerCase()) ? (
+                <MenuItem key={category.text} onClick={handleCloseListPopup} sx={{ paddingLeft: '10px', paddingRight: '10px', marginBottom: '-10px' }}>
+                  <Link to={category.path} style={{ textDecoration: 'none' }}>
+                    <Typography variant="body1">{category.text}</Typography>
+                  </Link>
+                </MenuItem>
+              ) : null
             ))}
-          </div> */}
-        </Popover>
-          <input
-            style={{
-              backgroundColor: 'white',
-              width: '400px',
-              height:'43px',
-              marginBottom:'10px'
-            }}
-          />
-          <SearchIcon
-            style={{
-              borderLeft: '2px solid gray',
-              backgroundColor: hoveredSearchIcon ? '#ff9800' : '#ffb74d',
-              width: '60px',
-              color: 'black',
-              height: '43px',
-              borderRadius: '0px 5px 5px 0px',
-              padding: '10px'
-            }}
-            onMouseEnter={handleMouseEnterSearchIcon}
-            onMouseLeave={handleMouseLeaveSearchIcon}
-          />
+            <hr style={{ margin: '10px 0px' }} />
+            {window.innerWidth <= 760 && !isAuthenticated && (
+              <>
+                <MenuItem onClick={handleCloseListPopup}>
+                  <Link to="/login" style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                    <Typography variant="body1" sx={{ border: '1px solid black', backgroundColor: '#eaeaea', width: '100%', display: 'block', padding: '10px', textAlign: 'center', borderRadius: '5px' }}>LogIn</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={handleCloseListPopup}>
+                  <Link to="/signup" style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                    <Typography variant="body1" sx={{ border: '1px solid black', backgroundColor: '#eaeaea', width: '100%', display: 'block', padding: '10px', textAlign: 'center', borderRadius: '5px' }}>SignUp</Typography>
+                  </Link>
+                </MenuItem>
+              </>
+            )}
+            {isAuthenticated && (
+              <MenuItem onClick={handleLogout}>
+                <Typography variant="body1" sx={{ border: '1px solid black', backgroundColor: '#eaeaea', width: '100%', display: 'block', padding: '10px', textAlign: 'center', borderRadius: '5px' }}>LogOut</Typography>
+              </MenuItem>
+            )}
+          </Popover>
         </div>
-        <IconButton
-          color="inherit"
-          aria-label="language"
-          onClick={handleLanguageIconClick}
-          onMouseEnter={handleMouseEnterLanguageIcon}
-          onMouseLeave={handleMouseLeaveLanguageIcon}
-          sx={{
-            border: `2px solid ${hoveredLanguageIcon ? 'white' : 'black'}`,
-            borderRadius: '5px',
-            marginLeft: '80px',
-            width: '150px',
-            padding: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: '16px'
-          }}
-        >
-          <LanguageIcon style={{ marginRight: '10px', fontSize: '22px' }} />
-          {selectedLanguage ? (
-            <>
-              <Typography variant="body1" sx={{ color: 'white', fontSize: '15px', marginLeft: '5px' }}>
-                {selectedLanguage}
-              </Typography>
-            </>
-          ) : (
-            <Typography variant="body1" sx={{ color: 'white', fontSize: '15px' }}>Language</Typography>
-          )}
-        </IconButton>
-
-        <Popover
-          id="language-popover"
-          open={Boolean(languageAnchorEl)}
-          anchorEl={languageAnchorEl}
-          onClose={handleCloseLanguagePopover}
-          anchorReference="anchorPosition"
-          anchorPosition={{ top: 65, left: 1030 }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          <div style={{ padding: '20px' }}>
-            {languages.map((language) => (
-              <MenuItem  key={language} onClick={() => handleLanguageSelect(language)}>
-                {language}
-              </MenuItem>
-            ))}
-          </div>
-        </Popover>
-
-	{isLoading ? (
-          <Button
-            color="inherit"
-            variant="outlined"
-            onClick={handleLogout}
-            onMouseEnter={handleMouseEnterLogin}
-            onMouseLeave={handleMouseLeaveLogin}
-            style={{
-              marginLeft: '20px',
-              padding: '15px',
-              border: `2px solid ${hoveredLogin ? 'white' : 'black'}`,
-              borderRadius: '5px',
-            }}
-          >
-            Loading...
-          </Button>
-        ) : isAuthenticated ? (
-          <Button
-            color="inherit"
-            variant="outlined"
-            onClick={handleLogout}
-            onMouseEnter={handleMouseEnterLogin}
-            onMouseLeave={handleMouseLeaveLogin}
-            style={{
-              marginLeft: '20px',
-              padding: '15px',
-              border: `2px solid ${hoveredLogin ? 'white' : 'black'}`,
-              borderRadius: '5px',
-            }}
-          >
-            Log out
-          </Button>
-        ) : (
-          <>
-            <Button
-              color="inherit"
-              variant="outlined"
-              component={RouterLink}
-              to="/login"
-              onMouseEnter={handleMouseEnterLogin}
-              onMouseLeave={handleMouseLeaveLogin}
-              style={{
-                marginLeft: '20px',
-                padding: '15px',
-                border: `2px solid ${hoveredLogin ? 'white' : 'black'}`,
-                borderRadius: '5px',
-              }}
-            >
-              Log in
-            </Button>
-            <Button
-              color="inherit"
-              variant="outlined"
-              component={RouterLink}
-              to="/signup"
-              onMouseEnter={handleMouseEnterSignup}
-              onMouseLeave={handleMouseLeaveSignup}
-              style={{
-                marginLeft: '20px',
-                padding: '15px',
-                border: `2px solid ${hoveredSignup ? 'white' : 'black'}`,
-                borderRadius: '5px',
-              }}
-            >
-              Sign up
-            </Button>
-          </>
-        )}
-        <IconButton
-          color="inherit"
-          aria-label="cart"
-          component={RouterLink}
-          to="/cart"
-          style={{
-            marginLeft: '20px',
-            padding: '15px',
-            border:`2px solid ${hoveredCart ? 'white' : 'black'}`,
-            borderRadius: '5px',
-          }}
-          onMouseEnter={handleMouseEnterCart}
-          onMouseLeave={handleMouseLeaveCart}
-        >
-         <Badge badgeContent={cart.length} color="secondary">
-          <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
       </Toolbar>
     </AppBar>
   );
