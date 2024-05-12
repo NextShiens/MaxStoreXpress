@@ -51,8 +51,13 @@ const useStyles = makeStyles((theme) => ({
   productContent: {
     flexGrow: 1,
   },
-  filters: {
-    marginBottom: theme.spacing(2),
+  filterDrawerPaper: {
+    width: '100%',
+    padding: theme.spacing(4),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pagination: {
     marginTop: theme.spacing(4),
@@ -60,11 +65,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   filterDrawer: {
-    width: 300,
+    width: '100%',
     flexShrink: 0,
-  },
-  filterDrawerPaper: {
-    width: 300,
   },
   priceSlider: {
     padding: theme.spacing(2),
@@ -77,6 +79,10 @@ const useStyles = makeStyles((theme) => ({
   chip: {
     margin: theme.spacing(0.5),
   },
+  saveButton: {
+    marginTop: theme.spacing(2),
+  },
+
 }));
 
 const GET_PRODUCTS = gql`
@@ -177,6 +183,9 @@ const HomePage = () => {
       [event.target.name]: event.target.value,
     });
   };
+  const handleSaveFilters = () => {
+    console.log('Filter values:', filterValues);
+  };
 
   const handleFilterDrawerToggle = () => {
     setFilterDrawerOpen(!filterDrawerOpen);
@@ -241,66 +250,76 @@ const HomePage = () => {
       <Drawer
         className={classes.filterDrawer}
         variant="temporary"
-        anchor="left"
+        anchor="top"
         open={filterDrawerOpen}
         onClose={handleFilterDrawerToggle}
         classes={{
           paper: classes.filterDrawerPaper,
         }}
       >
+        <Grid container spacing={2} className={classes.filters}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="rating">Sort by Rating</MenuItem>
+              <MenuItem value="price">Sort by Price</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="">All Categories</MenuItem>
+              <MenuItem value="electronics">Electronics</MenuItem>
+              <MenuItem value="clothing">Clothing</MenuItem>
+              <MenuItem value="books">Books</MenuItem>
+              {/* Add more categories as needed */}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              name="name"
+              label="Name"
+              value={filterValues.name}
+              onChange={handleFilterChange}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              name="description"
+              label="Description"
+              value={filterValues.description}
+              onChange={handleFilterChange}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              name="rating"
+              label="Rating"
+              value={filterValues.rating}
+              onChange={handleFilterChange}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.saveButton}
+              onClick={handleSaveFilters}
+            >
+              Save Filters
+            </Button>
+          </Grid>
+        </Grid>
       </Drawer>
-      <Grid container spacing={3} className={classes.filters}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            fullWidth
-          >
-            <MenuItem value="rating">Sort by Rating</MenuItem>
-            <MenuItem value="price">Sort by Price</MenuItem>
-          </Select>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <Select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            fullWidth
-          >
-            <MenuItem value="">All Categories</MenuItem>
-            <MenuItem value="electronics">Electronics</MenuItem>
-            <MenuItem value="clothing">Clothing</MenuItem>
-            <MenuItem value="books">Books</MenuItem>
-            {/* Add more categories as needed */}
-          </Select>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            name="name"
-            label="Name"
-            value={filterValues.name}
-            onChange={handleFilterChange}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            name="description"
-            label="Description"
-            value={filterValues.description}
-            onChange={handleFilterChange}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            name="rating"
-            label="Rating"
-            value={filterValues.rating}
-            onChange={handleFilterChange}
-            fullWidth
-          />
-        </Grid>
-      </Grid>
 
       {/* Product cards */}
       <Grid container spacing={3}>
