@@ -12,11 +12,18 @@ import IdTokenProvider from './auth/idTokenProvider.js';
 import { ProfileProvider } from './auth/profileProvider.js';
 import { GRAPHQL_URI, oidcConfig } from './constant.js';
 import { getIdToken } from './auth/idTokenProvider.js';
-import { legacy_createStore as createStore} from 'redux'
+import { legacy_createStore as createStore } from 'redux'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import orange from '@material-ui/core/colors/orange';
+import Paper from '@material-ui/core/Paper';
 
 import rootReducer from './globalReduxStore/reducers.js';
 import { Provider } from 'react-redux';
-
+const theme = createMuiTheme({
+  palette: {
+    primary: orange,
+  },
+});
 const httpLink = new HttpLink({ uri: GRAPHQL_URI });
 
 const store = createStore(rootReducer);
@@ -38,19 +45,21 @@ const apolloClient = new ApolloClient({
 
 ReactDOM.render(
   <ErrorBoundary>
-    <AuthProvider {...oidcConfig}>
-      <ApolloProvider client={apolloClient}>
-        <Provider store={store}>
-          <IdTokenProvider>
-            <ProfileProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </ProfileProvider>
-          </IdTokenProvider>
-        </Provider>
-      </ApolloProvider>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider {...oidcConfig}>
+        <ApolloProvider client={apolloClient}>
+          <Provider store={store}>
+            <IdTokenProvider>
+              <ProfileProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </ProfileProvider>
+            </IdTokenProvider>
+          </Provider>
+        </ApolloProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </ErrorBoundary>,
   document.getElementById('root')
 );
