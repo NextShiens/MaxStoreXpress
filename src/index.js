@@ -13,13 +13,13 @@ import { ProfileProvider } from './auth/profileProvider.js';
 import { GRAPHQL_URI, oidcConfig } from './constant.js';
 import { getIdToken } from './auth/idTokenProvider.js';
 import { legacy_createStore as createStore } from 'redux'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import orange from '@material-ui/core/colors/orange';
 import Paper from '@material-ui/core/Paper';
 
 import rootReducer from './globalReduxStore/reducers.js';
 import { Provider } from 'react-redux';
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: orange,
   },
