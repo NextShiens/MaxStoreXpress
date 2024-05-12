@@ -34,12 +34,31 @@ const productReducer = (state = initialProductState, action) => {
         ...state,
         products: action.payload,
       };
-    case actionTypes.SET_PRODUCT:
-      console.log(action, 'Actions');
-      return {
-        ...state,
-        products: [...state.products, action.payload],
-      };
+      case actionTypes.CREATE_PRODUCT:
+        return {
+          ...state,
+          products: action.payload,
+        };
+        case actionTypes.UPDATE_PRODUCT:
+          return {
+            ...state,
+            products: action.payload,
+          };
+          case actionTypes.DELETE_PRODUCT:
+            return {
+              ...state,
+              products: action.payload,
+            };
+            case actionTypes.UPDATE_PRODUCT_STATUS:
+              return {
+                ...state,
+                products: action.payload,
+              };
+              case actionTypes.GET_PRODUCTS:
+                return {
+                  ...state,
+                  products: action.payload,
+                };
     default:
       return state;
   }

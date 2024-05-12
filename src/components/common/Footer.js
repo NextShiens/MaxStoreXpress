@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import { actionCreators } from "../../globalReduxStore/actions";
 import { useSelector } from 'react-redux';
 const getProductById = (state, productId) => {
-  return state.product.products.find(product => product.id === productId);
+  // return state.product.products.find(product => product.id === productId);
+  return null
 };
 
 // both connect and useSelector have their use cases.For smaller, functional components,
