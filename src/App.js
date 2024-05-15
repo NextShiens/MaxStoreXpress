@@ -11,10 +11,12 @@ import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
 import CustomerPage from './pages/customers/customerPage.js';
 import UserTable from './pages/UserManagement/UserTable.js';
 import Review from './pages/Products/Review.js';
-import Sidebar from './pages/Sidebar/Sidebar.js';   
+import Sidebar from './pages/Sidebar/Sidebar.js';
+import SingleProductPage from './pages/Products/SingleProductPage.js';
+
 const EditProduct = React.lazy(() => import("./components/ProductManagement/EditProduct.js"))
 const ProductUpdate = React.lazy(() => import("./components/ProductManagement/ProductUpdate.js"))
-import SingleProductPage from './pages/Products/SingleProductPage.js';
+
 
 
 
