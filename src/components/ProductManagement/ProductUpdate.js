@@ -20,6 +20,7 @@ const UPLOAD_FILES_MUTATION = gql`
 const CreateProductForm = () => {
   const dispatch = useDispatch();
   const createProduct = useCreateProduct();
+  const [tenantID, setTenantID] = useState('');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -46,13 +47,10 @@ const CreateProductForm = () => {
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      setFormData({
-        ...formData,
-        tenantID: user.profile.tenantID,
-      });
+    if (isAuthenticated && user && user.profile && user.profile["custom:tenantID"]) {
+      setTenantID(user.profile["custom:tenantID"]);
     }
-  }, [isAuthenticated]);
+  }, [user,isAuthenticated]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +66,7 @@ const CreateProductForm = () => {
         ...formData,
         stock: parseInt(formData.stock),
         discount: parseInt(formData.discount),
-        tenantID: user.profile.sub,
+        tenantID: tenantID,
         status: 'non-active',
       };
 
@@ -89,7 +87,7 @@ const CreateProductForm = () => {
         ...formData,
         stock: parseInt(formData.stock),
         discount: parseInt(formData.discount),
-        tenantID: user.profile.sub,
+        tenantID: tenantID,
         status: 'active',
       };
 

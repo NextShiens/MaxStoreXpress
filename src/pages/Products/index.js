@@ -10,11 +10,17 @@ import { useDispatch } from "react-redux";
 import { actionCreators } from "../../globalReduxStore/actions";
 import { useGetProducts, useDeleteProduct, useUpdateProductStatus } from "../../globalReduxStore/reducers/productoperation";
 
-
 const Products = () => {
   const dispatch = useDispatch();
   const Navigate = useNavigate();
-  const { loading, error, data, refetch } = useGetProducts(50, 0);
+  const { loading, error, data, refetch } = useGetProducts({
+    limit: 50,
+    skip: 0,
+    filter: {
+      category: "",
+      status: ""
+    }
+  });
   const deleteProduct = useDeleteProduct();
   const updateProductStatus = useUpdateProductStatus();
   const { user, isAuthenticated } = useAuth();
@@ -22,7 +28,7 @@ const Products = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [statusUpdateSuccess, setStatusUpdateSuccess] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
@@ -33,16 +39,22 @@ const Products = () => {
     if (data && data.getProducts) {
       dispatch(actionCreators.setProducts(data.getProducts));
     }
-  }, [  user,isAuthenticated,data, dispatch]);
-  
+  }, [user, isAuthenticated, data, dispatch]);
 
-  const [page, setPage] = useState(1);
-  const limit = 50;
+  useEffect(() => {
+    refetch({
+      limit: 50,
+      skip: 0,
+      filter: {
+        category: selectedCategory,
+        status: selectedStatus
+      }
+    });
+  }, [selectedCategory, selectedStatus]);
 
   const handleEdit = (product) => {
     Navigate(`/EditProduct/${product.id}`, { state: { product } });
   };
-  
 
   const handleDelete = async (productId) => {
     Swal({
@@ -101,8 +113,14 @@ const Products = () => {
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
-
   
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :</p>;
@@ -120,7 +138,7 @@ const Products = () => {
 
       <div style={{ display: "flex", alignItems: "center", margin: "20px", marginBottom: "10px", borderColor: "blue", justifyContent: "flex-end" }}>
         <div style={{ display: "flex", borderRadius: "5px", borderColor: "blue", marginRight: "20px" }}>
-          <Select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} displayEmpty inputProps={{ "aria-label": "category" }}>
+          <Select value={selectedCategory} onChange={handleCategoryChange} displayEmpty inputProps={{ "aria-label": "category" }}>
             <MenuItem value="" disabled>Select Category</MenuItem>
             <MenuItem value="electronics">Electronics</MenuItem>
             <MenuItem value="grocery">Grocery</MenuItem>
@@ -129,7 +147,7 @@ const Products = () => {
           </Select>
         </div>
         <div style={{ display: "flex" }}>
-          <Select value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)} displayEmpty inputProps={{ "aria-label": "status" }}>
+          <Select value={selectedStatus} onChange={handleStatusChange} displayEmpty inputProps={{ "aria-label": "status" }}>
             <MenuItem value="" disabled>Select Status</MenuItem>
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="non-active">Non-active</MenuItem>
