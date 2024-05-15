@@ -19,6 +19,7 @@ const GET_PRODUCTS = gql`
       discount
       status 
       paymentMethods
+      alreadySold
     }
   }
 `;
@@ -41,6 +42,7 @@ const CREATE_PRODUCT_MUTATION = gql`
       discount
       tenantID
       paymentMethods
+      alreadySold
     }
   }
 `;
@@ -62,6 +64,7 @@ const UPDATE_PRODUCT_MUTATION = gql`
       stock
       discount
       paymentMethods
+      alreadySold
     }
   }
 `;

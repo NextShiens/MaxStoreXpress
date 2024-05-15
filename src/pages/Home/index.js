@@ -112,18 +112,19 @@ const GET_PRODUCTS = gql`
 const HomePage = () => {
   const classes = useStyles();
   const [sortBy, setSortBy] = useState('rating');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState('All Categories');
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState({
     name: '',
     description: '',
-    minPrice: 0,
-    maxPrice: 1000,
-    rating: '',
+    minPrice: '',
+    maxPrice: '',
+    // rating: '',
     brand: [],
   });
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [sortedProducts, setSortedProducts] = useState([]);
 
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
     variables: {
@@ -133,7 +134,7 @@ const HomePage = () => {
         description: filterValues.description,
         minPrice: filterValues.minPrice.toString(),
         maxPrice: filterValues.maxPrice.toString(),
-        rating: filterValues.rating,
+        // rating: filterValues.rating.toString(),
       },
       limit: 12,
       skip: (page - 1) * 12,
@@ -148,9 +149,10 @@ const HomePage = () => {
     if (userID) {
       try {
         const cartInput = {
-          userID,
-          productID: productId,
-          quantity: 1,
+          products: [{
+            productID: productId,
+            quantity: 1,
+          }]
         };
         await addToCart({ variables: { cartInput } });
         // Handle success or show a success message
@@ -163,19 +165,22 @@ const HomePage = () => {
       console.error('User must be logged in to add to cart');
     }
   };
-
+  
   useEffect(() => {
-    // Sort products based on the selected option
+    
     if (data) {
-      data.getProducts.sort((a, b) => {
+      const sortedProductsCopy = [...data.getProducts]; 
+      sortedProductsCopy.sort((a, b) => {
         if (sortBy === 'rating') {
           return b.rating - a.rating;
         } else if (sortBy === 'price') {
           return a.price - b.price;
         }
       });
+      setSortedProducts(sortedProductsCopy); 
     }
   }, [data, sortBy]);
+  
 
   const handleFilterChange = (event) => {
     setFilterValues({
@@ -276,6 +281,8 @@ const HomePage = () => {
             >
               <MenuItem value="">All Categories</MenuItem>
               <MenuItem value="electronics">Electronics</MenuItem>
+              <MenuItem value="jewellery">jewellery</MenuItem>
+              <MenuItem value="grocery">Grocery</MenuItem>
               <MenuItem value="clothing">Clothing</MenuItem>
               <MenuItem value="books">Books</MenuItem>
               {/* Add more categories as needed */}

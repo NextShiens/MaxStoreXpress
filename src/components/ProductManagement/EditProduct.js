@@ -3,14 +3,13 @@ import { TextField, Button, Box, Typography, Grid, Select, MenuItem, Snackbar, C
 import { useDropzone } from 'react-dropzone';
 import { useParams, useLocation } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
-import {  useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { actionCreators } from '../../globalReduxStore/actions';
 import { useUpdateProduct } from '../../globalReduxStore/reducers/productoperation';
 
 const EditProduct = () => {
   const location = useLocation();
   const { product } = location.state;
-  console.log('Product:', product);
   const updateProduct = useUpdateProduct();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -33,13 +32,12 @@ const EditProduct = () => {
     status: product.status,
     paymentMethods: product.paymentMethods,
     imageUrl: product.imageUrl, 
+    alreadySold: product.alreadySold,
   });
 
-  
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [files, setFiles] = useState([]);
   const [isUploading] = useState(false);
- 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,10 +84,11 @@ const EditProduct = () => {
         ...(formData.tenantID && { tenantID: formData.tenantID }),
         ...(formData.paymentMethods && { paymentMethods: formData.paymentMethods }),
         ...(formData.status && { status: formData.status }),
+        ...(formData.alreadySold && { alreadySold: formData.alreadySold }),
       };
-  
+
       const productId = id.trim();
-  
+
       await updateProduct({ variables: { id: productId, input } });
       dispatch(actionCreators.updateProduct({ id: productId, input }));
       setOpenSnackbar(true);
@@ -115,7 +114,7 @@ const EditProduct = () => {
       paymentMethods: updatedPaymentMethods,
     }));
   };
-  
+
   const handleChangeCategory = (e) => {
     const value = e.target.value;
     setFormData((prevFormData) => ({
@@ -136,10 +135,19 @@ const EditProduct = () => {
   const showAlert = (message) => {
     alert(message);
   };
-  
+
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      imageUrl: prevFormData.imageUrl.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+  
 
   const onDrop = useCallback((acceptedFiles) => {
     if (files.length + acceptedFiles.length > 5) {
@@ -149,12 +157,13 @@ const EditProduct = () => {
     const newImageUrls = acceptedFiles.map((file) => URL.createObjectURL(file));
     setFormData((prevFormData) => ({
       ...prevFormData,
-      imageUrl: [FormData.imageUrl, ...newImageUrls]
+      imageUrl: [...prevFormData.imageUrl, ...newImageUrls]
     }));
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles.map((file) => Object.assign(file, {
       preview: URL.createObjectURL(file),
     }))]);
   }, [files]);
+  
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
@@ -177,115 +186,134 @@ const EditProduct = () => {
         <Typography variant="h6" style={{ marginLeft: '40px', marginTop: '5px', fontWeight: 'bold', fontSize:'38px' }}>UPDATE PRODUCT</Typography>
         <Typography variant="body1" style={{ backgroundColor: '#F9F9F9', padding: '13px', borderRadius: '5px', border: '1px solid #E2E1E1', marginRight: '30px', width:'328px' , height:'61px', textAlign:'center',fontWeight:'700', fontFamily:'cursive'}}>{getCurrentDateTime()}</Typography>
       </Box>
-    <Box style={{display:'flex', border:'1px solid #ffffff', borderRadius:'6px', padding:'30px', height:'95%', boxShadow:'0 0 14px rgba(0, 0, 0, 0.1)' , backgroundColor: '#ffffff', margin:'20px 20px 20px 20px',  fontFamily:'sans-serif'}}>
-    <Box width="50%" p={2}>
-  <Typography variant="h2" gutterBottom>Upload Images</Typography>
-  <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-    <input {...getInputProps()} />
-    <Typography>Browse Image</Typography>
-  </div>
-  {product.imageUrl && (
-    <img src={product.imageUrl} alt="Product" style={{ marginTop: '10px' }} />
-  )}
-  <Box display="flex" flexWrap="wrap" mt={2}>
-    {files.map((file, index) => (
-      <Box key={index} width="100px" mr={1} mb={1}>
-        <img src={file.preview} alt={file.name} style={{ width: '100%' }} />
-      </Box>
-    ))}
-  </Box>
-  <Button variant="contained" color="primary" disabled={files.length === 0 || isUploading}>
-    {isUploading ? 'Uploading...' : 'Upload Images'}
-  </Button>
-</Box>
-
-
-      <Box width="50%" p={2} style={{ marginTop: '20px' }}>
-        <Typography variant="h2" gutterBottom>Update Product</Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField label="Name" name="name" value={formData.name } onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Price" name="price" value={formData.price} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <Select
-              value={formData.category}
-              onChange={handleChangeCategory}
-              fullWidth
-            >
-              <MenuItem value="electronics">Electronics</MenuItem>
-              <MenuItem value="jewellery">Jewellery</MenuItem>
-              <MenuItem value="clothing">Clothing</MenuItem>
-              <MenuItem value="grocery">Grocery</MenuItem>
-            </Select>
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Max Price" name="maxPrice" value={formData.maxPrice} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Min Price" name="minPrice" value={formData.minPrice} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Description" name="description" value={formData.description} onChange={handleInputChange} fullWidth />
-          </Grid>
-          {/* <Grid item xs={6}>
-            <TextField label="Rating" name="rating" value={formData.rating} onChange={handleInputChange} fullWidth />
-          </Grid> */}
-          <Grid item xs={6}>
-            <TextField label="Slug" name="slug" value={formData.slug} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Brand" name="brand" value={formData.brand} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Tags" name="tags" value={formData.tags} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Stock" name="stock" value={formData.stock} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField label="Status" name="status" value={formData.status} onChange={handleInputChange} fullWidth />
-          </Grid>
-          <Box mt={2}>
-            <Typography gutterBottom>Payment Methods</Typography>
-            <Grid container spacing={2}>
-              {paymentMethods.map((method) => (
-                <Grid item xs={2} key={method.name}>
-                  <FormControlLabel
-                    control={<Checkbox
-                      checked={(formData.paymentMethods).includes(method.value)}
-                      onChange={handlePaymentMethodChange}
-                      value={method.value}
-                    />}
-                    label={
-                      <Box>
-                        <img src={method.image} alt={method.name} style={{ width: '65%' }} />
-                        <Typography variant="body2">{method.name}</Typography>
-                      </Box>
-                    }
-                  />
-                </Grid>
-              ))}
-            </Grid>
+      <Box style={{display:'flex', border:'1px solid #ffffff', borderRadius:'6px', padding:'30px', height:'95%', boxShadow:'0 0 14px rgba(0, 0, 0, 0.1)' , backgroundColor: '#ffffff', margin:'20px 20px 20px 20px',  fontFamily:'sans-serif'}}>
+        <Box width="50%" p={2}>
+          <Typography variant="h2" gutterBottom>Upload Images</Typography>
+          <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+            <input {...getInputProps()} />
+            <Typography>Browse Image</Typography>
+          </div>
+          {product.imageUrl && (
+            <img src={product.imageUrl} alt="Product" style={{ marginTop: '10px' }} />
+          )}
+          <Box display="flex" flexWrap="wrap" mt={2}>
+            {files.map((file, index) => (
+              <Box key={index} position="relative" width="100px" mr={1} mb={1}>
+                <img src={file.preview} alt={file.name} style={{ width: '100%' }} />
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleRemoveImage(index)}
+                  style={{ position: 'absolute', top: 0, right: 0, padding: '2px' }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+            {formData.imageUrl.map((url, index) => (
+              <Box key={index} position="relative" width="100px" mr={1} mb={1}>
+                <img src={url} alt={`Image ${index}`} style={{ width: '100%' }} />
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleRemoveImage(files.length + index)}
+                  style={{ position: 'absolute', top: 0, right: 0, padding: '2px' }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
           </Box>
-        </Grid>
-        <Box mt={2} display="flex" justifyContent="space-between">
-          <Button variant="contained" color="primary" onClick={handleSaveToDraft}>Save Changes</Button>
-          <Button variant="contained" color="primary" onClick={handleUpdate}>Update</Button>
+          <Button variant="contained" color="primary" disabled={files.length === 0 || isUploading}>
+            {isUploading ? 'Uploading...' : 'Upload Images'}
+          </Button>
         </Box>
-      </Box>
+        <Box width="50%" p={2} style={{ marginTop: '20px' }}>
+          <Typography variant="h2" gutterBottom>Update Product</Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField label="Name" name="name" value={formData.name } onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Price" name="price" value={formData.price} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <Select
+                value={formData.category}
+                onChange={handleChangeCategory}
+                fullWidth
+              >
+                <MenuItem value="electronics">Electronics</MenuItem>
+                <MenuItem value="jewellery">Jewellery</MenuItem>
+                <MenuItem value="clothing">Clothing</MenuItem>
+                <MenuItem value="grocery">Grocery</MenuItem>
+              </Select>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Max Price" name="maxPrice" value={formData.maxPrice} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Min Price" name="minPrice" value={formData.minPrice} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Description" name="description" value={formData.description} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Slug" name="slug" value={formData.slug} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Brand" name="brand" value={formData.brand} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Tags" name="tags" value={formData.tags} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Stock" name="stock" value={formData.stock} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Already Sold" name="alreadySold" value={formData.alreadySold} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField label="Status" name="status" value={formData.status} onChange={handleInputChange} fullWidth />
+            </Grid>
+            <Box mt={2}>
+              <Typography gutterBottom>Payment Methods</Typography>
+              <Grid container spacing={2}>
+                {paymentMethods.map((method) => (
+                  <Grid item xs={2} key={method.name}>
+                    <FormControlLabel
+                      control={<Checkbox
+                        checked={(formData.paymentMethods).includes(method.value)}
+                        onChange={handlePaymentMethodChange}
+                        value={method.value}
+                      />}
+                      label={
+                        <Box>
+                          <img src={method.image} alt={method.name} style={{ width: '65%' }} />
+                          <Typography variant="body2">{method.name}</Typography>
+                        </Box>
+                      }
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Grid>
+          <Box mt={2} display="flex" justifyContent="space-between">
+            <Button variant="contained" color="primary" onClick={handleSaveToDraft}>Save Changes</Button>
+            <Button variant="contained" color="primary" onClick={handleUpdate}>Update</Button>
+          </Box>
+        </Box>
 
-      <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
-        <MuiAlert elevation={6} variant="filled" onClose={handleSnackbarClose} severity="success">
-          Product Updated successfully!
-        </MuiAlert>
-      </Snackbar>
-    </Box>
+        <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
+          <MuiAlert elevation={6} variant="filled" onClose={handleSnackbarClose} severity="success">
+            Product Updated successfully!
+          </MuiAlert>
+        </Snackbar>
+      </Box>
     </div>
   );
 };

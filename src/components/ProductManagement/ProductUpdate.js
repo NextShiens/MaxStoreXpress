@@ -37,6 +37,7 @@ const CreateProductForm = () => {
     discount: '',
     imageUrl: [],
     paymentMethods: [], 
+    alreadySold: '',
   });
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -160,6 +161,7 @@ const CreateProductForm = () => {
       stock: '',
       discount: '',
       paymentMethods: [], 
+      alreadySold: '',
     });
   };
 
@@ -321,6 +323,9 @@ const CreateProductForm = () => {
           </Grid>
           <Grid item xs={6}>
             <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField label="Already Sold" name="alreadySold" value={formData.alreadySold} onChange={handleInputChange} fullWidth />
           </Grid>
           <Grid item xs={6}>
             <TextField label="Description" name="description" value={formData.description} onChange={handleInputChange} fullWidth />

@@ -186,9 +186,9 @@ const Products = () => {
               <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Category: {product.category}
               </p>
-              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+              {/* <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Slug: {product.slug}
-              </p>
+              </p> */}
               <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Brand: {product.brand}
               </p>
@@ -201,8 +201,11 @@ const Products = () => {
               <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Discount: {product.discount}%
               </p>
-              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+              {/* <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Status: {product.status}
+              </p> */}
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Already Sold: {product.alreadySold}
               </p>
               <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
                 Payment Methods: {product.paymentMethods.join(", ")}
