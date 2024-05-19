@@ -31,7 +31,7 @@ export const GRAPHQL_URI = process.env.REACT_APP_GRAPHQL_URI    || "https://maxe
 export const REACT_APP_AWS_REGION = process.env.REACT_APP_AWS_REGION || "us-east-1";
 export const AWS_COGNITO_DOMAIN = process.env.REACT_APP_AWS_COGNITO_DOMAIN || "maxstore-1-dev.auth.us-east-1.amazoncognito.com";
 export const REACT_APP_GRAPHQL_FILE_UPLOAD_URI = process.env.REACT_APP_GRAPHQL_FILE_UPLOAD_URI || "https://maxedengine-v1.onrender.com/upload";
-
+console.log("GRAPHQL_URI", GRAPHQL_URI);
 export const oidcConfig = {
     authority: OPEN_ID_ISSUER ,
     client_id:OPEN_ID_CLIENT_ID,

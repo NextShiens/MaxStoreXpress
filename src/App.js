@@ -16,6 +16,11 @@ import Accounts from './components/common/Accounts.js';
 import YourProfile from './components/common/Yourprofile.js';
 import SingleProductPage from './pages/Products/SingleProductPage.js';
 
+const EditProduct = React.lazy(() => import("./components/ProductManagement/EditProduct.js"))
+const ProductUpdate = React.lazy(() => import("./components/ProductManagement/ProductUpdate.js"))
+
+
+
 
 
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
@@ -56,6 +61,8 @@ const App = () => {
           <Route path='/customers' element={<CustomerPage />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/productsPage' element={<ProductsPage />} />
+          <Route path='/EditProduct/:id' element={<EditProduct/>} />
+          <Route path='/updateproduct' element={<ProductUpdate/>} />
           <Route path="/your_profile" element={<YourProfile />} />
           <Route path="/product/:productId" element={<SingleProductPage />} />
           <Route
@@ -76,6 +83,10 @@ const App = () => {
           <Route
             path="/seller"
             element={<ProtectedRoute element={SellerComponent} roles={[SELLER_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+          />
+          <Route
+          path="/admin/ProductManagement"
+          element={<ProtectedRoute element={RealProducts} roles={[ADMIN_ROLE, SUPER_ADMIN_ROLE,SELLER_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
         </Routes>
         <Footer />

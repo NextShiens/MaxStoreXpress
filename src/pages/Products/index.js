@@ -1,224 +1,238 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useQuery, gql, useMutation } from '@apollo/client';
-import { useAuth } from 'react-oidc-context';
-import { useDropzone } from 'react-dropzone';
-import { Button, Grid, Typography, Card, CardContent, TextField } from '@material-ui/core';
-import Skeleton from '@mui/material/Skeleton';
-import axios from 'axios';
-import { REACT_APP_GRAPHQL_FILE_UPLOAD_URI } from '../../constant';
-const UPLOAD_FILES = gql`
-  mutation UploadFiles($files: [Upload!]!) {
-    uploadResolver(files: $files)
-  }
-`;
-
-const GET_PRODUCTS = gql`
-  query GetProducts($filter: ProductFilterInput, $limit: Int, $skip: Int) {
-    getProducts(filter: $filter, limit: $limit, skip: $skip) {
-      id
-      name
-      price
-      description
-      tenantID
-    }
-  }
-`;
-
-const CREATE_PRODUCT = gql`
-  mutation CreateProduct($input: ProductInput!) {
-    createProduct(input: $input) {
-      id
-      name
-      price
-      description
-    }
-  }
-`;
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "react-oidc-context";
+import { Box, Typography, Snackbar, MenuItem, Select, Switch } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
+import Swal from "sweetalert";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+import { actionCreators } from "../../globalReduxStore/actions";
+import { useGetProducts, useDeleteProduct, useUpdateProductStatus } from "../../globalReduxStore/reducers/productoperation";
 
 const Products = () => {
+  const dispatch = useDispatch();
+  const Navigate = useNavigate();
+  const { loading, error, data, refetch } = useGetProducts({
+    limit: 50,
+    skip: 0,
+    filter: {
+      category: "",
+      status: ""
+    }
+  });
+  const deleteProduct = useDeleteProduct();
+  const updateProductStatus = useUpdateProductStatus();
   const { user, isAuthenticated } = useAuth();
-  const [files, setFiles] = useState([]);
-  const tenantID = user?.profile['custom:tenantID'];
-  const [page, setPage] = useState(1);
-  const [filesUploaded, setFilesUploaded] = useState(false);
-  const [createProduct, { data: createProductData }] = useMutation(CREATE_PRODUCT);
-  const [uploadFiles, { data: uploadFilesData }] = useMutation(UPLOAD_FILES);
-
-  const [product, setProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    category: '',
-    imageUrl: '',
-    tenantID: ''
-  });
-  const onUploadWithGraphQL = async () => {
-    try {
-      // Read the file data for each file
-      const fileDataPromises = files.map(file => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve({ path: file.name, data: reader.result });
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(file);
-        });
-      });
-  
-      const filesData = await Promise.all(fileDataPromises);
-  
-      const response = await uploadFiles({ variables: { files: filesData } });
-      console.log('Upload response:', response);
-      alert('Files uploaded successfully with GraphQL');
-    } catch (error) {
-      console.error('Error uploading files with GraphQL:', error);
-      alert('Error uploading files with GraphQL');
-    }
-  };
-
-  const handleChange = (event) => {
-    setProduct({
-      ...product,
-      [event.target.name]: event.target.value
-    });
-  };
-
-  const { loading, error, data } = useQuery(GET_PRODUCTS, {
-    variables: {
-      filter: {
-        tenantID: tenantID
-      },
-      limit: 10, skip: (page - 1) * 10, tenantID
-    },
-  });
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      await createProduct({ variables: { input: product } });
-      alert('Product created successfully');
-    } catch (error) {
-      console.error('Error creating product:', error);
-      alert('Error creating product');
-    }
-  };
-
-  const onDrop = useCallback(acceptedFiles => {
-    if (files.length + acceptedFiles.length > 5) {
-      alert('You can only upload up to 5 images.');
-      return;
-    }
-    setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file, {
-      preview: URL.createObjectURL(file)
-    }))]);
-  }, [files]);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
-    onDrop,
-    maxFiles: 5 - files.length
-  });
-
-  const onUpload = async () => {
-    const formData = new FormData();
-    files.forEach((file, index) => {
-      formData.append('files', file);
-    });
-
-    try {
-      const response = await axios.post(REACT_APP_GRAPHQL_FILE_UPLOAD_URI, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log('Upload response:', response);
-
-      if (response.data && Array.isArray(response.data)) {
-        const urls = response.data.map(file => file.url);
-        setProduct(prevProduct => ({
-          ...prevProduct,
-          imageUrl: urls
-        }));
-      }
-
-      alert('Files uploaded successfully');
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      alert('Error uploading files');
-    }
-  };
+  const [tenantID, setTenantID] = useState();
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [statusUpdateSuccess, setStatusUpdateSuccess] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user && user.profile && user.profile["custom:tenantID"]) {
+      setTenantID(user.profile["custom:tenantID"]);
     }
-  }, [user, isAuthenticated]);
+  
+    if (data && data.getProducts) {
+      dispatch(actionCreators.setProducts(data.getProducts));
+    }
+  }, [user, isAuthenticated, data, dispatch]);
 
-  if (loading) {
-    return (
-      <div>
-        <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-          <input {...getInputProps()} />
-          <Typography>Drag 'n' drop some files here, or click to select files</Typography>
-        </div>
-        <Grid container spacing={3}>
-          {[...Array(10)].map((_, index) => (
-            <Grid item xs={3} key={index}>
-              <Skeleton variant="rect" height={150} />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
-    );
-  }
+  useEffect(() => {
+    refetch({
+      limit: 50,
+      skip: 0,
+      filter: {
+        category: selectedCategory,
+        status: selectedStatus
+      }
+    });
+  }, [selectedCategory, selectedStatus]);
 
-  if (error) return <Typography>Error :(</Typography>;
+  const handleEdit = (product) => {
+    Navigate(`/EditProduct/${product.id}`, { state: { product } });
+  };
+
+  const handleDelete = async (productId) => {
+    Swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this product!",
+      icon: "warning",
+      buttons: ["No", "Yes"],
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        try {
+          await deleteProduct({ variables: { ID: productId.toString() } });
+          dispatch(actionCreators.deleteProduct(productId));
+          setOpenSnackbar(true);
+          resetDeleteMessage();
+          refetch();
+        } catch (err) {
+          console.error("Error deleting product:", err);
+        }
+      }
+    });
+  };
+
+  const handleProductStatusChange = async (productId, currentStatus) => {
+    const newStatus = currentStatus === "active" ? "non-active" : "active";
+    try {
+      await updateProductStatus({ variables: { id: productId, status: newStatus } });
+      dispatch(actionCreators.updateProductStatus({ id: productId, status: newStatus }));
+      setStatusUpdateSuccess(true);
+      setOpenSnackbar(true);
+      refetch();
+    } catch (err) {
+      console.error("Error updating product status:", err);
+    }
+  };
+
+  const getCurrentDateTime = () => {
+    const currentDate = new Date();
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const dateTimeString = currentDate.toLocaleDateString("en-US", options);
+    const [datePart, timePart] = dateTimeString.split(", ");
+    const formattedTime = timePart.replace("at", "").trim();
+    return `${datePart}, ${formattedTime}`;
+  };
+
+  const resetDeleteMessage = () => {
+    setDeleteSuccess(false);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+  
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :</p>;
 
   return (
-    <div>
-      <div {...getRootProps()} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-        <input {...getInputProps()} />
-        <Typography>Drag 'n' drop some files here, or click to select files</Typography>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <Box style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#ffffff", border: "1px solid #ffffff", borderRadius: "6px", padding: "15px", margin: "10px", marginTop: "30px", boxShadow: "0 0 14px rgba(0, 0, 0, 0.1)", height: "90px", width: "99%" }}>
+        <Typography variant="h6" style={{ marginLeft: "40px", marginTop: "5px", fontWeight: "bold", fontFamily: "sans-serif", fontSize: "38px" }}>
+          Products
+        </Typography>
+        <Typography variant="body1" style={{ backgroundColor: "#F9F9F9", padding: "13px", borderRadius: "5px", border: "1px solid #E2E1E1", marginRight: "30px", width: "328px", height: "61px", textAlign: "center", fontWeight: "700" }}>
+          {getCurrentDateTime()}
+        </Typography>
+      </Box>
+
+      <div style={{ display: "flex", alignItems: "center", margin: "20px", marginBottom: "10px", borderColor: "blue", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", borderRadius: "5px", borderColor: "blue", marginRight: "20px" }}>
+          <Select value={selectedCategory} onChange={handleCategoryChange} displayEmpty inputProps={{ "aria-label": "category" }}>
+            <MenuItem value="" disabled>Select Category</MenuItem>
+            <MenuItem value="electronics">Electronics</MenuItem>
+            <MenuItem value="grocery">Grocery</MenuItem>
+            <MenuItem value="jewellery">Jewellery</MenuItem>
+            <MenuItem value="clothing">Clothing</MenuItem>
+          </Select>
+        </div>
+        <div style={{ display: "flex" }}>
+          <Select value={selectedStatus} onChange={handleStatusChange} displayEmpty inputProps={{ "aria-label": "status" }}>
+            <MenuItem value="" disabled>Select Status</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="non-active">Non-active</MenuItem>
+          </Select>
+        </div>
       </div>
-      <form onSubmit={handleSubmit}>
-        <TextField name="name" value={product.name} onChange={handleChange} label="Name" />
-        <TextField name="price" value={product.price} onChange={handleChange} label="Price" />
-        <TextField name="description" value={product.description} onChange={handleChange} label="Description" />
-        <TextField name="category" value={product.category} onChange={handleChange} label="Category" />
-        <TextField name="imageUrl" value={product.imageUrl} onChange={handleChange} label="Image URL" />
-        <TextField name="tenantID" value={product.tenantID} onChange={handleChange} label="Tenant ID" />
-        <Button type="submit">Create Product</Button>
-      </form>
-      <Button variant="contained" color="primary" onClick={onUpload} disabled={files.length === 0}>
-        Upload
-      </Button>
-      <Button variant="contained" color="primary" onClick={onUploadWithGraphQL} disabled={files.length === 0}>
-        Upload with GraphQL
-      </Button>
-      <Grid container spacing={3}>
-        {files.map((file, index) => (
-          <Grid item xs={3} key={index}>
-            <img src={file.preview} alt={file.name} style={{ width: '100%' }} />
-          </Grid>
+
+      <div className="card" style={{ position: "relative", padding: "24px", backgroundColor: "#ffffff", borderRadius: "10px", boxShadow: "0 0 14px rgba(0, 0, 0, 0.1)", width: "210px", height: "78px", marginLeft: "24px", justifyContent: "flex-start", marginTop:"-64px" }}>
+        <Typography variant="subtitle1" style={{  fontFamily: "sans-serif" }}>selectedCategory:</Typography>
+        <Typography variant="body1" style={{ fontFamily: "sans-serif" }}>{selectedCategory}</Typography>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px", marginBottom: "20px", padding: "20px" }}>
+        {data.getProducts.map((product, index) => (
+          <div key={product.id} style={{ border: "1px solid #ffffff", borderRadius: "6px", padding: "30px", height: "100%", marginBottom: index % 3 === 2 ? "0" : "20px", boxShadow: "0 0 14px rgba(0, 0, 0, 0.1)", display: "flex", flexDirection: "column", justifyContent: "space-between", backgroundColor: "#ffffff", fontFamily: "sans-serif ,Archivo SemiExpanded", fontWeight: "bold" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ position: "relative" }}>
+                <Switch checked={product.status === "active"} onChange={() => handleProductStatusChange(product.id, product.status)} color={product.status === "active" ? "primary" : "secondary"} inputProps={{ "aria-label": "controlled" }} style={{ position: "absolute", top: 0, left: 0, color: product.status === "active" ? "green" : "red" }} />
+                <img src={product.imageUrl} alt={product.name} style={{ maxWidth: "225px", maxHeight: "200px", border: "0.5px solid #ccc", borderRadius: "5px", alignSelf: "center" }} />
+              </div>
+              <h2 style={{ fontSize: "1.5rem", marginBottom: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#333", fontFamily: 'sans-serif' }}>
+                {product.name}
+              </h2>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#666" }}>
+                Description: {product.description}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Price: ${product.price}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Min Price: ${product.minPrice}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Max Price: ${product.maxPrice}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Category: {product.category}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Slug: {product.slug}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Brand: {product.brand}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Tags: {product.tags.join(", ")}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Stock: {product.stock}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Discount: {product.discount}%
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Status: {product.status}
+              </p>
+              <p style={{ fontWeight: "bold", lineHeight: 1.4, fontSize: "1rem", color: "#777" }}>
+                Payment Methods: {product.paymentMethods.join(", ")}
+              </p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
+                <button  onClick={() => handleEdit(product)} style={{ backgroundColor: "white", color: "blue", padding: "20px 30px", border: "2px solid blue", borderRadius: "23px", cursor: "pointer", height: "36px", display: "flex", alignItems: "center", marginRight: "5px", transition: "background-color 0.3s, color 0.3s" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "blue"; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.color = "blue"; }}>
+                  <EditIcon style={{ marginRight: "5px" }}  />
+                  Edit
+                </button>
+              <button onClick={() => handleDelete(product.id)} style={{ backgroundColor: "white", color: "red", padding: "20px 30px", border: "2px solid red", borderRadius: "23px", cursor: "pointer", height: "36px", display: "flex", alignItems: "center", marginRight: "5px", transition: "background-color 0.3s, color 0.3s" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "red"; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.color = "red"; }}>
+                <DeleteIcon style={{ marginRight: "2px" }} />
+                Delete
+              </button>
+            </div>
+          </div>
         ))}
-      </Grid>
-      <Grid container spacing={3}>
-        {data.getProducts.map(({ id, name, price, description }) => (
-          <Grid item xs={4} key={id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5">{name}</Typography>
-                <Typography>{description}</Typography>
-                <Typography>{price}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Button variant="contained" color="primary" onClick={() => setPage(page - 1)} disabled={page === 1}>
-        Previous Page
-      </Button>
-      <Button variant="contained" color="primary" onClick={() => setPage(page + 1)}>
-        Next Page
-      </Button>
+      </div>
+
+      <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
+        <MuiAlert elevation={6} variant="filled" onClose={handleSnackbarClose} severity="success">
+          Product deleted successfully!
+        </MuiAlert>
+      </Snackbar>
+
+      <Snackbar open={statusUpdateSuccess} autoHideDuration={2000} onClose={() => setStatusUpdateSuccess(false)}>
+        <MuiAlert elevation={6} variant="filled" onClose={() => setStatusUpdateSuccess(false)} severity="success">
+          Product status updated successfully!
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };
