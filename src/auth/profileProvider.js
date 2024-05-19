@@ -72,7 +72,8 @@ const ProfileContext = createContext({});
 
 
 export const ProfileProvider = ({ children = "null" }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading:loading } = useAuth();
+  console.log('loading', loading)
   const [preferencesCreated, setPreferencesCreated] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
   const [updateUserPreferences, { data: updateData, loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER_PREFERENCES);
@@ -145,7 +146,7 @@ export const ProfileProvider = ({ children = "null" }) => {
 
     fetchUserPreferences();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user, userPreferencesLoading]);
+  }, [isAuthenticated, user, userPreferencesLoading, loading]);
 
   return (
     <ProfileContext.Provider
@@ -155,6 +156,7 @@ export const ProfileProvider = ({ children = "null" }) => {
         createLoading,
         updateLoading,
         createError,
+        loading,
       }}
     >
       {children}

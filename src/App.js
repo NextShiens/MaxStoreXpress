@@ -12,7 +12,10 @@ import CustomerPage from './pages/customers/customerPage.js';
 import UserTable from './pages/UserManagement/UserTable.js';
 import Review from './pages/Products/Review.js';
 import Sidebar from './pages/Sidebar/Sidebar.js';
+import Accounts from './components/common/Accounts.js';
+import YourProfile from './components/common/Yourprofile.js';
 import SingleProductPage from './pages/Products/SingleProductPage.js';
+
 
 
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
@@ -42,6 +45,7 @@ const App = () => {
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/Account" element={<Accounts />} />
           <Route path="/realproducts" element={<RealProducts />} />
           <Route path="/demoProducts" element={<DemoProducts />} />
           <Route path="/product/:id" element={<Product />} />
@@ -52,6 +56,7 @@ const App = () => {
           <Route path='/customers' element={<CustomerPage />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/productsPage' element={<ProductsPage />} />
+          <Route path="/your_profile" element={<YourProfile />} />
           <Route path="/product/:productId" element={<SingleProductPage />} />
           <Route
             path="/users"

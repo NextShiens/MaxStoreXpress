@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, ListItem, ListItemIcon, ListItemText, Menu,Popover, Button, MenuItem, InputAdornment, IconButton, TextField, styled } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, ListItem, ListItemIcon, ListItemText, Menu, Popover, Button, MenuItem, InputAdornment, IconButton, TextField, styled } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
 import logo from './logo2.png';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ReorderIcon from '@mui/icons-material/Reorder';
@@ -18,6 +17,7 @@ import Badge from '@mui/material/Badge';
 import { UserManager } from 'oidc-client';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
+import { useProfile } from '../../auth/profileProvider';
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -50,6 +50,7 @@ const Navbar = () => {
   const [showLanguage, setShowLanguage] = useState(window.innerWidth > 992);
   const [showListIcon, setShowListIcon] = useState(window.innerWidth <= 992);
   const [showLoginSignup, setShowLoginSignup] = useState(window.innerWidth > 760);
+  const { user: userProfile, loading: pLoading } = useProfile();
 
   const { loading, error, data } = useQuery(GET_CATEGORIES);
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -60,14 +61,30 @@ const Navbar = () => {
   const [popupSearchValue, setPopupSearchValue] = useState('');
   const [hoveredLogin, setHoveredLogin] = useState(false);
   const [hoveredSignup, setHoveredSignup] = useState(false);
-
   const [anchorEl, setAnchorEl] = useState(null);
-    const userID= user?.profile?.sub || null;
-    const { loading: isLoadingCart, error: cartError, data: cartData, refetch } = useFetchCartData(userID);
+  const [showLogoutButton, setShowLogoutButton] = useState(false); 
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
+
+  const userID = user?.profile?.sub || null;
+  const { loading: isLoadingCart, error: cartError, data: cartData, refetch } = useFetchCartData(userID);
   const cart = useSelector((state) => state.cart.cart);
 
-
   const languages = ['English', 'Urdu', 'French', 'Arabic'];
+
+  const profileLinks = [
+    { label: 'Account', path: '/Account' },
+    { label: 'Orders', path: '/Orders' },
+    { label: 'Recommendations', path: '/Recommendations' },
+    { label: 'Browsing History', path: '/BrowsingHistory' },
+    { label: 'Watchlist', path: '/Watchlist' },
+    { label: 'Video purchase & Rentals', path: '/VideoPurchaseRentals' },
+    { label: 'Kindle Unlimited', path: '/KindleUnlimited' },
+    { label: 'Content & Devices', path: '/ContentDevices' },
+    { label: 'Subscribe & Save Items', path: '/SubscribeSaveItems' },
+    { label: 'Membership & Subscriptions', path: '/MembershipSubscriptions' },
+    { label: 'Music Library', path: '/MusicLibrary' },
+    { label: 'Switch accounts', path: '/SwitchAccounts' }
+  ];
 
   const handleListIconClick = (event) => {
     setListPopupAnchorEl(event.currentTarget);
@@ -79,6 +96,10 @@ const Navbar = () => {
 
   const handleCategoryClick = (event) => {
     setCategoryAnchorEl(event.currentTarget);
+  };
+  const handleLanguageSelect = (language) => {
+    setSelectedLanguage(language);
+    setLanguageAnchorEl(null);
   };
 
   const handleMouseEnterLogin = () => {
@@ -96,6 +117,7 @@ const Navbar = () => {
   const handleMouseLeaveLogin = () => {
     setHoveredLogin(false);
   };
+
   const handleCartClick = () => {
     navigate('/cart');
   };
@@ -122,37 +144,6 @@ const Navbar = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-    useEffect(() => {
-    if (data && data.getCartItems) {
-      dispatch(actionCreators.setCart(data.getCartItems.products));
-    }
-  }, [dispatch, data]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log("User: LoggedIn")
-    }
-  }, [user, isAuthenticated, navigate])
-
-  const handleLanguageClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseLanguageMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleCloseCategoryPopover = () => {
-    setCategoryAnchorEl(null);
-  };
-
-  const handleCloseLanguagePopover = () => {
-    setLanguageAnchorEl(null);
-  };
-
-  const handleLoginClick = () => {
-    console.log('Login clicked');
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -168,12 +159,45 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleCloseCategoryPopover = () => {
+    setCategoryAnchorEl(null);
+  };
+
   const handleSearchInputChange = (event) => {
     setSearchValue(event.target.value);
   };
 
   const handlePopupSearchInputChange = (event) => {
     setPopupSearchValue(event.target.value);
+  };
+
+  const handleLanguageClick = (event) => {
+    setLanguageAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseLanguageMenu = () => {
+    setLanguageAnchorEl(null);
+  };
+
+  const handleCloseLanguagePopover = () => {
+    setLanguageAnchorEl(null);
+  };
+
+  const handleUsernameClick = (event) => {
+    setShowLogoutButton(true); 
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUsernameMenu = () => {
+    setShowLogoutButton(false); 
+    setAnchorEl(null);
+  };
+
+  const loginSignupButtonStyle = {
+    marginLeft: '20px',
+    padding: '10px',
+    borderRadius: '5px',
+    color: 'black',
   };
 
   return (
@@ -184,7 +208,6 @@ const Navbar = () => {
             <div
               className="flex items-center"
               style={{ padding: '5px', height: '60px', border: '2px solid transparent', borderRadius: '5px', marginRight: '20px' }}
-
             >
               <img
                 src={logo}
@@ -228,17 +251,22 @@ const Navbar = () => {
             </div>
           )}
 
-          <Popover
-            id="category-popover"
-            open={Boolean(categoryAnchorEl)}
+          <Menu
+            id="category-menu"
             anchorEl={categoryAnchorEl}
+            open={Boolean(categoryAnchorEl)}
             onClose={handleCloseCategoryPopover}
-            anchorReference="anchorPosition"
-            anchorPosition={{ top: 54, left: 270 }}
+            anchorReference="anchorEl"
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
             transformOrigin={{
               vertical: 'top',
               horizontal: 'left',
             }}
+            style={{marginTop:'-2px'}}
           >
             <div style={{ padding: '5px' }}>
               {loading && <MenuItem>Loading...</MenuItem>}
@@ -250,13 +278,14 @@ const Navbar = () => {
                   to={category.path}
                   onClick={handleCloseCategoryPopover}
                 >
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{marginTop:'-5px'}}>
                     {category.text}
                   </Typography>
                 </MenuItem>
               ))}
             </div>
-          </Popover>
+          </Menu>
+
 
           <div style={{ position: 'relative', marginLeft: 'auto' }}>
             <div style={{ border: '2px solid #ccc', borderRadius: '5px', padding: '3px', marginRight: '10px' }}>
@@ -279,77 +308,145 @@ const Navbar = () => {
             </div>
           </div>
           {showLanguage && (
-           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-           <LanguageIcon
-             style={{ marginRight: '10px', color: 'black', cursor: 'pointer' }}
-             aria-controls="language-menu"
-             aria-haspopup="true"
-           />
-           <Typography
-             variant="body1"
-             style={{ color: 'black', cursor: 'pointer' }}
-             onClick={handleLanguageClick}
-           >
-             Language
-             <ArrowDropDownIcon/>
-           </Typography>
-           <Menu
-             id="language-menu"
-             anchorEl={anchorEl}
-             open={Boolean(anchorEl)}
-             onClose={handleCloseLanguageMenu}
-             anchorOrigin={{
-               vertical: 'bottom',
-               horizontal: 'right',
-             }}
-             transformOrigin={{
-               vertical: 'top',
-               horizontal: 'right',
-             }}
-           >
-             {languages.map((language) => (
-               <MenuItem key={language} onClick={handleCloseLanguageMenu}>
-                 <Typography variant="body1">{language}</Typography>
-               </MenuItem>
-             ))}
-           </Menu>
-         </div>
-       )}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+              <LanguageIcon
+                style={{ marginRight: '10px', color: 'black', cursor: 'pointer' }}
+                aria-controls="language-menu"
+                aria-haspopup="true"
+                onClick={handleLanguageClick}
+              />
+              <Typography
+                variant="body1"
+                style={{ color: 'black', cursor: 'pointer',marginTop:'3px' }}
+                onClick={handleLanguageClick}
+              >
+                {selectedLanguage}
+                <ArrowDropDownIcon />
+              </Typography>
+
+              <Menu
+                id="language-menu"
+                anchorEl={languageAnchorEl}
+                open={Boolean(languageAnchorEl)}
+                onClose={handleCloseLanguageMenu}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                style={{marginTop:'15px'}}
+              >
+                {languages.map((language) => (
+                  <MenuItem key={language} onClick={() => handleLanguageSelect(language)}>
+                    <Typography variant="body1" style={{ color: 'black' }}>
+                      {language}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </div>
+          )}
 
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
             {showLoginSignup && (
               <>
-                {isLoading ? (
-                  <Button
-                    color="inherit"
-                    variant="outlined"
-                    onClick={handleLogout}
-                    onMouseEnter={handleMouseEnterLogin}
-                    onMouseLeave={handleMouseLeaveLogin}
-                    style={{
-                      marginLeft: '20px',
-                      padding: '15px',
-                      borderRadius: '5px',
-                      color: 'black',
-                    }}
-                  >
-                    Loading...
-                  </Button>
-                ) : isAuthenticated ? (
-                  <Button
-                    color="inherit"
-                    variant="outlined"
-                    onClick={handleLogout}
-                    style={{
-                      padding: '10px',
-                      border: '2px solid black',
-                      borderRadius: '5px',
-                      color: 'black',
-                    }}
-                  >
-                    LogOut
-                  </Button>
-                ) : (
+                {isAuthenticated && userProfile && !pLoading && (
+                  <div style={{ position: 'relative', marginLeft: 'auto' }}>
+                    <Typography
+                      variant="body1"
+                      style={{ color: 'black', cursor: 'pointer' }}
+                      onClick={handleUsernameClick}
+                    >
+                      Welcome, {userProfile.profile['cognito:username']}
+                      <ArrowDropDownIcon style={{ color: 'black' }} />
+                    </Typography>
+                    <Menu
+                      id="username-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleCloseUsernameMenu}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                      PaperProps={{
+                        sx: {
+                          width: 'auto',
+                          marginTop: '18px',
+                        },
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ margin: '10px', color: '#000000' }}>
+                        Your Profile
+                      </Typography>
+                      <div style={{ display: 'grid', gap: '10px' }}>
+                        {profileLinks.map(link => (
+                          <Link
+                            to={link.path}
+                            key={link.label}
+                            onClick={handleCloseUsernameMenu} 
+                            style={{
+                              color: '#000000',
+                              margin: '-5px 10px',
+                              textDecoration: 'none',
+                              position: 'relative',
+                            }}
+                            onMouseEnter={e => { e.target.style.color = '#888'; }}
+                            onMouseLeave={e => { e.target.style.color = '#000'; }}
+                          >
+                            {link.label}
+                            <div style={{ height: '2px', backgroundColor: 'black', position: 'absolute', bottom: '-3px', left: 0, right: 0, opacity: 0, transition: 'opacity 0.3s' }}></div>
+                          </Link>
+                        ))}
+                      </div>
+                      <hr style={{ margin: '15px 0px' }} />
+                      {showLogoutButton && (
+                        <>
+                          {isLoading ? (
+                            <MenuItem
+                              onClick={handleLogout}
+                              onMouseEnter={handleMouseEnterLogin}
+                              onMouseLeave={handleMouseLeaveLogin}
+                              style={{
+                                padding: '15px',
+                                borderRadius: '5px',
+                                color: 'black',
+                                position: 'relative',
+                              }}
+                            >
+                              Loading...
+                            </MenuItem>
+                          ) : (
+                            <MenuItem
+                              onClick={handleLogout}
+                              style={{
+                                padding: '10px',
+                                border: '2px solid black',
+                                borderRadius: '5px',
+                                color: 'black',
+                                margin: '5px',
+                                justifyContent: 'center',
+                                position: 'relative',
+                              }}
+                              onMouseEnter={e => { e.target.style.color = '#000'; }}
+                              onMouseLeave={e => { e.target.style.color = 'black'; }}
+                            >
+                              LogOut
+                            </MenuItem>
+                          )}
+                        </>
+                      )}
+                    </Menu>
+                  </div>
+                )}
+                {!isAuthenticated && (
                   <>
                     <Button
                       color="inherit"
@@ -358,12 +455,7 @@ const Navbar = () => {
                       to="/login"
                       onMouseEnter={handleMouseEnterLogin}
                       onMouseLeave={handleMouseLeaveLogin}
-                      style={{
-                        marginLeft: '20px',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        color: 'black',
-                      }}
+                      style={loginSignupButtonStyle}
                     >
                       LogIn
                     </Button>
@@ -374,12 +466,7 @@ const Navbar = () => {
                       to="/signup"
                       onMouseEnter={handleMouseEnterSignup}
                       onMouseLeave={handleMouseLeaveSignup}
-                      style={{
-                        marginLeft: '20px',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        color: 'black',
-                      }}
+                      style={loginSignupButtonStyle}
                     >
                       SignUp
                     </Button>
@@ -480,11 +567,14 @@ const Navbar = () => {
                 </MenuItem>
               </>
             )}
-            {isAuthenticated && (
-              <MenuItem onClick={handleLogout}>
-                <Typography variant="body1" sx={{ border: '1px solid black', backgroundColor: '#eaeaea', width: '100%', display: 'block', padding: '10px', textAlign: 'center', borderRadius: '5px' }}>LogOut</Typography>
+            {window.innerWidth <= 760 && isAuthenticated && (
+              <MenuItem onClick={handleCloseListPopup}>
+                <Link to="/" style={{ textDecoration: 'none', color: 'inherit', width: '100%' }} onClick={handleLogout}>
+                  <Typography variant="body1" sx={{ border: '1px solid black', backgroundColor: '#eaeaea', width: '100%', display: 'block', padding: '10px', textAlign: 'center', borderRadius: '5px' }}>LogOut</Typography>
+                </Link>
               </MenuItem>
             )}
+
           </Popover>
         </div>
       </Toolbar>
