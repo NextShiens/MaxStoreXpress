@@ -4,7 +4,7 @@ import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE, SUPER_ADMIN_ROLE } from './constant
 import Footer from './components/common/Footer.js';
 import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
-import  Navbar  from './components/common/Navbar';
+import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './pages/transactions/transactions.js';
 import UpdateUserForm from './pages/UserManagement/UserUpdate.js';
@@ -14,9 +14,12 @@ import Review from './pages/Products/Review.js';
 import Sidebar from './pages/Sidebar/Sidebar.js';
 import Accounts from './components/common/Accounts.js';
 import YourProfile from './components/common/Yourprofile.js';
+import SingleProductPage from './pages/Products/SingleProductPage.js';
+
 
 
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
+
 const Cart = React.lazy(() => import("./pages/Products/cart.js"));
 const ProductsPage = React.lazy(() => import("./pages/Products/productPage.js"));
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
@@ -37,7 +40,7 @@ const App = () => {
       <React.Suspense fallback={<Skeleton variant="rectangular" width={210} height={118} />}>
         <Navbar />
         <Routes>
-        <Route path="/sidebar" element={<Sidebar />} />
+          <Route path="/sidebar" element={<Sidebar />} />
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<LoginComponent />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
@@ -50,21 +53,21 @@ const App = () => {
           <Route path='/update/:id' element={<UpdateUserForm />} />
           <Route path='/review' element={<Review />} />
           <Route path='/transactions' element={<Transactions />} />
-          <Route path= '/customers' element={<CustomerPage />} />
+          <Route path='/customers' element={<CustomerPage />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/productsPage' element={<ProductsPage />} />
           <Route path="/your_profile" element={<YourProfile />} />
-
+          <Route path="/product/:productId" element={<SingleProductPage />} />
           <Route
             path="/users"
-            element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />
+            element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />
           <Route
             path="/admin"
             element={<ProtectedRoute element={AdminComponent} roles={[ADMIN_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/user"
-            element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE,SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
+            element={<ProtectedRoute element={UserComponent} roles={[USER_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />}
           />
           <Route
             path="/seller-request"
