@@ -97,8 +97,8 @@ const HomePage = () => {
   const [filterValues, setFilterValues] = useState({
     name: '',
     description: '',
-    minPrice: 0,
-    maxPrice: 1000,
+    minPrice: 0.0,
+    maxPrice: 1000.0,
     rating: '',
   });
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
