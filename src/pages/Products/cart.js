@@ -77,8 +77,21 @@ const Cart = () => {
 
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+if( error && error.message=='No cart found for this user'){
+  return (
+    <div className="container mx-auto p-8 relative">
+      <div className="flex flex-col items-center justify-center max-h-128 gap-6">
+        <div className="grid gap-2 text-center">
+          <h2 className="text-2xl font-bold">Your cart is empty</h2>
+          <p className="text-gray-500 dark:text-gray-400">Looks like you haven't added any items to your cart yet.</p>
+        </div>
+        <button variant="contained" onClick={() => window.location.href = "/productsPage"} className=" bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Go to Products</button>
 
+      </div>
+    </div>
+  );
+}
+else if (error) return <p>Error: {error.message}</p>;
   const proceedToPay = () => {
     // Add functionality for proceeding to payment
   };
