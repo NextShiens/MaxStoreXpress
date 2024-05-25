@@ -72,10 +72,10 @@ const EditProduct = () => {
     try {
       const input = {
         ...(formData.name && { name: formData.name }),
-        ...(formData.price && { price: String(formData.price) }),
+        ...(formData.price && { price: parseFloat(formData.price) }),
         ...(formData.category && { category: formData.category }),
-        ...(formData.maxPrice && { maxPrice: String(formData.maxPrice) }),
-        ...(formData.minPrice && { minPrice: String(formData.minPrice) }),
+        ...(formData.maxPrice && { maxPrice: parseFloat(formData.maxPrice) }),
+        ...(formData.minPrice && { minPrice: parseFloat(formData.minPrice) }),
         ...(formData.description && { description: formData.description }),
         ...(formData.imageUrl.length > 0 && { imageUrl: formData.imageUrl }),
         ...(formData.slug && { slug: formData.slug }),
