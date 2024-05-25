@@ -112,8 +112,8 @@ const HomePage = () => {
         category,
         name: filterValues.name,
         description: filterValues.description,
-        minPrice: filterValues.minPrice,
-        maxPrice: filterValues.maxPrice
+        minPrice: parseFloat(filterValues.minPrice),
+        maxPrice: parseFloat(filterValues.maxPrice)
       },
       limit: 12,
       skip: (page - 1) * 12,
