@@ -35,6 +35,10 @@ const Footer = ({ product, setProduct }) => {
       name: 'Demo Product',
       price: '$19.99',
       description: 'This is a demo product description.',
+      imageUrl: [
+        'https://demo-source.imgix.net/house.jpg', 
+      ],
+      
     };
     setProduct(demoProduct);
   }, [setProduct]);

@@ -15,20 +15,16 @@ import {
   Button,
   Box,
   TextField,
-  Chip,
-  Slider,
   Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
+  Slider,
+  useMediaQuery,
+  makeStyles,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import Pagination from '@material-ui/lab/Pagination';
-import { makeStyles } from '@material-ui/core/styles';
+import Pagination from '@material-ui/lab/Pagination'; // Updated import
 import StarIcon from '@material-ui/icons/Star';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import Checkbox from '@material-ui/core/Checkbox';
+import Carousel from 'react-material-ui-carousel'; // Ensure this package is installed
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+    },
   },
   productCard: {
     height: '100%',
@@ -46,18 +46,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   productMedia: {
-    paddingTop: '56.25%', // 16:9 aspect ratio
+    height: 200,
   },
   productContent: {
     flexGrow: 1,
   },
   filterDrawerPaper: {
-    width: '100%',
     padding: theme.spacing(4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   pagination: {
     marginTop: theme.spacing(4),
@@ -65,46 +60,31 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   filterDrawer: {
-    width: '100%',
     flexShrink: 0,
-  },
-  priceSlider: {
-    padding: theme.spacing(2),
-  },
-  chipContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: theme.spacing(1),
-  },
-  chip: {
-    margin: theme.spacing(0.5),
   },
   saveButton: {
     marginTop: theme.spacing(2),
   },
-
+  carousel: {
+    [theme.breakpoints.down('xs')]: {
+      height: 150,
+    },
+  },
+  media: {
+    height: '100%',
+    width: '100%',
+  },
 }));
 
 const GET_PRODUCTS = gql`
   query GetProducts($filter: ProductFilterInput, $limit: Int, $skip: Int) {
     getProducts(filter: $filter, limit: $limit, skip: $skip) {
       id
-      tenantID
       name
-      slug
-      brand
-      price
-      minPrice
-      maxPrice
       description
-      category
-      tags
-      imageUrl
+      price
       rating
-      stock
-      discount
-      createdAt
-      updatedAt
+      imageUrl
     }
   }
 `;
@@ -120,10 +100,11 @@ const HomePage = () => {
     minPrice: 0,
     maxPrice: 1000,
     rating: '',
-    brand: [],
   });
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('xs'));
   const [selectedTags, setSelectedTags] = useState([]);
+
 
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
     variables: {
@@ -131,9 +112,8 @@ const HomePage = () => {
         category,
         name: filterValues.name,
         description: filterValues.description,
-        minPrice: filterValues.minPrice.toString(),
-        maxPrice: filterValues.maxPrice.toString(),
-        rating: filterValues.rating,
+        minPrice: filterValues.minPrice,
+        maxPrice: filterValues.maxPrice
       },
       limit: 12,
       skip: (page - 1) * 12,
@@ -153,19 +133,15 @@ const HomePage = () => {
           quantity: 1,
         };
         await addToCart({ variables: { cartInput } });
-        // Handle success or show a success message
       } catch (error) {
-        // Handle error
         console.error('Error adding to cart:', error);
       }
     } else {
-      // Handle case when user is not logged in
       console.error('User must be logged in to add to cart');
     }
   };
 
   useEffect(() => {
-    // Sort products based on the selected option
     if (data) {
       data.getProducts.sort((a, b) => {
         if (sortBy === 'rating') {
@@ -183,6 +159,7 @@ const HomePage = () => {
       [event.target.name]: event.target.value,
     });
   };
+
   const handleSaveFilters = () => {
     console.log('Filter values:', filterValues);
   };
@@ -190,7 +167,6 @@ const HomePage = () => {
   const handleFilterDrawerToggle = () => {
     setFilterDrawerOpen(!filterDrawerOpen);
   };
-
   const handleTagSelect = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((t) => t !== tag));
@@ -225,7 +201,6 @@ const HomePage = () => {
 
   return (
     <Container className={classes.root}>
-      {/* Header and filter drawer */}
       <Box className={classes.header}>
         <Box>
           <Typography variant="h2" gutterBottom>
@@ -250,14 +225,14 @@ const HomePage = () => {
       <Drawer
         className={classes.filterDrawer}
         variant="temporary"
-        anchor="top"
+        anchor={isMobile ? 'bottom' : 'left'}
         open={filterDrawerOpen}
         onClose={handleFilterDrawerToggle}
         classes={{
           paper: classes.filterDrawerPaper,
         }}
       >
-        <Grid container spacing={2} className={classes.filters}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
             <Select
               value={sortBy}
@@ -278,7 +253,6 @@ const HomePage = () => {
               <MenuItem value="electronics">Electronics</MenuItem>
               <MenuItem value="clothing">Clothing</MenuItem>
               <MenuItem value="books">Books</MenuItem>
-              {/* Add more categories as needed */}
             </Select>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -320,45 +294,60 @@ const HomePage = () => {
           </Grid>
         </Grid>
       </Drawer>
-
-      {/* Product cards */}
       <Grid container spacing={3}>
         {data.getProducts.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
             <Card className={classes.productCard}>
-              <Link to={`/product/${product.id}`}>
-                <CardMedia
-                  className={classes.productMedia}
-                  component="img" image={product.imageUrl[0] || '/placeholder.jpg'}
-                  alt={product.name}
-                />
-                <CardContent className={classes.productContent}>
-                  <Typography variant="h5" gutterBottom>
+              <Carousel
+                className={classes.carousel}
+                indicators={false}
+                navButtonsAlwaysVisible
+              >
+                {product.imageUrl.length > 0 ? product.imageUrl.map((url, index) => (
+                  <CardMedia
+                    key={index}
+                    component="img"
+                    image={url}
+                    alt={product.name}
+                    className={classes.media}
+                  />
+                )) : (
+                  <CardMedia
+                    component="img"
+                    image="/placeholder.jpg"
+                    alt="placeholder"
+                    className={classes.media}
+                  />
+                )}
+              </Carousel>
+              <CardContent className={classes.productContent}>
+                <Typography variant="h5" gutterBottom>
+                  <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     {product.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {product.description}
+                  </Link>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  {product.description}
+                </Typography>
+                <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Typography variant="body1">
+                    Price: ${product.price}
                   </Typography>
                   <Box display="flex" alignItems="center">
-                    <Typography variant="body1">
-                      Price: ${product.price}
+                    <StarIcon fontSize="small" color="primary" />
+                    <Typography variant="body1" color="textSecondary" style={{ marginLeft: 4 }}>
+                      {product.rating}
                     </Typography>
-                    <Box ml={1} display="flex" alignItems="center">
-                      <StarIcon fontSize="small" color="primary" />
-                      <Typography variant="body1" color="textSecondary">
-                        {product.rating}
-                      </Typography>
-                    </Box>
                   </Box>
-                </CardContent>
-              </Link>
-              <Button onClick={() => handleAddToCart(product.id)}>
+                </Box>
+              </CardContent>
+              <Button variant="contained" color="primary" onClick={() => handleAddToCart(product.id)}>
                 Add to Cart
               </Button>
             </Card>
           </Grid>
         ))}
-      </Grid>{/* Pagination */}
+      </Grid>
       <Box className={classes.pagination}>
         <Pagination
           count={10}
@@ -369,4 +358,5 @@ const HomePage = () => {
     </Container>
   );
 };
+
 export default HomePage;
