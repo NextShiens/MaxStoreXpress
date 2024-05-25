@@ -39,6 +39,7 @@ const CreateProductForm = () => {
     paymentMethods: [], 
   });
 
+  const [errors, setErrors] = useState({});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [files, setFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -52,55 +53,100 @@ const CreateProductForm = () => {
     }
   }, [user,isAuthenticated]);
 
+  const validate = () => {
+    let tempErrors = {};
+    tempErrors.name = formData.name ? "" : "This field is required.";
+    tempErrors.price = formData.price ? "" : "This field is required.";
+    tempErrors.maxPrice = formData.maxPrice ? "" : "This field is required.";
+    tempErrors.minPrice = formData.minPrice ? "" : "This field is required.";
+    tempErrors.stock = formData.stock ? "" : "This field is required.";
+    tempErrors.discount = formData.discount ? "" : "This field is required.";
+    tempErrors.alreadySold = formData.alreadySold ? "" : "This field is required.";
+    tempErrors.category = formData.category ? "" : "This field is required.";
+    tempErrors.description = formData.description ? "" : "This field is required.";
+    tempErrors.slug = formData.slug ? "" : "This field is required.";
+    tempErrors.brand = formData.brand ? "" : "This field is required.";
+    tempErrors.tags = formData.tags.length > 0 ? "" : "This field is required.";
+
+    setErrors({
+      ...tempErrors
+    });
+
+    return Object.values(tempErrors).every(x => x === "");
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    const numberFields = ['price', 'maxPrice', 'minPrice', 'stock', 'discount', 'alreadySold'];
+    const numberPattern = /^[0-9]*$/;
+
+    if (numberFields.includes(name) && (value === '' || numberPattern.test(value))) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else if (!numberFields.includes(name)) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSaveToDraft = async () => {
-    try {
-      const input = {
-        ...formData,
-        stock: parseInt(formData.stock),
-        discount: parseInt(formData.discount),
-        tenantID: tenantID,
-        status: 'non-active',
-      };
+    if (validate()) {
+      try {
+        const input = {
+          ...formData,
+          price: parseFloat(formData.price),
+          maxPrice: parseFloat(formData.maxPrice),
+          minPrice: parseFloat(formData.minPrice),
+          alreadySold: parseInt(formData.alreadySold),
+          stock: parseInt(formData.stock),
+          discount: parseInt(formData.discount),
+          tenantID: tenantID,
+          status: 'non-active',
+        };
 
-      await createProduct({ variables: { input } });
-      dispatch(actionCreators.createProduct(input));
-      setOpenSnackbar(true);
-      clearForm();
-      clearFiles();
-    } catch (error) {
-      console.error('Error creating product:', error);
-      showAlert('Error saving product to draft');
+        await createProduct({ variables: { input } });
+        dispatch(actionCreators.createProduct(input));
+        setOpenSnackbar(true);
+        clearForm();
+        clearFiles();
+      } catch (error) {
+        console.error('Error creating product:', error);
+        showAlert('Error saving product to draft');
+      }
     }
   };
 
   const handlePublish = async () => {
-    try {
-      const input = {
-        ...formData,
-        stock: parseInt(formData.stock),
-        discount: parseInt(formData.discount),
-        tenantID: tenantID,
-        status: 'active',
-      };
+    if (validate()) {
+      try {
+        const input = {
+          ...formData,
+          price: parseFloat(formData.price),
+          maxPrice: parseFloat(formData.maxPrice),
+          minPrice: parseFloat(formData.minPrice),
+          alreadySold: parseInt(formData.alreadySold),
+          stock: parseInt(formData.stock),
+          discount: parseInt(formData.discount),
+          tenantID: tenantID,
+          status: 'active',
+        };
 
-      console.log('Publishing product with data:', input);
+        console.log('Publishing product with data:', input);
 
-      await createProduct({ variables: { input } });
-      dispatch(actionCreators.createProduct(input));
-      setOpenSnackbar(true);
-      clearForm();
-      clearFiles();
-    } catch (error) {
-      console.error('Error publishing product:', error);
-      showAlert('Error publishing product');
+        await createProduct({ variables: { input } });
+        dispatch(actionCreators.createProduct(input));
+        setOpenSnackbar(true);
+        clearForm();
+        clearFiles();
+      } catch (error) {
+        console.error('Error publishing product:', error);
+        showAlert('Error publishing product');
+      }
     }
   };
 
@@ -237,7 +283,7 @@ const CreateProductForm = () => {
         <Typography variant="body1" style={{ backgroundColor: '#F9F9F9', padding: '13px', borderRadius: '5px', border: '1px solid #E2E1E1', marginRight: '30px', width:'328px' , height:'61px', textAlign:'center',fontWeight:'700', fontFamily:'cursive', color:'#182e4c'  }}>{getCurrentDateTime()}</Typography>
       </Box>
     
-      <Box  style={{display:'flex', border:'1px solid #ffffff', borderRadius:'6px', padding:'30px', height:'95%', boxShadow:'0 0 14px rgba(0, 0, 0, 0.1)' , backgroundColor: '#ffffff', fontFamily:'sans-serif ,Archivo SemiExpanded', margin:'20px 20px 20px 20px',  fontFamily:'sans-serif'}}>
+      <Box  style={{display:'flex', border:'1px solid #ffffff', borderRadius:'6px', padding:'30px', height:'95%', boxShadow:'0 0 14px rgba(0, 0, 0, 0.1)' , backgroundColor: '#ffffff', margin:'20px 20px 20px 20px',  fontFamily:'sans-serif'}}>
       <Box width="50%" p={2}>
         <Typography variant="h2" gutterBottom>Upload Images</Typography>
       <Grid container spacing={3}>
@@ -284,10 +330,10 @@ const CreateProductForm = () => {
         <Typography variant="h2" gutterBottom>Create Product</Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField label="Name" name="name" value={formData.name} onChange={handleInputChange} fullWidth />
+            <TextField label="Name" name="name" value={formData.name} onChange={handleInputChange} fullWidth error={!!errors.name} helperText={errors.name} />
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Price" name="price" value={formData.price} onChange={handleInputChange} fullWidth />
+            <TextField label="Price" name="price" value={formData.price} onChange={handleInputChange} fullWidth error={!!errors.price} helperText={errors.price}/>
           </Grid>
           <Grid item xs={6}>
             <Select
@@ -299,31 +345,36 @@ const CreateProductForm = () => {
               <MenuItem value="jewellery">Jewellery</MenuItem>
               <MenuItem value="clothing">Clothing</MenuItem>
               <MenuItem value="grocery">Grocery</MenuItem>
+              <MenuItem value="furniture">Furniture</MenuItem>
+              
             </Select>
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Max Price" name="maxPrice" value={formData.maxPrice} onChange={handleInputChange} fullWidth />
+            <TextField label="Max Price" name="maxPrice" value={formData.maxPrice} onChange={handleInputChange} fullWidth  error={!!errors.maxPrice} helperText={errors.maxPrice} />
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Min Price" name="minPrice" value={formData.minPrice} onChange={handleInputChange} fullWidth />
+            <TextField label="Min Price" name="minPrice" value={formData.minPrice} onChange={handleInputChange} fullWidth  error={!!errors.minPrice} helperText={errors.minPrice}/>
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Slug" name="slug" value={formData.slug} onChange={handleInputChange} fullWidth />
+            <TextField label="Slug" name="slug" value={formData.slug} onChange={handleInputChange} fullWidth error={!!errors.slug} helperText={errors.slug} />
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Brand" name="brand" value={formData.brand} onChange={handleInputChange} fullWidth />
+            <TextField label="Brand" name="brand" value={formData.brand} onChange={handleInputChange} fullWidth error={!!errors.brand} helperText={errors.brand}/>
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Tags" name="tags" value={formData.tags} onChange={handleInputChange} fullWidth />
+            <TextField label="Tags" name="tags" value={formData.tags} onChange={handleInputChange} fullWidth error={!!errors.tags} helperText={errors.tags} />
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Stock" name="stock" value={formData.stock} onChange={handleInputChange} fullWidth />
+            <TextField label="Stock" name="stock" value={formData.stock} onChange={handleInputChange} fullWidth error={!!errors.stock} helperText={errors.stock}/>
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth />
+            <TextField label="Discount" name="discount" value={formData.discount} onChange={handleInputChange} fullWidth error={!!errors.discount} helperText={errors.discount}/>
           </Grid>
           <Grid item xs={6}>
-            <TextField label="Description" name="description" value={formData.description} onChange={handleInputChange} fullWidth />
+            <TextField label="Already Sold" name="alreadySold" value={formData.alreadySold} onChange={handleInputChange} fullWidth  error={!!errors.alreadySold} helperText={errors.alreadySold}/>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField label="Description" name="description" value={formData.description} onChange={handleInputChange} fullWidth error={!!errors.description} helperText={errors.description}/>
           </Grid>
           <Box mt={2}>
             <Typography gutterBottom style={{fontFamily:'sans-serif'}}>Payment Methods</Typography>
