@@ -20,8 +20,10 @@ const Cart = () => {
   const updateCartItem = useUpdateCartItem();
   const cart = useSelector((state) => state.cart.cart);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteItemLoading, setDeleteItemLoading] = useState(false);
+  const [ItemLoading, seItemLoading] = useState(false);
+  const [deleteSingleItem, setDeleteSingleItem] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
+
 
 
   useEffect(() => {
@@ -31,16 +33,17 @@ const Cart = () => {
   }, [dispatch, data]);
 
   const handleDelete = async (productID) => {
+    setDeleteSingleItem(true);
     try {
       await deleteCartItem({
         variables: { userID, productID },
       });
       refetch();
       setDeleteItemId(productID);
-      setDeleteLoading(true);
     } catch (err) {
       console.error('Error deleting item from cart:', err);
-      setDeleteLoading(false);
+    } finally {
+      setDeleteSingleItem(false);
     }
   };
   const handleClearCart = async () => {
@@ -59,7 +62,7 @@ const Cart = () => {
 
 
   const handleUpdateQuantity = async (productID, quantity) => {
-    setDeleteItemLoading(true);
+    seItemLoading(true);
     try {
       await updateCartItem({
         variables: { userID, productID, quantity },
@@ -68,7 +71,7 @@ const Cart = () => {
     } catch (err) {
       console.error('Error updating item quantity:', err);
     } finally {
-      setDeleteItemLoading(false);
+      seItemLoading(false);
     }
   };
   if (userID === null) {
@@ -86,16 +89,16 @@ const Cart = () => {
 
 
   if (loading) return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '40vh' 
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '40vh'
     }}>
-      <CircularProgress color='inherit' size={60}/>
+      <CircularProgress color='inherit' size={60} />
     </Box>
   );
-  
+
 
   if (error && error.message == 'No cart found for this user') {
     return (
@@ -140,7 +143,6 @@ const Cart = () => {
                 Cart <span className="text-sm text-gray-500">({cart.length}{cart.length === 1 ? " product" : " products"} )</span>
               </h2>
               <Button
-                className="h-3"
                 color="error"
                 onClick={() => handleClearCart()}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}
@@ -158,16 +160,17 @@ const Cart = () => {
 
                 <div key={id} className="w-full max-w-2xl mx-auto">
                   <div className="relative flex flex-col md:flex-row items-start gap-6 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-
-                    <CloseIcon
-                      className="h-8 w-8 rounded-full p-0  absolute top-3 right-3"
-                      onClick={() => handleDelete(id)}
-                      sx={{
-                        color: '#C41E3A',
-                        cursor: 'pointer',
-                        fontSize: '20px'
-                      }}
-                    />
+                    {deleteSingleItem ? <CircularProgress className='absolute top-3 right-3' color="error" size={20} /> :
+                      <CloseIcon
+                        className="h-8 w-8 rounded-full p-0  absolute top-3 right-3"
+                        onClick={() => handleDelete(id)}
+                        sx={{
+                          color: '#C41E3A',
+                          cursor: 'pointer',
+                          fontSize: '20px'
+                        }}
+                      />
+                    }
                     <div className="relative h-32 w-32 shrink-0 overflow-hidden border-2 border-slate-800 rounded-xl">
                       <img
                         alt="Product Image"
@@ -202,7 +205,7 @@ const Cart = () => {
                             />
                           </Button>
                           <span className="text-lg font-semibold" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>
-                            {deleteItemLoading ? <CircularProgress color="inherit" size={20} /> : quantity}
+                            {ItemLoading ? <CircularProgress color="inherit" size={20} /> : quantity}
                           </span>
                           <Button className="h-8 w-8 rounded-full p-0" size="icon" variant="outline">
                             <AddIcon
