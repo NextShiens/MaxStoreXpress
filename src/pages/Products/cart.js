@@ -7,6 +7,8 @@ import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -18,6 +20,7 @@ const Cart = () => {
   const updateCartItem = useUpdateCartItem();
   const cart = useSelector((state) => state.cart.cart);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteItemLoading, setDeleteItemLoading] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
 
 
@@ -41,6 +44,7 @@ const Cart = () => {
     }
   };
   const handleClearCart = async () => {
+    setDeleteLoading(true);
     try {
       await clearCart({
         variables: { userID },
@@ -48,11 +52,14 @@ const Cart = () => {
       refetch();
     } catch (err) {
       console.error('Error clearing cart:', err);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
 
   const handleUpdateQuantity = async (productID, quantity) => {
+    setDeleteItemLoading(true);
     try {
       await updateCartItem({
         variables: { userID, productID, quantity },
@@ -60,6 +67,8 @@ const Cart = () => {
       refetch();
     } catch (err) {
       console.error('Error updating item quantity:', err);
+    } finally {
+      setDeleteItemLoading(false);
     }
   };
   if (userID === null) {
@@ -76,22 +85,34 @@ const Cart = () => {
   };
 
 
-  if (loading) return <p>Loading...</p>;
-if( error && error.message=='No cart found for this user'){
-  return (
-    <div className="container mx-auto p-8 relative">
-      <div className="flex flex-col items-center justify-center max-h-128 gap-6">
-        <div className="grid gap-2 text-center">
-          <h2 className="text-2xl font-bold">Your cart is empty</h2>
-          <p className="text-gray-500 dark:text-gray-400">Looks like you haven't added any items to your cart yet.</p>
-        </div>
-        <button variant="contained" onClick={() => window.location.href = "/productsPage"} className=" bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Go to Products</button>
-
-      </div>
-    </div>
+  if (loading) return (
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '40vh' 
+    }}>
+      <CircularProgress color='inherit' size={60}/>
+    </Box>
   );
-}
-else if (error) return <p>Error: {error.message}</p>;
+  
+
+  if (error && error.message == 'No cart found for this user') {
+    return (
+      <div className="container mx-auto p-8 relative">
+        <div className="flex flex-col items-center justify-center max-h-128 gap-6">
+          <div className="grid gap-2 text-center">
+            <h2 className="text-2xl font-bold">Your cart is empty</h2>
+            <p className="text-gray-500 dark:text-gray-400">Looks like you haven't added any items to your cart yet.</p>
+          </div>
+          <button variant="contained" onClick={() => window.location.href = "/productsPage"} className=" bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Go to Products</button>
+
+        </div>
+      </div>
+    );
+  }
+  else if (error) return <p>Error: {error.message}</p>;
+
   const proceedToPay = () => {
     // Add functionality for proceeding to payment
   };
@@ -118,13 +139,24 @@ else if (error) return <p>Error: {error.message}</p>;
               <h2 className="text-3xl font-semibold">
                 Cart <span className="text-sm text-gray-500">({cart.length}{cart.length === 1 ? " product" : " products"} )</span>
               </h2>
-              <Button color="error" onClick={() => handleClearCart()} >Clear cart</Button>
+              <Button
+                className="h-3"
+                color="error"
+                onClick={() => handleClearCart()}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}
+              >
+                {deleteLoading ? (
+                  <CircularProgress color="error" size={20} />
+                ) : (
+                  "clear cart"
+                )}
+              </Button>
             </div>
             <div className=" w-full max-h-128  overflow-y-auto  grid gap-8 md:w-12/12">
 
               {cart.length > 0 && cart.map(({ id, name, price, imageUrl, quantity, description }) => (
 
-                <div  key={id} className="w-full max-w-2xl mx-auto">
+                <div key={id} className="w-full max-w-2xl mx-auto">
                   <div className="relative flex flex-col md:flex-row items-start gap-6 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-950">
 
                     <CloseIcon
@@ -158,7 +190,7 @@ else if (error) return <p>Error: {error.message}</p>;
                         <div className="flex items-center gap-2">
                           <Button className="h-8 w-8 rounded-full p-0" size="icon" variant="outline">
                             <RemoveIcon
-                              className='hover:bg-gray-200'
+                              className="hover:bg-gray-200"
                               sx={{
                                 color: '#4a4a4a',
                                 backgroundColor: '#f0f0f0',
@@ -169,7 +201,9 @@ else if (error) return <p>Error: {error.message}</p>;
                               onClick={() => handleUpdateQuantity(id, quantity - 1)}
                             />
                           </Button>
-                          <span className="text-lg font-semibold">{quantity}</span>
+                          <span className="text-lg font-semibold" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>
+                            {deleteItemLoading ? <CircularProgress color="inherit" size={20} /> : quantity}
+                          </span>
                           <Button className="h-8 w-8 rounded-full p-0" size="icon" variant="outline">
                             <AddIcon
                               sx={{

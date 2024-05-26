@@ -3,6 +3,8 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuth } from 'react-oidc-context';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 const GET_PRODUCTS = gql`
 query GetProducts {
   getProducts {
@@ -76,7 +78,16 @@ const Products = () => {
   };
 
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '50vh' 
+    }}>
+      <CircularProgress color='inherit' size={60}/>
+    </Box>
+  );
   if (error) return <p>Error: {error.message}</p>;
 
   return (
