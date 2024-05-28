@@ -121,7 +121,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 relative">
+    <div className="container mx-auto lg:p-8 p-3 relative">
       {cart.length === 0 && (
         <div>
           <div className="flex flex-col items-center justify-center max-h-128 gap-6">
@@ -134,7 +134,7 @@ const Cart = () => {
         </div>
       )}
       {cart.length !== 0 &&
-        <div className="w-full flex flex-col md:flex-row gap-6 items-start">
+        <div className="w-full flex flex-col md:flex-row md:gap-6 gap-2 items-start">
           <div className="w-full md:w-12/12 mx-auto bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center pb-4 mb-3 border-b">
               <h2 className="text-3xl font-semibold">
@@ -169,7 +169,7 @@ const Cart = () => {
                     }
                     <div className="relative h-32 w-32 shrink-0 overflow-hidden border-2 border-slate-800 rounded-xl">
                       <img
-                        alt="Product Image"
+                        alt="Product "
                         className="h-full w-full object-cover"
                         height={128}
                         src={imageUrl[0]}
@@ -226,10 +226,10 @@ const Cart = () => {
               ))}
             </div>
           </div>
-          <div className="w-8/12 space-y-4">
+          <div className="md:w-full xl:w-8/12  w-full space-y-4">
             {cart.length > 0 && (
               <div className="flex flex-row justify-center">
-                <div className="w-8/12 bg-white rounded-md shadow-md dark:bg-gray-950">
+                <div className="lg:w-9/12 w-full bg-white rounded-md shadow-md dark:bg-gray-950">
                   <div className="px-6 py-4 border-b">
                     <h3 className="text-xl font-bold">Your Cart</h3>
                   </div>
