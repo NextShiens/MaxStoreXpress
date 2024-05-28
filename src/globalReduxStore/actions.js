@@ -1,4 +1,3 @@
-// import { create } from "@mui/material/styles/createTransitions";
 
 export const actionTypes = {
   SET_USERS: 'SET_USERS',
@@ -59,9 +58,9 @@ export const actionCreators = {
     type: actionTypes.CLEAR_CART,
     payload: userID, 
   }),
-  updateCart: (cart) => ({
+  updateCart: (userID,productID, quantity ) => ({
     type: actionTypes.UPDATE_CART,
-    payload: cart,
+    payload: { userID, productID, quantity },
   }),
   createProduct: (product) => ({
     type: actionTypes.CREATE_PRODUCT,

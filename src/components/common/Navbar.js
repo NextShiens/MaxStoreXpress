@@ -10,12 +10,10 @@ import { useQuery, gql } from '@apollo/client';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useSelector, useDispatch } from 'react-redux';
-import { actionCreators } from '../../globalReduxStore/actions';
 import { useFetchCartData } from '../../globalReduxStore/reducers/cartOperations';
 import { useAuth } from 'react-oidc-context';
 import Badge from '@mui/material/Badge';
 import { UserManager } from 'oidc-client';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
 import { useProfile } from '../../auth/profileProvider';
 

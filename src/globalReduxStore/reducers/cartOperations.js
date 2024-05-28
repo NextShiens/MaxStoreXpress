@@ -56,6 +56,7 @@ const UPDATE_ITEM = gql`
       userID
       products {
         id
+        quantity
       }
     }
   }
@@ -69,9 +70,9 @@ export const useFetchCartData = (userID) => {
   return { data, loading, error, refetch };
 };
 export const useAddToCart = () => {
-  const [addToCart] = useMutation(ADD_TO_CART);
+  const [addToCartItem] = useMutation(ADD_TO_CART);
 
-  return addToCart;
+  return addToCartItem;
 };
 export const useDeleteCartItem = () => {
   const [deleteCartItem] = useMutation(DELETE_ITEM);
