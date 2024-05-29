@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useAuth } from 'react-oidc-context';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
@@ -19,6 +19,7 @@ const GET_PRODUCTS = gql`
       stock
       imageUrl
       description
+      discount
     }
   }
 `;
@@ -39,13 +40,13 @@ const Products = () => {
   }, [showAlert]);
 
   const handleAddToCart = async (product) => {
-    const { id, name, price, imageUrl, description } = product;
+    const { id, name, price, imageUrl, description,discount } = product;
   
       try {
       await addToCartItem({
           variables: {
             cartInput: {
-              products: [{ id, name, price, imageUrl, quantity: 1, description }],
+              products: [{ id, name, price, imageUrl, quantity: 1, description , discount}],
               userID: user?.profile?.sub
             }
           }
@@ -109,7 +110,7 @@ const Products = () => {
                   <h3 className="text-lg font-semibold">{product.name}</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">{product.brand}</p>
                 </div>
-                <p className="text-lg font-bold">{product.price}</p>
+                <p className="text-lg font-bold">{product.price } - {product.discount}%</p>
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{product.description}</p>
               <button onClick={() => handleAddToCart(product)} className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import { actionCreators } from '../../globalReduxStore/actions';
 import { useFetchCartData, useDeleteCartItem, useUpdateCartItem, useClearCart } from '../../globalReduxStore/reducers/cartOperations';
 import { useAuth } from 'react-oidc-context';
@@ -10,7 +11,9 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 
+
 const Cart = () => {
+  const navigate =useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
   const userID = user?.profile?.sub || null;                      
@@ -85,7 +88,7 @@ const Cart = () => {
           <div className="grid gap-2 text-center">
             <h2 className="text-2xl font-bold">Please sign in to view your cart</h2>
           </div>
-          <button onClick={() => window.location.href = "/login"} className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Sign in</button>
+          <button onClick={() => navigate("/login")} className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Sign in</button>
         </div>
       </div>
     );
@@ -98,7 +101,7 @@ const Cart = () => {
       alignItems: 'center',
       height: '40vh'
     }}>
-      <CircularProgress color='inherit' size={60} />
+      <CircularProgress color='inherit' size={50} />
     </Box>
   );
 
@@ -110,14 +113,14 @@ const Cart = () => {
             <h2 className="text-2xl font-bold">Your cart is empty</h2>
             <p className="text-gray-500 dark:text-gray-400">Looks like you haven't added any items to your cart yet.</p>
           </div>
-          <button variant="contained" onClick={() => window.location.href = "/productsPage"} className=" bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Go to Products</button>
+          <button variant="contained" onClick={() => navigate("/productsPage")} className=" bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">Go to Products</button>
         </div>
       </div>
     );
   } else if (error) return <p>Error: {error.message}</p>;
 
-  const proceedToPay = () => {
-    // Add functionality for proceeding to payment
+  const handleCheckout = () => {
+    navigate('/checkout');
   };
 
   return (
@@ -249,8 +252,8 @@ const Cart = () => {
                     </div>
                   </div>
                   <div className="px-6 py-4 border-t">
-                    <button onClick={proceedToPay} className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">
-                      Proceed to Pay
+                    <button onClick={handleCheckout} className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                      Checkout 
                     </button>
                   </div>
                 </div>

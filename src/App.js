@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE, SUPER_ADMIN_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
-import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
 import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,6 +25,7 @@ const ProductUpdate = React.lazy(() => import("./components/ProductManagement/Pr
 // const Navbar = React.lazy(() => import("./components/common/Navbar"));
 
 const Cart = React.lazy(() => import("./pages/Products/cart.js"));
+const Checkout =React.lazy(() => import("./pages/Products/checkout.js"));
 const ProductsPage = React.lazy(() => import("./pages/Products/productPage.js"));
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized.js"));
 const Home = React.lazy(() => import("./pages/Home"));
@@ -65,6 +65,7 @@ const App = () => {
           <Route path='/updateproduct' element={<ProductUpdate/>} />
           <Route path="/your_profile" element={<YourProfile />} />
           <Route path="/product/:productId" element={<SingleProductPage />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route
             path="/users"
             element={<ProtectedRoute element={Users} roles={[ADMIN_ROLE, SUPER_ADMIN_ROLE]} unauthorizedPath="/unauthorized" loginPath="/login" />} />

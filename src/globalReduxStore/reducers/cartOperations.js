@@ -10,6 +10,7 @@ const GET_CART = gql`
         quantity
         imageUrl
         description
+        discount
       }
       userID
       totalPrice
@@ -26,6 +27,7 @@ const ADD_TO_CART = gql`
         quantity
         imageUrl
         description
+        discount
       }
       userID
     }
