@@ -1,5 +1,5 @@
 import React from 'react';
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { actionCreators } from '../../globalReduxStore/actions';
 import TextField from '@mui/material/TextField';
@@ -7,12 +7,13 @@ import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
-import { useFetchCartData} from '../../globalReduxStore/reducers/cartOperations';
+import { useFetchCartData } from '../../globalReduxStore/reducers/cartOperations';
 import { useAuth } from 'react-oidc-context';
-
+import { useProfile } from '../../auth/profileProvider';
 
 const customTheme = (outerTheme) =>
   createTheme({
@@ -81,15 +82,17 @@ const customTheme = (outerTheme) =>
   });
 
 export default function Checkout() {
+  const { userPreferences } = useProfile();
+  console.log('userPreferences', userPreferences)
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const userID = user?.profile?.sub || null;                      
-  const { loading, error, data ,refetch} = useFetchCartData(userID);
+  const userID = user?.profile?.sub || null;
+  const { loading, error, data, refetch } = useFetchCartData(userID);
   const cart = useSelector((state) => state.cart.cart);
-  const [value, setValue] = React.useState('Cash on Delivery');
   const outerTheme = useTheme();
   const handlePaymentMethod = (event) => {
-    setValue(event.target.value);
+    setPaymentMethod(event.target.value);
   };
   useEffect(() => {
     if (data && data.getCartItems) {
@@ -100,6 +103,10 @@ export default function Checkout() {
     refetch();
   }, [refetch]);
 
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen"> <CircularProgress /> </div>
+  }
+  if (error) return <p>Error: {error.message}</p>;
   return (
 
     <ThemeProvider theme={customTheme(outerTheme)}>
@@ -111,18 +118,19 @@ export default function Checkout() {
             </div>
             <div className="p-4 md:p-6 space-y-4">
               <div className="space-x-5 flex flex-row">
-                <TextField id="outlined-basic" label="First Name" variant="outlined" size="small" />
+                <TextField id="outlined-basic" label="First Name" value={userPreferences.userName}
+ variant="outlined" size="small" />
                 <TextField id="outlined-basic" label="Last Name " variant="outlined" size="small" />
 
               </div>
 
 
               <div className="space-y-2">
-                <TextField id="outlined-basic" label="Email" className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
+                <TextField id="outlined-basic" label="Email" value={userPreferences.email}  className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
               </div>
-              <div className="space-x-5">
-                <TextField id="Phone" label="Phone" variant="outlined" size="small" />
-                <TextField id="City" label="City" variant="outlined" size="small" />
+              <div className="space-x-5 flex flex-row">
+                <TextField id="Phone" label="Phone" value={userPreferences.defaultAddress[0].phone} variant="outlined" size="small" />
+                <TextField id="City" label="City" value={userPreferences.defaultAddress[0].city} variant="outlined" size="small" />
 
               </div>
               <div className="space-y-2">
@@ -130,6 +138,7 @@ export default function Checkout() {
                   className="block w-full rounded-md   sm:text-sm"
                   label="Street Address"
                   id="address"
+                  value={userPreferences.defaultAddress[0].streetAddress}
                   multiline
                   rows={2}
                   size="small"
@@ -141,7 +150,7 @@ export default function Checkout() {
                   <RadioGroup
                     aria-labelledby="payment-method"
                     name="controlled-radio-buttons-group"
-                    value={value}
+                    value={paymentMethod}
                     onChange={handlePaymentMethod}
                   >
                     <FormControlLabel value="Cash on Delivery" control={<Radio color="default" />} label="Cash on Delivery" />
@@ -149,8 +158,9 @@ export default function Checkout() {
                   </RadioGroup>
                 </FormControl>
               </div>
+              {paymentMethod === 'Card' && <div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
-              <div className="space-y-2">
+              <div className="mb-3">
                 <TextField id="outlined-basic" label="Card Number" placeholder="0000 0000 0000 0000" className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
               </div>
 
@@ -164,8 +174,10 @@ export default function Checkout() {
                   save card for future payments
                 </label>
               </div>
+              </div>
+              }
             </div>
-            
+
           </div>
         </div>
         <div className="grid gap-6">
@@ -173,62 +185,62 @@ export default function Checkout() {
             <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
               <h3 className="text-lg font-medium">Order Summary</h3>
             </div>
-            {cart.length > 0 && cart.map(({  name, price, imageUrl, quantity, description ,discount}) => (
-            <div className="p-4 md:p-6 space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <img
-                      alt="Product "
-                      className="rounded-md"
-                      height={60}
-                      src={imageUrl}
-                      style={{
-                        aspectRatio: "60/60",
-                        objectFit: "cover",
-                      }}
-                      width={60}
-                    />
-                    <div>
-                      <h4 className="font-medium">{name}</h4>
-                      <p className="text-sm text-gray-500 ">{description}</p>
+            {cart.length > 0 && cart.map(({ name, price, imageUrl, quantity, description, discount }) => (
+              <div className="p-4 md:p-6 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img
+                        alt="Product "
+                        className="rounded-md"
+                        height={60}
+                        src={imageUrl}
+                        style={{
+                          aspectRatio: "60/60",
+                          objectFit: "cover",
+                        }}
+                        width={60}
+                      />
+                      <div>
+                        <h4 className="font-medium">{name}</h4>
+                        <p className="text-sm text-gray-500 ">{description}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">{price}</p>
+                      <p className="text-sm text-gray-500 ">Qty: {quantity}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">{price}</p>
-                    <p className="text-sm text-gray-500 ">Qty: {quantity}</p>
-                  </div>
-                </div>
-                <div className="border-t border-gray-200 pt-4" />
-              </div>
-              <div className="border-t border-gray-200  pt-4" />
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <p>Subtotal</p>
-                  <p className="font-medium">{data.getCartItems.totalPrice}</p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p>Shipping</p>
-                  <p className="font-medium"></p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p>Discount</p>
-                  <p className="font-medium text-green-500">{discount}</p>
+                  <div className="border-t border-gray-200 pt-4" />
                 </div>
                 <div className="border-t border-gray-200  pt-4" />
-                <div className="flex items-center justify-between font-medium text-lg">
-                  <p>Total</p>
-                  <p>$74.98</p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p>Subtotal</p>
+                    <p className="font-medium">{data.getCartItems.totalPrice}</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p>Shipping</p>
+                    <p className="font-medium"></p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p>Discount</p>
+                    <p className="font-medium text-green-500">{discount}%</p>
+                  </div>
+                  <div className="border-t border-gray-200  pt-4" />
+                  <div className="flex items-center justify-between font-medium text-lg">
+                    <p>Total</p>
+                    <p>{data.getCartItems.totalPrice - (data.getCartItems.totalPrice * (discount / 100))}</p>
+                  </div>
                 </div>
               </div>
-            </div>
             ))}
             <div className="  p-4 md:p-6">
               <button
                 className="inline-flex justify-center w-full rounded-md border border-transparent bg-gray-900 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700 "
                 type="button"
               >
-                Continue to Payment
+                Place Order
               </button>
             </div>
           </div>

@@ -11,7 +11,14 @@ const UPDATE_USER_PREFERENCES = gql`
       userName
       preferredLanguage
       currencyPreference
-      defaultAddress
+      defaultAddress{
+        city
+        email
+        phone
+        country
+        postalCode
+        streetAddress
+      }
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -33,7 +40,14 @@ const GET_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
-      defaultAddress
+      defaultAddress{
+        city
+        email
+        phone
+        country
+        postalCode
+        streetAddress
+      }
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -55,7 +69,14 @@ const CREATE_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
-      defaultAddress
+      defaultAddress{
+        city
+        email
+        phone
+        country
+        postalCode
+        streetAddress
+      }
       notificationSettings {
         newProductUpdates
         orderUpdates
@@ -100,7 +121,16 @@ export const ProfileProvider = ({ children = "null" }) => {
             email: user.profile.email,
             preferredLanguage: 'en',
             currencyPreference: 'PKR',
-            defaultAddress: 'no Address yet',
+            defaultAddress: [
+              {
+                email: user.profile.email,
+                phone: 1234567890,
+                city: 'Karachi',
+                country: 'Pakistan',
+                postalCode: 12345,
+                streetAddress: '123 Main Street',
+              },
+            ],
             notificationSettings: {
               newProductUpdates: true,
               orderUpdates: true,
@@ -108,19 +138,18 @@ export const ProfileProvider = ({ children = "null" }) => {
             },
             lastLoggedIn: new Date().toISOString(),
           };
-
+    
           let userPreferencesResult;
           if (userPreferencesData?.getUserPreferencesByEmail) {
             const updatedPreferencesInput = {
               userId: userPreferencesData.userId ? userPreferencesData.userId : userPreferencesInput.userId,
               email: userPreferencesData.email ? userPreferencesData.email : userPreferencesInput.email,
               currencyPreference: userPreferencesData.currencyPreference ? userPreferencesData.currencyPreference : userPreferencesInput.currencyPreference,
-              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress,
-              preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
+              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress,              preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
               userName: userPreferencesData.userName ? userPreferencesData.userName : userPreferencesInput.userName,
               lastLoggedIn: new Date().toISOString(),
             };
-
+    
             userPreferencesResult = await updateUserPreferences({
               variables: {
                 id: userPreferencesData.getUserPreferencesByEmail.id,
@@ -135,15 +164,13 @@ export const ProfileProvider = ({ children = "null" }) => {
             });
             setPreferencesCreated(true);
           }
-
+    
           setUserPreferences(userPreferencesResult?.data?.createUserPreferences || userPreferencesResult?.data?.updateUserPreferences);
         } catch (error) {
           console.error('Error fetching user preferences:', error);
-
         }
       }
     };
-
     fetchUserPreferences();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, userPreferencesLoading, loading]);
