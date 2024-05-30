@@ -8,6 +8,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
@@ -103,8 +104,15 @@ export default function Checkout() {
     refetch();
   }, [refetch]);
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen"> <CircularProgress /> </div>
+  if (loading || !userPreferences || !data ) {
+    return (<Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '40vh'
+    }}>
+      <CircularProgress color='inherit' size={50} />
+    </Box>)
   }
   if (error) return <p>Error: {error.message}</p>;
   return (
@@ -119,14 +127,14 @@ export default function Checkout() {
             <div className="p-4 md:p-6 space-y-4">
               <div className="space-x-5 flex flex-row">
                 <TextField id="outlined-basic" label="First Name" value={userPreferences.userName}
- variant="outlined" size="small" />
+                  variant="outlined" size="small" />
                 <TextField id="outlined-basic" label="Last Name " variant="outlined" size="small" />
 
               </div>
 
 
               <div className="space-y-2">
-                <TextField id="outlined-basic" label="Email" value={userPreferences.email}  className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
+                <TextField id="outlined-basic" label="Email" value={userPreferences.email} className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
               </div>
               <div className="space-x-5 flex flex-row">
                 <TextField id="Phone" label="Phone" value={userPreferences.defaultAddress[0].phone} variant="outlined" size="small" />
@@ -159,21 +167,21 @@ export default function Checkout() {
                 </FormControl>
               </div>
               {paymentMethod === 'Card' && <div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
-              <div className="mb-3">
-                <TextField id="outlined-basic" label="Card Number" placeholder="0000 0000 0000 0000" className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
-              </div>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
+                <div className="mb-3">
+                  <TextField id="outlined-basic" label="Card Number" placeholder="0000 0000 0000 0000" className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
+                </div>
 
-              <div className="space-x-5 flex flex-row">
-                <TextField id="outlined-basic" label="Expiry Date" placeholder="MM/YY" variant="outlined" size="small" />
-                <TextField id="outlined-basic" label="CVC" variant="outlined" placeholder="000" size="small" />
-              </div>
-              <div class="flex items-center gap-2">
-                <label for="myCheckbox">
-                  <Checkbox id="myCheckbox" color="default" />
-                  save card for future payments
-                </label>
-              </div>
+                <div className="space-x-5 flex flex-row">
+                  <TextField id="outlined-basic" label="Expiry Date" placeholder="MM/YY" variant="outlined" size="small" />
+                  <TextField id="outlined-basic" label="CVC" variant="outlined" placeholder="000" size="small" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <label for="myCheckbox">
+                    <Checkbox id="myCheckbox" color="default" />
+                    save card for future payments
+                  </label>
+                </div>
               </div>
               }
             </div>
