@@ -69,7 +69,7 @@ const CREATE_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
-      defaultAddress{
+      defaultAddress {
         city
         email
         phone
@@ -93,7 +93,7 @@ const ProfileContext = createContext({});
 
 
 export const ProfileProvider = ({ children = "null" }) => {
-  const { user, isAuthenticated, isLoading:loading } = useAuth();
+  const { user, isAuthenticated, isLoading: loading } = useAuth();
   console.log('loading', loading)
   const [preferencesCreated, setPreferencesCreated] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
@@ -124,7 +124,7 @@ export const ProfileProvider = ({ children = "null" }) => {
             defaultAddress: [
               {
                 email: user.profile.email,
-                phone: 1234567890,
+                phone: user.profile.phone_number || 1234567890,
                 city: 'Karachi',
                 country: 'Pakistan',
                 postalCode: 12345,
@@ -138,18 +138,18 @@ export const ProfileProvider = ({ children = "null" }) => {
             },
             lastLoggedIn: new Date().toISOString(),
           };
-    
+
           let userPreferencesResult;
           if (userPreferencesData?.getUserPreferencesByEmail) {
             const updatedPreferencesInput = {
               userId: userPreferencesData.userId ? userPreferencesData.userId : userPreferencesInput.userId,
               email: userPreferencesData.email ? userPreferencesData.email : userPreferencesInput.email,
               currencyPreference: userPreferencesData.currencyPreference ? userPreferencesData.currencyPreference : userPreferencesInput.currencyPreference,
-              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress,              preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
+              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress, preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
               userName: userPreferencesData.userName ? userPreferencesData.userName : userPreferencesInput.userName,
               lastLoggedIn: new Date().toISOString(),
             };
-    
+
             userPreferencesResult = await updateUserPreferences({
               variables: {
                 id: userPreferencesData.getUserPreferencesByEmail.id,
@@ -164,7 +164,7 @@ export const ProfileProvider = ({ children = "null" }) => {
             });
             setPreferencesCreated(true);
           }
-    
+
           setUserPreferences(userPreferencesResult?.data?.createUserPreferences || userPreferencesResult?.data?.updateUserPreferences);
         } catch (error) {
           console.error('Error fetching user preferences:', error);
