@@ -9,6 +9,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import {Skeleton} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
@@ -84,7 +85,6 @@ const customTheme = (outerTheme) =>
 
 export default function Checkout() {
   const { userPreferences } = useProfile();
-  console.log('userPreferences', userPreferences)
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const { user } = useAuth();
   const dispatch = useDispatch();
@@ -104,15 +104,35 @@ export default function Checkout() {
     refetch();
   }, [refetch]);
 
-  if (loading || !userPreferences || !data ) {
-    return (<Box sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '40vh'
-    }}>
-      <CircularProgress color='inherit' size={50} />
-    </Box>)
+  if (loading ) {
+    return (  
+      <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
+      <div className="grid gap-6">
+        <div className="rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+            <Skeleton variant="text" width={200} height={30} />
+          </div>
+          <div className="p-4 md:p-6 space-y-4">
+            <Skeleton variant="rectangular" width={200} height={30} />
+            <Skeleton variant="rectangular" width={200} height={30} />
+            <Skeleton variant="rectangular" width={200} height={30} />
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-6">
+        <div className="rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+            <Skeleton variant="text" width={200} height={30} />
+          </div>
+          <div className="p-4 md:p-6 space-y-4">
+            <Skeleton variant="rectangular" width="100%" height={30} />
+            <Skeleton variant="rectangular" width="100%" height={30} />
+            <Skeleton variant="rectangular" width="100%" height={30} />
+          </div>
+        </div>
+      </div>
+    </div>
+    )
   }
   if (error) return <p>Error: {error.message}</p>;
   return (
@@ -126,7 +146,7 @@ export default function Checkout() {
             </div>
             <div className="p-4 md:p-6 space-y-4">
               <div className="space-x-5 flex flex-row">
-                <TextField id="outlined-basic" label="First Name" value={userPreferences.userName}
+                <TextField id="outlined-basic" label="First Name" value={userPreferences.userName ||''}
                   variant="outlined" size="small" />
                 <TextField id="outlined-basic" label="Last Name " variant="outlined" size="small" />
 
@@ -134,11 +154,11 @@ export default function Checkout() {
 
 
               <div className="space-y-2">
-                <TextField id="outlined-basic" label="Email" value={userPreferences.email} className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
+                <TextField id="outlined-basic" label="Email" value={userPreferences.email ||''} className="block w-full rounded-md   sm:text-sm" variant="outlined" size="small" />
               </div>
               <div className="space-x-5 flex flex-row">
-                <TextField id="Phone" label="Phone" value={userPreferences.defaultAddress[0].phone} variant="outlined" size="small" />
-                <TextField id="City" label="City" value={userPreferences.defaultAddress[0].city} variant="outlined" size="small" />
+                <TextField id="Phone" label="Phone" value={userPreferences.defaultAddress[0].phone ||''} variant="outlined" size="small" />
+                <TextField id="City" label="City" value={userPreferences.defaultAddress[0].city || ''} variant="outlined" size="small" />
 
               </div>
               <div className="space-y-2">

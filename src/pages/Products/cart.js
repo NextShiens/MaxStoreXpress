@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { Skeleton } from '@mui/material';
 
 
 const Cart = () => {
@@ -95,14 +95,57 @@ const Cart = () => {
   }
 
   if (loading) return (
-    <Box sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '40vh'
-    }}>
-      <CircularProgress color='inherit' size={50} />
-    </Box>
+    <div className="container mx-auto lg:p-8 p-3 relative">
+    <div className="w-full flex flex-col md:flex-row md:gap-6 gap-2 items-start">
+      <div className="w-full md:w-12/12 mx-auto bg-white p-6 rounded-lg shadow-md">
+        <div className="flex justify-between items-center pb-4 mb-3 border-b">
+          <Skeleton variant="text" width={200} height={40} />
+          <Skeleton variant="rectangular" width={100} height={40} />
+        </div>
+        <div className="w-full max-h-128 overflow-y-auto grid gap-8 md:w-12/12">
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="w-full max-w-2xl mx-auto">
+              <div className="relative flex flex-col md:flex-row items-start gap-6 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <Skeleton variant="rectangular" width={128} height={128} />
+                <div className="flex-1 flex flex-col items-start justify-between">
+                  <Skeleton variant="text" width="60%" height={30} />
+                  <Skeleton variant="text" width="80%" height={20} />
+                  <div className="flex items-center gap-10 w-full mt-4">
+                    <Skeleton variant="rectangular" width={30} height={30} />
+                    <Skeleton variant="text" width={40} height={30} />
+                    <Skeleton variant="rectangular" width={30} height={30} />
+                    <Skeleton variant="text" width={100} height={30} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="md:w-full xl:w-8/12 w-full space-y-4">
+        <div className="flex flex-row justify-center">
+          <div className="lg:w-9/12 w-full bg-white rounded-md shadow-md dark:bg-gray-950">
+            <div className="px-6 py-4 border-b">
+              <Skeleton variant="text" width={150} height={30} />
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              <Skeleton variant="text" width="80%" height={20} />
+              <Skeleton variant="text" width="80%" height={20} />
+              <Skeleton variant="text" width="80%" height={20} />
+              <div className="h-px bg-gray-200 dark:bg-gray-800" />
+              <div className="flex items-center justify-between font-medium">
+                <Skeleton variant="text" width={100} height={30} />
+                <Skeleton variant="text" width={50} height={30} />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t">
+              <Skeleton variant="rectangular" width="100%" height={40} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   );
 
   if (error && error.message === 'No cart found for this user') {

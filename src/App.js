@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ADMIN_ROLE, USER_ROLE, SELLER_ROLE, SUPER_ADMIN_ROLE } from './constant';
 import Footer from './components/common/Footer.js';
-import Skeleton from '@mui/material/Skeleton';
+import SkeletonHome from './pages/skelton/skeltonHome.js'
 import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './pages/transactions/transactions.js';
@@ -39,10 +39,11 @@ const Users = React.lazy(() => import("./components/UserComponent/index.js"));
 const RealProducts = React.lazy(() => import("./pages/Products/index.js"));
 const DemoProducts = React.lazy(() => import("./pages/Products/demoRealProducts.js"));
 const SellerAccessRequestForm = React.lazy(() => import("./components/SellerDashboard/SellerAccessRequestForm.js"));
+
 const App = () => {
   return (
     <>
-      <React.Suspense fallback={<Skeleton variant="rectangular" width={210} height={118} />}>
+      <React.Suspense fallback={<SkeletonHome />}>
         <Navbar />
         <Routes>
           <Route path="/sidebar" element={<Sidebar />} />
