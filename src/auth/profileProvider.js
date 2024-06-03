@@ -91,10 +91,8 @@ const CREATE_USER_PREFERENCES = gql`
 
 const ProfileContext = createContext({});
 
-
 export const ProfileProvider = ({ children = "null" }) => {
   const { user, isAuthenticated, isLoading: loading } = useAuth();
-  console.log('loading', loading)
   const [preferencesCreated, setPreferencesCreated] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
   const [updateUserPreferences, { data: updateData, loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER_PREFERENCES);
@@ -145,7 +143,9 @@ export const ProfileProvider = ({ children = "null" }) => {
               userId: userPreferencesData.userId ? userPreferencesData.userId : userPreferencesInput.userId,
               email: userPreferencesData.email ? userPreferencesData.email : userPreferencesInput.email,
               currencyPreference: userPreferencesData.currencyPreference ? userPreferencesData.currencyPreference : userPreferencesInput.currencyPreference,
-              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress, preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
+              defaultAddress: userPreferencesData.defaultAddress ? userPreferencesData.defaultAddress : userPreferencesInput.defaultAddress,
+              notificationSettings: userPreferencesData.notificationSettings ? userPreferencesData.notificationSettings : userPreferencesInput.notificationSettings,
+              preferredLanguage: userPreferencesData.preferredLanguage ? userPreferencesData.preferredLanguage : userPreferencesInput.preferredLanguage,
               userName: userPreferencesData.userName ? userPreferencesData.userName : userPreferencesInput.userName,
               lastLoggedIn: new Date().toISOString(),
             };
@@ -171,9 +171,24 @@ export const ProfileProvider = ({ children = "null" }) => {
         }
       }
     };
+
     fetchUserPreferences();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, userPreferencesLoading, loading]);
+
+  const updateUserPreferencesHandler = async (updatedPreferences) => {
+    try {
+      const result = await updateUserPreferences({
+        variables: {
+          id: userPreferences.id,
+          input: updatedPreferences,
+        },
+      });
+      setUserPreferences(result.data.updateUserPreferences);
+    } catch (error) {
+      console.error('Error updating user preferences:', error);
+    }
+  };
 
   return (
     <ProfileContext.Provider
@@ -184,6 +199,7 @@ export const ProfileProvider = ({ children = "null" }) => {
         updateLoading,
         createError,
         loading,
+        updateUserPreferences: updateUserPreferencesHandler,
       }}
     >
       {children}
