@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import TextField from '@mui/material/TextField';
 import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -10,6 +9,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { toast } from 'react-toastify';
+import { Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Button } from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 const customTheme = (outerTheme) =>
   createTheme({
@@ -77,9 +82,8 @@ const customTheme = (outerTheme) =>
     },
   });
 
-const YourProfile = () => {
+  const YourProfile = () => {
   const { userPreferences, updateUserPreferences } = useProfile();
-  const dispatch = useDispatch();
   const outerTheme = useTheme();
 
   const [userId, setUserId] = useState('');
@@ -87,14 +91,8 @@ const YourProfile = () => {
   const [email, setEmail] = useState('');
   const [language, setLanguage] = useState('');
   const [currency, setCurrency] = useState('');
-  const [address, setAddress] = useState({
-    city: '',
-    email: '',
-    phone: '',
-    country: '',
-    postalCode: '',
-    streetAddress: '',
-  });
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
   const [notificationSettings, setNotificationSettings] = useState({
     newProductUpdates: false,
     orderUpdates: false,
@@ -102,23 +100,32 @@ const YourProfile = () => {
   });
 
   useEffect(() => {
+    console.log("user preferences" + userPreferences);
     if (userPreferences) {
       setUserId(userPreferences.userId || '');
       setUsername(userPreferences.userName || '');
       setEmail(userPreferences.email || '');
       setLanguage(userPreferences.preferredLanguage || '');
       setCurrency(userPreferences.currencyPreference || '');
-      setAddress(userPreferences.defaultAddress || {});
+      setAddresses(userPreferences.defaultAddress || []);
       setNotificationSettings(userPreferences.notificationSettings || {});
     }
   }, [userPreferences]);
 
   const handleAddressChange = (e) => {
     const { name, value } = e.target;
-    setAddress((prevAddress) => ({
-      ...prevAddress,
-      [name]: value,
-    }));
+    const updatedAddresses = [...addresses];
+    if (selectedAddressIndex !== -1) {
+      updatedAddresses[selectedAddressIndex] = {
+        ...updatedAddresses[selectedAddressIndex],
+        [name]: value,
+      };
+    } else {
+      updatedAddresses.push({
+        [name]: value,
+      });
+    }
+    setAddresses(updatedAddresses);
   };
 
   const handleNotificationChange = (e) => {
@@ -128,6 +135,11 @@ const YourProfile = () => {
       [name]: checked,
     }));
   };
+
+  const handleAddressSelection = (index) => {
+    setSelectedAddressIndex(index);
+  };
+
   const handleSubmit = () => {
     const updatedUserPreferences = {
       userId: userId,
@@ -135,14 +147,7 @@ const YourProfile = () => {
       email: email,
       preferredLanguage: language,
       currencyPreference: currency,
-      defaultAddress: {
-        city: address.city,
-        email: address.email,
-        phone:address.phone,
-        country: address.country,
-        postalCode: address.postalCode,
-        streetAddress: address.streetAddress,
-      },
+      defaultAddress: addresses,
       notificationSettings: {
         newProductUpdates: notificationSettings.newProductUpdates,
         orderUpdates: notificationSettings.orderUpdates,
@@ -150,9 +155,27 @@ const YourProfile = () => {
       },
       lastLoggedIn: userPreferences.lastLoggedIn,
     };
-  
-    updateUserPreferences(updatedUserPreferences);
+
+    try {
+      updateUserPreferences(updatedUserPreferences);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      toast.success('🦄 Wow so easy!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
   };
+
+  const selectedAddress = selectedAddressIndex !== -1 ? addresses[selectedAddressIndex] : {};
 
   return (
     <ThemeProvider theme={customTheme(outerTheme)}>
@@ -163,7 +186,7 @@ const YourProfile = () => {
               <h3 className="text-lg font-medium">Your Profile</h3>
             </div>
             <div className="p-4 md:p-6 space-y-4">
-              <div className="space-x-5 flex flex-row">
+              <div className="space-x-11 flex flex-row">
                 <TextField
                   id="userName"
                   label="Username"
@@ -182,7 +205,7 @@ const YourProfile = () => {
                 />
               </div>
 
-              <div className="space-x-5 flex flex-row">
+              <div className="space-x-11 flex flex-row">
                 <FormControl fullWidth variant="outlined" margin="normal">
                   <InputLabel>Language</InputLabel>
                   <Select
@@ -211,11 +234,11 @@ const YourProfile = () => {
                 </FormControl>
               </div>
 
-              <div className="space-x-5 flex flex-row">
+              <div className="space-x-11 flex flex-row">
                 <TextField
                   id="city"
                   label="City"
-                  value={address.city}
+                  value={selectedAddress.city || ''}
                   name="city"
                   variant="outlined"
                   size="small"
@@ -224,7 +247,7 @@ const YourProfile = () => {
                 <TextField
                   id="postalCode"
                   label="Postal Code"
-                  value={address.postalCode}
+                  value={selectedAddress.postalCode || ''}
                   name="postalCode"
                   variant="outlined"
                   size="small"
@@ -232,11 +255,11 @@ const YourProfile = () => {
                 />
               </div>
 
-              <div className="space-x-5 flex flex-row">
+              <div className="space-x-11 flex flex-row">
                 <TextField
                   id="phone"
                   label="Phone"
-                  value={address.phone}
+                  value={selectedAddress.phone || ''}
                   name="phone"
                   variant="outlined"
                   size="small"
@@ -245,19 +268,20 @@ const YourProfile = () => {
                 <TextField
                   id="country"
                   label="Country"
-                  value={address.country}
+                  value={selectedAddress.country || ''}
                   name="country"
                   variant="outlined"
                   size="small"
                   onChange={handleAddressChange}
                 />
               </div>
-              
+
               <div className="space-x-5 flex flex-row">
                 <TextField
+                  className="w-full block"
                   id="email"
                   label="Contact Email"
-                  value={address.email}
+                  value={selectedAddress.email || ''}
                   name="email"
                   variant="outlined"
                   size="small"
@@ -265,11 +289,12 @@ const YourProfile = () => {
                 />
               </div>
 
-              <div className="space-y-2 ">
-                <TextField className='w-full block '
+              <div className="space-y-2">
+                <TextField
+                  className="w-full block"
                   id="streetAddress"
                   label="Street Address"
-                  value={address.streetAddress}
+                  value={selectedAddress.streetAddress || ''}
                   name="streetAddress"
                   variant="outlined"
                   multiline
@@ -318,11 +343,42 @@ const YourProfile = () => {
 
               <button
                 onClick={handleSubmit}
-                className="inline-flex justify-center w-full rounded-md border border-transparent bg-gray-900 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700 "
+                className="inline-flex justify-center w-full rounded-md border border-transparent bg-gray-900 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700"
                 type="button"
               >
                 Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-6">
+          <div className="rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+              <h3 className="text-lg font-medium">Your Addresses</h3>
+            </div>
+            <div className="p-4 md:p-6 space-y-4">
+              {userPreferences.defaultAddress && userPreferences.defaultAddress.map((address, index) => (
+                <div key={index} className="border border-gray-200 m-2 ml-5 mr-5 space-x-3 rounded-md p-4 mb-4">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        color="default"
+                        checked={index === selectedAddressIndex}
+                        onChange={() => handleAddressSelection(index)}
+                        className="text-blue-500 focus:ring-blue-500"
+                      />
+                    }
+                    label={
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{address.streetAddress}</p>
+                        <p className="text-sm text-gray-500"><LocationOnIcon /> {address.city}</p>
+                        <p className="text-sm text-gray-500"><LocalPhoneIcon /> {address.phone}</p>
+                      </div>
+                    }
+                    className="flex items-start"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

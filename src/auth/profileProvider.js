@@ -122,10 +122,10 @@ export const ProfileProvider = ({ children = "null" }) => {
             defaultAddress: [
               {
                 email: user.profile.email,
-                phone: user.profile.phone_number || 1234567890,
+                phone: user.profile.phone_number || '1234567890',
                 city: 'Karachi',
                 country: 'Pakistan',
-                postalCode: 12345,
+                postalCode: '12345',
                 streetAddress: '123 Main Street',
               },
             ],
@@ -164,7 +164,7 @@ export const ProfileProvider = ({ children = "null" }) => {
             });
             setPreferencesCreated(true);
           }
-
+          
           setUserPreferences(userPreferencesResult?.data?.createUserPreferences || userPreferencesResult?.data?.updateUserPreferences);
         } catch (error) {
           console.error('Error fetching user preferences:', error);
