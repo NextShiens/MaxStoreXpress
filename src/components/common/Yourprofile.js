@@ -9,10 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import { toast } from 'react-toastify';
-import { Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Button } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
@@ -83,101 +80,170 @@ const customTheme = (outerTheme) =>
   });
 
   const YourProfile = () => {
-  const { userPreferences, updateUserPreferences } = useProfile();
-  const outerTheme = useTheme();
-
-  const [userId, setUserId] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [language, setLanguage] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
-  const [notificationSettings, setNotificationSettings] = useState({
-    newProductUpdates: false,
-    orderUpdates: false,
-    promotionalOffers: false,
-  });
-
-  useEffect(() => {
-    console.log("user preferences" + userPreferences);
-    if (userPreferences) {
-      setUserId(userPreferences.userId || '');
-      setUsername(userPreferences.userName || '');
-      setEmail(userPreferences.email || '');
-      setLanguage(userPreferences.preferredLanguage || '');
-      setCurrency(userPreferences.currencyPreference || '');
-      setAddresses(userPreferences.defaultAddress || []);
-      setNotificationSettings(userPreferences.notificationSettings || {});
-    }
-  }, [userPreferences]);
-
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    const updatedAddresses = [...addresses];
-    if (selectedAddressIndex !== -1) {
-      updatedAddresses[selectedAddressIndex] = {
-        ...updatedAddresses[selectedAddressIndex],
-        [name]: value,
-      };
-    } else {
-      updatedAddresses.push({
-        [name]: value,
-      });
-    }
-    setAddresses(updatedAddresses);
-  };
-
-  const handleNotificationChange = (e) => {
-    const { name, checked } = e.target;
-    setNotificationSettings((prevSettings) => ({
-      ...prevSettings,
-      [name]: checked,
-    }));
-  };
-
-  const handleAddressSelection = (index) => {
-    setSelectedAddressIndex(index);
-  };
-
-  const handleSubmit = () => {
-    const updatedUserPreferences = {
-      userId: userId,
-      userName: username,
-      email: email,
-      preferredLanguage: language,
-      currencyPreference: currency,
-      defaultAddress: addresses,
-      notificationSettings: {
-        newProductUpdates: notificationSettings.newProductUpdates,
-        orderUpdates: notificationSettings.orderUpdates,
-        promotionalOffers: notificationSettings.promotionalOffers,
-      },
-      lastLoggedIn: userPreferences.lastLoggedIn,
+    const { loading, createLoading, userPreferences, updateUserPreferences } = useProfile();
+    const outerTheme = useTheme();
+    const [userId, setUserId] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [language, setLanguage] = useState('');
+    const [currency, setCurrency] = useState('');
+    const [addresses, setAddresses] = useState([]);
+    const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
+    const [inputAddress, setInputAddress] = useState({
+      city: '',
+      email: '',
+      phone: '',
+      country: '',
+      postalCode: '',
+      streetAddress: '',
+    });
+    const [notificationSettings, setNotificationSettings] = useState({
+      newProductUpdates: false,
+      orderUpdates: false,
+      promotionalOffers: false,
+    });
+  
+    useEffect(() => {
+      console.log("user preferences" + userPreferences);
+      if (userPreferences) {
+        setUserId(userPreferences.userId || '');
+        setUsername(userPreferences.userName || '');
+        setEmail(userPreferences.email || '');
+        setLanguage(userPreferences.preferredLanguage || '');
+        setCurrency(userPreferences.currencyPreference || '');
+        setAddresses(userPreferences.defaultAddress || []);
+        setNotificationSettings(userPreferences.notificationSettings || {});
+      }
+    }, [userPreferences]);
+  
+    const handleAddressChange = (e) => {
+      const { name, value } = e.target;
+      if (selectedAddressIndex !== -1) {
+        const updatedAddresses = [...addresses];
+        updatedAddresses[selectedAddressIndex] = {
+          ...updatedAddresses[selectedAddressIndex],
+          [name]: value,
+        };
+        setAddresses(updatedAddresses);
+      } else {
+        setInputAddress((prevAddress) => ({
+          ...prevAddress,
+          [name]: value,
+        }));
+      }
     };
-
-    try {
-      updateUserPreferences(updatedUserPreferences);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      toast.success('🦄 Wow so easy!', {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
+  
+    const handleNotificationChange = (e) => {
+      const { name, checked } = e.target;
+      setNotificationSettings((prevSettings) => ({
+        ...prevSettings,
+        [name]: checked,
+      }));
+    };
+  
+    const handleAddressSelection = (index) => {
+      setSelectedAddressIndex(index);
+      setInputAddress(addresses[index]);
+    };
+  
+    const handleDeleteAddress = (index) => {
+      const updatedAddresses = addresses.filter((_, i) => i !== index);
+      setAddresses(updatedAddresses);
+      setSelectedAddressIndex(-1);
+      setInputAddress({
+        city: '',
+        email: '',
+        phone: '',
+        country: '',
+        postalCode: '',
+        streetAddress: '',
       });
-    }
-  };
-
-  const selectedAddress = selectedAddressIndex !== -1 ? addresses[selectedAddressIndex] : {};
-
-  return (
+    };
+  
+    const handleSubmit = async () => {
+      const updatedAddress = {
+        city: inputAddress.city,
+        email: inputAddress.email,
+        phone: inputAddress.phone,
+        country: inputAddress.country,
+        postalCode: inputAddress.postalCode,
+        streetAddress: inputAddress.streetAddress,
+      };
+    
+      let updatedAddresses;
+      if (selectedAddressIndex !== -1) {
+        updatedAddresses = [...addresses];
+        updatedAddresses[selectedAddressIndex] = updatedAddress;
+      } else {
+        updatedAddresses = [...addresses, updatedAddress];
+      }
+    
+      const updatedUserPreferences = {
+        userId: userId,
+        userName: username,
+        email: email,
+        preferredLanguage: language,
+        currencyPreference: currency,
+        defaultAddress: updatedAddresses.map((address) => ({ ...address, __typename: undefined })),
+        notificationSettings: {
+          newProductUpdates: notificationSettings.newProductUpdates,
+          orderUpdates: notificationSettings.orderUpdates,
+          promotionalOffers: notificationSettings.promotionalOffers,
+        },
+        lastLoggedIn: userPreferences.lastLoggedIn,
+      };
+    
+      try {
+        await updateUserPreferences(updatedUserPreferences);
+        setAddresses(updatedAddresses);
+        setInputAddress({
+          city: '',
+          email: '',
+          phone: '',
+          country: '',
+          postalCode: '',
+          streetAddress: '',
+        });
+        setSelectedAddressIndex(-1);
+      } catch (err) {
+        console.error('Error updating user preferences:', err);
+      }
+    };
+    
+  if (loading || createLoading || !userPreferences) {
+    return (
+      <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
+        <div className="grid gap-6">
+          <div className="rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+              <Skeleton variant="text" width={200} height={30} />
+            </div>
+            <div className="p-4 md:p-6 space-y-4">
+              <Skeleton className='rounded' variant="rectangular" width={250} height={30} />
+              <Skeleton className='rounded' variant="rectangular" width={200} height={30} />
+              <Skeleton className='rounded' variant="rectangular" width={250} height={30} />
+              <Skeleton className='rounded' variant="rectangular" width={200} height={30} />
+              <Skeleton className='rounded' variant="rectangular" width={250} height={30} />
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-6">
+          <div className="rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+              <Skeleton variant="text" width={200} height={30} />
+            </div>
+            <div className="p-4 md:p-6 space-y-4">
+              <Skeleton className='rounded' variant="rectangular" width="80%" height={30} />
+              <Skeleton variant="rectangular" className='rounded' width="70%" height={30} />
+              <Skeleton variant="rectangular" className='rounded' width="80%" height={30} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  const selectedAddress = selectedAddressIndex !== -1 ? addresses[selectedAddressIndex] : inputAddress;
+    return (
     <ThemeProvider theme={customTheme(outerTheme)}>
       <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
         <div className="grid gap-6">
@@ -346,7 +412,7 @@ const customTheme = (outerTheme) =>
                 className="inline-flex justify-center w-full rounded-md border border-transparent bg-gray-900 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700"
                 type="button"
               >
-                Save Changes
+                {selectedAddressIndex !== -1 ? 'Update Address' : 'Add Address'}
               </button>
             </div>
           </div>

@@ -129,7 +129,11 @@ const Navbar = () => {
       console.error("Error logging out: ", error);
     }
   };
-
+  useEffect(() => {
+    if (cartData) {
+      dispatch(actionCreators.setCart(cartData.getCartItems.products));
+    }
+  }, [cartData, dispatch]);
   useEffect(() => {
     const handleResize = () => {
       setShowCategories(window.innerWidth > 992);

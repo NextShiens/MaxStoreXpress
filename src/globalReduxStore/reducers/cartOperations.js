@@ -67,6 +67,7 @@ const UPDATE_ITEM = gql`
 export const useFetchCartData = (userID) => {
   const { data, loading, error, refetch } = useQuery(GET_CART, {
     variables: { userID },
+    skip: !userID, 
   });
 
   return { data, loading, error, refetch };
