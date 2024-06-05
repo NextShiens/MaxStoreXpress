@@ -121,20 +121,12 @@ const customTheme = (outerTheme) =>
   
     const handleAddressChange = (e) => {
       const { name, value } = e.target;
-      if (selectedAddressIndex !== -1) {
-        const updatedAddresses = [...addresses];
-        updatedAddresses[selectedAddressIndex] = {
-          ...updatedAddresses[selectedAddressIndex],
-          [name]: value,
-        };
-        setAddresses(updatedAddresses);
-      } else {
-        setInputAddress((prevAddress) => ({
-          ...prevAddress,
-          [name]: value,
-        }));
-      }
+      setInputAddress((prevAddress) => ({
+        ...prevAddress,
+        [name]: value,
+      }));
     };
+    
   
     const handleNotificationChange = (e) => {
       const { name, checked } = e.target;
@@ -170,16 +162,27 @@ const customTheme = (outerTheme) =>
         console.error('Error deleting user address:', error);
       }
     };
-  
     const handleSubmit = async () => {
-      const updatedAddress = {
-        city: inputAddress.city ,
-        email: inputAddress.email,
-        phone: inputAddress.phone,
-        country: inputAddress.country,
-        postalCode: inputAddress.postalCode,
-        streetAddress: inputAddress.streetAddress,
-      };
+      let updatedAddress;
+      if (selectedAddressIndex !== -1) {
+        updatedAddress = {
+          city: inputAddress.city,
+          email: inputAddress.email,
+          phone: inputAddress.phone,
+          country: inputAddress.country,
+          postalCode: inputAddress.postalCode,
+          streetAddress: inputAddress.streetAddress,
+        };
+      } else {
+        updatedAddress = {
+          city: inputAddress.city,
+          email: inputAddress.email,
+          phone: inputAddress.phone,
+          country: inputAddress.country,
+          postalCode: inputAddress.postalCode,
+          streetAddress: inputAddress.streetAddress,
+        };
+      }
     
       let updatedAddresses;
       if (selectedAddressIndex !== -1) {
@@ -220,7 +223,6 @@ const customTheme = (outerTheme) =>
         console.error('Error updating user preferences:', err);
       }
     };
-    
   if (loading || createLoading || !userPreferences) {
     return (
       <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
@@ -314,21 +316,21 @@ const customTheme = (outerTheme) =>
               </div>
 
               <div className="space-x-11 flex flex-row">
-                <TextField
-                required
-                  id="city"
-                  label="City"
-                  value={selectedAddress.city || ''}
-                  name="city"
-                  variant="outlined"
-                  size="small"
-                  onChange={handleAddressChange}
-                />
-                <TextField
+              <TextField
+  required
+  id="city"
+  label="City"
+  value={inputAddress.city || ''}
+  name="city"
+  variant="outlined"
+  size="small"
+  onChange={handleAddressChange}
+/>
+<TextField
                 required
                   id="postalCode"
                   label="Postal Code"
-                  value={selectedAddress.postalCode || ''}
+                  value={inputAddress.postalCode || ''}
                   name="postalCode"
                   variant="outlined"
                   size="small"
@@ -341,7 +343,7 @@ const customTheme = (outerTheme) =>
                 required
                   id="phone"
                   label="Phone"
-                  value={selectedAddress.phone || ''}
+                  value={inputAddress.phone || ''}
                   name="phone"
                   variant="outlined"
                   size="small"
@@ -351,7 +353,7 @@ const customTheme = (outerTheme) =>
                 required
                   id="country"
                   label="Country"
-                  value={selectedAddress.country || ''}
+                  value={inputAddress.country || ''}
                   name="country"
                   variant="outlined"
                   size="small"
@@ -365,7 +367,7 @@ const customTheme = (outerTheme) =>
                   className="w-full block"
                   id="email"
                   label="Contact Email"
-                  value={selectedAddress.email || ''}
+                  value={inputAddress.email || ''}
                   name="email"
                   variant="outlined"
                   size="small"
@@ -379,7 +381,7 @@ const customTheme = (outerTheme) =>
                   className="w-full block"
                   id="streetAddress"
                   label="Street Address"
-                  value={selectedAddress.streetAddress || ''}
+                  value={inputAddress.streetAddress || ''}
                   name="streetAddress"
                   variant="outlined"
                   multiline
@@ -446,7 +448,7 @@ const customTheme = (outerTheme) =>
        
               {userPreferences.defaultAddress && userPreferences.defaultAddress.map((address, index) => (
               
-              <div key={index} className="border border-gray-200 m-2 ml-5 mr-5 space-x-3 rounded-md p-4 mb-4">
+              <div key={index} className="border flex flex-col justify-start border-gray-200 m-2 ml-5 mr-5 space-x-3 rounded-md p-4 mb-4">
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -468,7 +470,7 @@ const customTheme = (outerTheme) =>
                     }
                     className="flex items-start"
                   />
-                   <Button onClick={()=>handleDeleteAddress(index)} disabled={deleteLoading} className=' margin: 0 auto' variant="text" color="error">    
+                   <Button onClick={()=>handleDeleteAddress(index)} disabled={deleteLoading} className='w-8 ' variant="text" color="error">    
                   <DeleteForeverIcon/>
                 </Button>
 
