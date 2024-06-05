@@ -11,7 +11,7 @@ const UPDATE_USER_PREFERENCES = gql`
       userName
       preferredLanguage
       currencyPreference
-      defaultAddress{
+      defaultAddress {
         city
         email
         phone
@@ -40,7 +40,7 @@ const GET_USER_PREFERENCES = gql`
       email
       preferredLanguage
       currencyPreference
-      defaultAddress{
+      defaultAddress {
         city
         email
         phone
@@ -89,14 +89,45 @@ const CREATE_USER_PREFERENCES = gql`
   }
 `;
 
+const DELETE_ADDRESS = gql`
+  mutation deleteAddress($index: Int!, $email: String!) {
+    deleteAddress(index: $index, email: $email) {
+      id
+      userId
+      userName
+      email
+      preferredLanguage
+      currencyPreference
+      defaultAddress {
+        city
+        email
+        phone
+        country
+        postalCode
+        streetAddress
+      }
+      notificationSettings {
+        newProductUpdates
+        orderUpdates
+        promotionalOffers
+      }
+      createdAt
+      updatedAt
+      lastLoggedIn
+    }
+  }
+`;
+
 const ProfileContext = createContext({});
 
 export const ProfileProvider = ({ children = "null" }) => {
   const { user, isAuthenticated, isLoading: loading } = useAuth();
   const [preferencesCreated, setPreferencesCreated] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
+
   const [updateUserPreferences, { data: updateData, loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER_PREFERENCES);
   const [createUserPreferences, { data: createData, loading: createLoading, error: createError }] = useMutation(CREATE_USER_PREFERENCES);
+  const [deleteUserAddress, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(DELETE_ADDRESS);
 
   const { data: userPreferencesData, loading: userPreferencesLoading, error: userPreferencesError } = useQuery(GET_USER_PREFERENCES, {
     skip: !user?.profile?.email,
@@ -110,11 +141,48 @@ export const ProfileProvider = ({ children = "null" }) => {
   }, [userPreferencesData]);
 
   useEffect(() => {
+    const cleanPreferences = (preferences) => {
+      const { __typename, id, createdAt, updatedAt, ...cleanedPreferences } = preferences;
+      if (cleanedPreferences.defaultAddress) {
+        cleanedPreferences.defaultAddress = cleanedPreferences.defaultAddress.map(({ __typename, ...address }) => address);
+      }
+      if (cleanedPreferences.notificationSettings) {
+        const { __typename, ...settings } = cleanedPreferences.notificationSettings;
+        cleanedPreferences.notificationSettings = settings;
+      }
+      return cleanedPreferences;
+    };
+
     const fetchUserPreferences = async () => {
       if (isAuthenticated && user?.profile?.email && !userPreferencesLoading) {
         try {
           if (userPreferencesData?.getUserPreferencesByEmail) {
-            setUserPreferences(userPreferencesData.getUserPreferencesByEmail);
+            if (!userPreferencesData.getUserPreferencesByEmail.defaultAddress || userPreferencesData.getUserPreferencesByEmail.defaultAddress.length === 0) {
+              const updatedPreferencesInput = {
+                ...cleanPreferences(userPreferencesData.getUserPreferencesByEmail),
+                defaultAddress: [
+                  {
+                    email: user.profile.email,
+                    phone: user.profile.phone_number || '1234567890',
+                    city: 'Kamalia',
+                    country: 'Pakistan',
+                    postalCode: '12345',
+                    streetAddress: '123 Main Street',
+                  },
+                ],
+              };
+
+              const result = await updateUserPreferences({
+                variables: {
+                  id: userPreferencesData.getUserPreferencesByEmail.id,
+                  input: updatedPreferencesInput,
+                },
+              });
+
+              setUserPreferences(result.data.updateUserPreferences);
+            } else {
+              setUserPreferences(userPreferencesData.getUserPreferencesByEmail);
+            }
           } else {
             const userPreferencesInput = {
               userId: user.profile.sub,
@@ -139,13 +207,13 @@ export const ProfileProvider = ({ children = "null" }) => {
               },
               lastLoggedIn: new Date().toISOString(),
             };
-    
+
             const userPreferencesResult = await createUserPreferences({
               variables: {
                 input: userPreferencesInput,
               },
             });
-    
+
             setUserPreferences(userPreferencesResult?.data?.createUserPreferences);
             setPreferencesCreated(true);
           }
@@ -160,10 +228,22 @@ export const ProfileProvider = ({ children = "null" }) => {
 
   const updateUserPreferencesHandler = async (updatedPreferences) => {
     try {
+      const cleanPreferences = (preferences) => {
+        const { __typename, id, createdAt, updatedAt, ...cleanedPreferences } = preferences;
+        if (cleanedPreferences.defaultAddress) {
+          cleanedPreferences.defaultAddress = cleanedPreferences.defaultAddress.map(({ __typename, ...address }) => address);
+        }
+        if (cleanedPreferences.notificationSettings) {
+          const { __typename, ...settings } = cleanedPreferences.notificationSettings;
+          cleanedPreferences.notificationSettings = settings;
+        }
+        return cleanedPreferences;
+      };
+
       const result = await updateUserPreferences({
         variables: {
           id: userPreferences.id,
-          input: updatedPreferences,
+          input: cleanPreferences(updatedPreferences),
         },
       });
       setUserPreferences(result.data.updateUserPreferences);
@@ -179,16 +259,17 @@ export const ProfileProvider = ({ children = "null" }) => {
         userPreferences,
         createLoading,
         updateLoading,
+        deleteLoading,
         createError,
         loading,
         updateUserPreferences: updateUserPreferencesHandler,
+        deleteUserAddress,
       }}
     >
       {children}
     </ProfileContext.Provider>
   );
 };
-
 
 export const useProfile = () => {
   return useContext(ProfileContext);

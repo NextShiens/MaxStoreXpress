@@ -12,6 +12,9 @@ import FormControl from '@mui/material/FormControl';
 import Skeleton from '@mui/material/Skeleton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const customTheme = (outerTheme) =>
   createTheme({
@@ -80,7 +83,7 @@ const customTheme = (outerTheme) =>
   });
 
   const YourProfile = () => {
-    const { loading, createLoading, userPreferences, updateUserPreferences } = useProfile();
+    const { loading, deleteLoading, createLoading,updateLoading, userPreferences, updateUserPreferences ,deleteUserAddress} = useProfile();
     const outerTheme = useTheme();
     const [userId, setUserId] = useState('');
     const [username, setUsername] = useState('');
@@ -145,24 +148,32 @@ const customTheme = (outerTheme) =>
       setSelectedAddressIndex(index);
       setInputAddress(addresses[index]);
     };
-  
-    const handleDeleteAddress = (index) => {
-      const updatedAddresses = addresses.filter((_, i) => i !== index);
-      setAddresses(updatedAddresses);
-      setSelectedAddressIndex(-1);
-      setInputAddress({
-        city: '',
-        email: '',
-        phone: '',
-        country: '',
-        postalCode: '',
-        streetAddress: '',
-      });
+
+    
+    const handleDeleteAddress = async (index) => {
+      try {
+        await deleteUserAddress({
+          variables: {
+            index: index,
+            email: email,
+          },
+        });
+        setInputAddress({
+          city: '',
+          email: '',
+          phone: '',
+          country: '',
+          postalCode: '',
+          streetAddress: '',
+        });
+      } catch (error) {
+        console.error('Error deleting user address:', error);
+      }
     };
   
     const handleSubmit = async () => {
       const updatedAddress = {
-        city: inputAddress.city,
+        city: inputAddress.city ,
         email: inputAddress.email,
         phone: inputAddress.phone,
         country: inputAddress.country,
@@ -248,12 +259,14 @@ const customTheme = (outerTheme) =>
       <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
         <div className="grid gap-6">
           <div className="rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6 relative">
               <h3 className="text-lg font-medium">Your Profile</h3>
+              { updateLoading && <CircularProgress className='absolute right-10 top-6' color="inherit" size={25} /> }
             </div>
             <div className="p-4 md:p-6 space-y-4">
               <div className="space-x-11 flex flex-row">
                 <TextField
+                required
                   id="userName"
                   label="Username"
                   value={username}
@@ -302,6 +315,7 @@ const customTheme = (outerTheme) =>
 
               <div className="space-x-11 flex flex-row">
                 <TextField
+                required
                   id="city"
                   label="City"
                   value={selectedAddress.city || ''}
@@ -311,6 +325,7 @@ const customTheme = (outerTheme) =>
                   onChange={handleAddressChange}
                 />
                 <TextField
+                required
                   id="postalCode"
                   label="Postal Code"
                   value={selectedAddress.postalCode || ''}
@@ -323,6 +338,7 @@ const customTheme = (outerTheme) =>
 
               <div className="space-x-11 flex flex-row">
                 <TextField
+                required
                   id="phone"
                   label="Phone"
                   value={selectedAddress.phone || ''}
@@ -332,6 +348,7 @@ const customTheme = (outerTheme) =>
                   onChange={handleAddressChange}
                 />
                 <TextField
+                required
                   id="country"
                   label="Country"
                   value={selectedAddress.country || ''}
@@ -344,6 +361,7 @@ const customTheme = (outerTheme) =>
 
               <div className="space-x-5 flex flex-row">
                 <TextField
+                required
                   className="w-full block"
                   id="email"
                   label="Contact Email"
@@ -357,6 +375,7 @@ const customTheme = (outerTheme) =>
 
               <div className="space-y-2">
                 <TextField
+                required
                   className="w-full block"
                   id="streetAddress"
                   label="Street Address"
@@ -369,7 +388,7 @@ const customTheme = (outerTheme) =>
                   onChange={handleAddressChange}
                 />
               </div>
-
+              <h3 className="text-lg font-medium">Notifications Settings</h3>
               <div className="flex items-center gap-2">
                 <FormControlLabel
                   control={
@@ -419,12 +438,15 @@ const customTheme = (outerTheme) =>
         </div>
         <div className="grid gap-6">
           <div className="rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 md:p-6 relative">
               <h3 className="text-lg font-medium">Your Addresses</h3>
+              { deleteLoading &&<CircularProgress className='absolute right-10 top-6' color="error" size={25} />}
             </div>
             <div className="p-4 md:p-6 space-y-4">
+       
               {userPreferences.defaultAddress && userPreferences.defaultAddress.map((address, index) => (
-                <div key={index} className="border border-gray-200 m-2 ml-5 mr-5 space-x-3 rounded-md p-4 mb-4">
+              
+              <div key={index} className="border border-gray-200 m-2 ml-5 mr-5 space-x-3 rounded-md p-4 mb-4">
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -436,13 +458,20 @@ const customTheme = (outerTheme) =>
                     }
                     label={
                       <div>
+                        
                         <p className="text-sm font-medium text-gray-900">{address.streetAddress}</p>
                         <p className="text-sm text-gray-500"><LocationOnIcon /> {address.city}</p>
                         <p className="text-sm text-gray-500"><LocalPhoneIcon /> {address.phone}</p>
+                       
                       </div>
+
                     }
                     className="flex items-start"
                   />
+                   <Button onClick={()=>handleDeleteAddress(index)} disabled={deleteLoading} className=' margin: 0 auto' variant="text" color="error">    
+                  <DeleteForeverIcon/>
+                </Button>
+
                 </div>
               ))}
             </div>
