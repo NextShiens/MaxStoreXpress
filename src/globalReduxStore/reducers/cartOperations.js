@@ -10,6 +10,7 @@ const GET_CART = gql`
         quantity
         imageUrl
         description
+        discount
       }
       userID
       totalPrice
@@ -26,6 +27,7 @@ const ADD_TO_CART = gql`
         quantity
         imageUrl
         description
+        discount
       }
       userID
     }
@@ -56,6 +58,7 @@ const UPDATE_ITEM = gql`
       userID
       products {
         id
+        quantity
       }
     }
   }
@@ -64,14 +67,15 @@ const UPDATE_ITEM = gql`
 export const useFetchCartData = (userID) => {
   const { data, loading, error, refetch } = useQuery(GET_CART, {
     variables: { userID },
+    skip: !userID, 
   });
 
   return { data, loading, error, refetch };
 };
 export const useAddToCart = () => {
-  const [addToCart] = useMutation(ADD_TO_CART);
+  const [addToCartItem] = useMutation(ADD_TO_CART);
 
-  return addToCart;
+  return addToCartItem;
 };
 export const useDeleteCartItem = () => {
   const [deleteCartItem] = useMutation(DELETE_ITEM);

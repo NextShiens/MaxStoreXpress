@@ -15,7 +15,6 @@ import { useFetchCartData } from '../../globalReduxStore/reducers/cartOperations
 import { useAuth } from 'react-oidc-context';
 import Badge from '@mui/material/Badge';
 import { UserManager } from 'oidc-client';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { oidcConfig, REACT_APP_AWS_REGION, OPEN_ID_CLIENT_ID, WEBAPP_DOMAIN } from '../../constant';
 import { useProfile } from '../../auth/profileProvider';
 
@@ -130,7 +129,11 @@ const Navbar = () => {
       console.error("Error logging out: ", error);
     }
   };
-
+  useEffect(() => {
+    if (cartData) {
+      dispatch(actionCreators.setCart(cartData.getCartItems.products));
+    }
+  }, [cartData, dispatch]);
   useEffect(() => {
     const handleResize = () => {
       setShowCategories(window.innerWidth > 992);
